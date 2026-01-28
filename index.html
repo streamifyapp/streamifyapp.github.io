@@ -7,6 +7,9 @@
     <title>Streamify - Ultimate Movie & Series Streaming Experience</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     
+    <!-- Video.js CSS -->
+    <link href="https://vjs.zencdn.net/8.6.1/video-js.css" rel="stylesheet" />
+    
     <style>
         :root {
             --primary: #e50914;
@@ -75,52 +78,25 @@
             box-shadow: 0 10px 40px rgba(229, 9, 20, 0.3);
         }
 
-        .vast-player-wrapper video {
+        .video-js {
             width: 100%;
-            height: auto;
-            display: block;
-            aspect-ratio: 16/9;
+            height: 360px;
         }
 
-        .video-placeholder {
-            width: 100%;
-            aspect-ratio: 16/9;
-            background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .video-placeholder:hover {
-            background: linear-gradient(135deg, #2a2a2a, #3a3a3a);
-        }
-
-        .video-placeholder .play-icon {
+        .video-js .vjs-big-play-button {
+            background-color: var(--primary);
+            border: none;
+            border-radius: 50%;
             width: 80px;
             height: 80px;
-            background: var(--primary);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            color: white;
-            margin-bottom: 15px;
-            box-shadow: 0 10px 30px rgba(229, 9, 20, 0.5);
-            transition: transform 0.3s ease;
+            line-height: 80px;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
         }
 
-        .video-placeholder:hover .play-icon {
-            transform: scale(1.1);
-        }
-
-        .video-placeholder p {
-            color: var(--light-gray);
-            font-size: 0.9rem;
+        .video-js:hover .vjs-big-play-button {
+            background-color: #ff1a1a;
         }
 
         .bg-animation {
@@ -842,32 +818,6 @@
             line-height: 1.8;
         }
 
-        .social-links {
-            display: flex;
-            gap: 1.2rem;
-            margin-top: 2rem;
-        }
-
-        .social-links a {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, rgba(229, 9, 20, 0.2), rgba(42, 42, 42, 0.5));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--white);
-            text-decoration: none;
-            transition: all 0.4s ease;
-            border: 1px solid rgba(229, 9, 20, 0.2);
-        }
-
-        .social-links a:hover {
-            background: var(--primary);
-            transform: translateY(-8px) rotate(360deg);
-            box-shadow: 0 10px 30px rgba(229, 9, 20, 0.4);
-        }
-
         .copyright {
             text-align: center;
             padding-top: 3rem;
@@ -909,6 +859,10 @@
             .phone-mockup {
                 max-width: 320px;
             }
+
+            .video-js {
+                height: 280px;
+            }
         }
 
         @media (max-width: 768px) {
@@ -939,6 +893,10 @@
 
             .features-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .video-js {
+                height: 220px;
             }
         }
 
@@ -981,6 +939,10 @@
 
             .modal-content h2 {
                 font-size: 2.5rem;
+            }
+
+            .video-js {
+                height: 180px;
             }
         }
     </style>
@@ -1092,12 +1054,18 @@
         <div class="ad-label">Featured Content - Advertisement</div>
         <div class="ad-content">
             <div class="vast-player-wrapper">
-                <div id="vast-video-container">
-                    <div class="video-placeholder" id="video-placeholder" onclick="loadVastAd()">
-                        <div class="play-icon">▶</div>
-                        <p>Click to play video ad</p>
-                    </div>
-                </div>
+                <video
+                    id="vast-player"
+                    class="video-js vjs-big-play-centered vjs-fluid"
+                    controls
+                    preload="auto"
+                    poster="https://firebasestorage.googleapis.com/v0/b/moddy-store.appspot.com/o/cd6e6e0e08584dfc71f70c207a299076.jpg?alt=media&token=d1021634-7a63-42e9-b23e-64a910c3e829"
+                    data-setup="{}">
+                    <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+                    <p class="vjs-no-js">
+                        To view this video please enable JavaScript, and consider upgrading to a web browser that supports HTML5 video.
+                    </p>
+                </video>
             </div>
         </div>
     </div>
@@ -1183,7 +1151,21 @@
         </div>
     </footer>
 
+    <!-- Video.js Library -->
+    <script src="https://vjs.zencdn.net/8.6.1/video.min.js"></script>
+    
+    <!-- Video.js VAST/VPAID Plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/videojs-vast-vpaid@2.0.2/bin/videojs-vast-vpaid.min.js"></script>
+    
+    <!-- IMA SDK for VAST -->
+    <script src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
+    
+    <!-- Video.js IMA Plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/videojs-ima@1.11.0/dist/videojs.ima.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/videojs-ima@1.11.0/dist/videojs.ima.css" rel="stylesheet">
+
     <script>
+        // Modal Functions
         function openModal(type) {
             const modal = document.getElementById(type + 'Modal');
             if (modal) {
@@ -1216,34 +1198,46 @@
             }
         });
 
-        // VAST Video Ad Function
-        function loadVastAd() {
-            var container = document.getElementById('vast-video-container');
-            var placeholder = document.getElementById('video-placeholder');
-            
-            // Hide placeholder
-            if(placeholder) {
-                placeholder.style.display = 'none';
-            }
-            
-            // Create and load the VAST ad script
-            var script = document.createElement('script');
-            script.src = "//physicaldad.com/dwmxF/z.dVGTNnvxZMGcUe/-ecmo9tu/ZQUNlVkRP/TZYO3ONfT-k/zUMYTwYSt/NmjRcf1WOWTbMTxwN/wL";
-            script.async = true;
-            script.referrerPolicy = 'no-referrer-when-downgrade';
-            container.appendChild(script);
-        }
+        // Initialize Video.js with VAST
+        document.addEventListener('DOMContentLoaded', function() {
+            var player = videojs('vast-player', {
+                controls: true,
+                autoplay: false,
+                preload: 'auto',
+                fluid: true
+            });
 
-        // Auto-load VAST ad when page loads (optional - remove if you want click-to-play only)
-        window.addEventListener('load', function() {
-            setTimeout(function() {
-                // Uncomment the line below if you want auto-play
-                // loadVastAd();
-            }, 2000);
+            // VAST Ad Tag URL
+            var vastUrl = 'https://physicaldad.com/dwmxF/z.dVGTNnvxZMGcUe/-ecmo9tu/ZQUNlVkRP/TZYO3ONfT-k/zUMYTwYSt/NmjRcf1WOWTbMTxwN/wL';
+
+            // Initialize IMA plugin
+            try {
+                player.ima({
+                    adTagUrl: vastUrl,
+                    adsManagerLoadedCallback: function() {
+                        console.log('VAST ads manager loaded');
+                    }
+                });
+
+                // Request ads when player is ready
+                player.on('ready', function() {
+                    console.log('Player ready, requesting ads...');
+                });
+
+                // Handle ad errors
+                player.on('adserror', function(e) {
+                    console.log('Ad error:', e);
+                    // Continue with content if ad fails
+                    player.play();
+                });
+
+            } catch (e) {
+                console.log('IMA plugin error:', e);
+            }
         });
     </script>
 
-    <!-- ========== AD SCRIPTS ========== -->
+    <!-- ========== BANNER AD SCRIPTS ========== -->
 
     <!-- Small Banner Ad (Hero Section) -->
     <script>
