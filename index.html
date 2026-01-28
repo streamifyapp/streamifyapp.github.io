@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="6999466a7278575e1c9345a6b6f7a847f34a64e8" content="6999466a7278575e1c9345a6b6f7a847f34a64e8" />
+    <title>Streamify - Ultimate Movie & Series Streaming Experience</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #e50914;
+            --secondary: #ffd700;
+            --accent: #00d4ff;
+            --dark: #0a0a0a;
+            --dark-gray: #141414;
+            --medium-gray: #2a2a2a;
+            --light-gray: #999;
+            --white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--dark);
+            color: var(--white);
+            overflow-x: hidden;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Ad Container Styling */
+        .ad-container {
+            width: 100%;
+            margin: 20px 0;
+            padding: 10px;
+            background: rgba(20, 20, 20, 0.3);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 60px;
+        }
+
+        .ad-label {
+            font-size: 10px;
+            color: #666;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .ad-content {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Video Ad Container */
+        .video-ad-container {
+            width: 100%;
+            max-width: 640px;
+            margin: 30px auto;
+            padding: 15px;
+            background: rgba(229, 9, 20, 0.05);
+            border-radius: 15px;
+            border: 1px solid rgba(229, 9, 20, 0.2);
+        }
+
+        .video-ad-frame {
+            width: 100%;
+            height: 360px;
+            border: none;
+            border-radius: 10px;
+            background: #000;
+        }
+
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(ellipse at center, #1a1a2e 0%, #0a0a0a 100%);
+            will-change: transform;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 25% 25%, rgba(229, 9, 20, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.08) 0%, transparent 70%);
+            animation: bgRotate 25s linear infinite;
+            will-change: transform;
+        }
+
+        @keyframes bgRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1.2rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(229, 9, 20, 0.2);
+            animation: slideDown 0.8s ease-out;
+            will-change: transform;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .logo {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 2.8rem;
+            letter-spacing: 4px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+        }
+
+        .logo::after {
+            content: 'STREAMIFY';
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .logo:hover::after {
+            opacity: 0.3;
+        }
+
+        nav {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        nav a {
+            color: var(--light-gray);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transition: width 0.3s ease;
+        }
+
+        nav a:hover {
+            color: var(--white);
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, rgba(20, 20, 30, 0.95), rgba(42, 42, 42, 0.95));
+            padding: 3rem;
+            border-radius: 25px;
+            max-width: 700px;
+            width: 90%;
+            border: 1px solid rgba(229, 9, 20, 0.3);
+            box-shadow: 0 30px 80px rgba(229, 9, 20, 0.4);
+            position: relative;
+            animation: slideUp 0.4s ease;
+            transform: translateZ(0);
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            color: var(--light-gray);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: none;
+            border: none;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .modal-close:hover {
+            color: var(--primary);
+            background: rgba(229, 9, 20, 0.1);
+            transform: rotate(90deg);
+        }
+
+        .modal-content h2 {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+        }
+
+        .modal-content p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-content ul {
+            list-style: none;
+            margin-top: 1.5rem;
+        }
+
+        .modal-content ul li {
+            padding: 0.8rem 0;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .modal-content ul li:before {
+            content: '✓';
+            color: var(--accent);
+            font-weight: bold;
+            margin-right: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10rem 5% 2rem;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -30%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150%;
+            height: 150%;
+            background: radial-gradient(ellipse at center, rgba(229, 9, 20, 0.12) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 5rem;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-text {
+            animation: fadeInLeft 1s ease-out;
+        }
+
+        @keyframes fadeInLeft {
+            from {
+                transform: translateX(-80px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .hero-text h1 {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 6rem;
+            line-height: 0.95;
+            margin-bottom: 1.5rem;
+            letter-spacing: 3px;
+            background: linear-gradient(135deg, var(--white) 0%, var(--light-gray) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+        }
+
+        .hero-text .highlight {
+            display: block;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 7rem;
+            margin-top: 0.3rem;
+        }
+
+        .hero-text p {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 3rem;
+            font-weight: 300;
+            max-width: 550px;
+            line-height: 1.8;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-text .tagline {
+            font-size: 1.1rem;
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .download-cta {
+            display: inline-block;
+            margin-top: 1rem;
+        }
+
+        .btn-download {
+            padding: 1.8rem 4rem;
+            border: none;
+            border-radius: 60px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, #b20710 100%);
+            color: var(--white);
+            box-shadow: 
+                0 15px 45px rgba(229, 9, 20, 0.4),
+                0 0 60px rgba(229, 9, 20, 0.3);
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transform: translateZ(0);
+        }
+
+        .btn-download::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .btn-download:hover::before {
+            left: 100%;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-5px) scale(1.05) translateZ(0);
+            box-shadow: 
+                0 25px 70px rgba(229, 9, 20, 0.6),
+                0 0 100px rgba(229, 9, 20, 0.5);
+        }
+
+        .btn-download:active {
+            transform: translateY(-2px) scale(1.02) translateZ(0);
+        }
+
+        .btn-download .icon {
+            font-size: 1.8rem;
+        }
+
+        .download-info {
+            margin-top: 1.5rem;
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.6);
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .download-info span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .download-info .badge {
+            background: rgba(0, 212, 255, 0.2);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--accent);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            font-weight: 600;
+        }
+
+        .hero-phone {
+            position: relative;
+            animation: fadeInRight 1s ease-out;
+            perspective: 1500px;
+        }
+
+        @keyframes fadeInRight {
+            from {
+                transform: translateX(80px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .phone-mockup {
+            position: relative;
+            width: 100%;
+            max-width: 380px;
+            margin: 0 auto;
+            transform: translateY(0) rotateY(-12deg) rotateX(5deg) translateZ(0);
+            filter: drop-shadow(0 30px 80px rgba(229, 9, 20, 0.3));
+            will-change: transform;
+        }
+
+        .phone-mockup:hover {
+            transform: translateY(-15px) rotateY(-12deg) rotateX(5deg) translateZ(0);
+            transition: transform 0.6s ease;
+        }
+
+        .phone-frame {
+            background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+            border-radius: 50px;
+            padding: 16px;
+            box-shadow: 
+                0 40px 80px rgba(0, 0, 0, 0.6),
+                0 0 60px rgba(229, 9, 20, 0.2);
+            position: relative;
+        }
+
+        .phone-screen {
+            background: var(--dark);
+            border-radius: 40px;
+            overflow: hidden;
+            position: relative;
+            aspect-ratio: 9/19.5;
+        }
+
+        .phone-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 130px;
+            height: 32px;
+            background: #0a0a0a;
+            border-radius: 0 0 22px 22px;
+            z-index: 10;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .phone-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(180deg, #141414 0%, #0a0a0a 100%);
+            padding: 55px 22px 22px;
+            gap: 18px;
+        }
+
+        .movie-card {
+            background: linear-gradient(135deg, rgba(229, 9, 20, 0.15), rgba(42, 42, 42, 0.8));
+            border-radius: 22px;
+            padding: 22px;
+            border: 1px solid rgba(229, 9, 20, 0.2);
+            animation: slideUpCard 0.6s ease-out backwards;
+            transition: all 0.3s ease;
+        }
+
+        @keyframes slideUpCard {
+            from {
+                transform: translateY(40px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .movie-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(229, 9, 20, 0.5);
+            box-shadow: 0 10px 30px rgba(229, 9, 20, 0.3);
+        }
+
+        .movie-card:nth-child(1) { animation-delay: 0.2s; }
+        .movie-card:nth-child(2) { animation-delay: 0.4s; }
+        .movie-card:nth-child(3) { animation-delay: 0.6s; }
+
+        .movie-card h4 {
+            font-size: 0.95rem;
+            margin-bottom: 6px;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .movie-card p {
+            font-size: 0.75rem;
+            color: var(--light-gray);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .movie-thumbnail {
+            width: 100%;
+            height: 110px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
+            border-radius: 14px;
+            margin-bottom: 12px;
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 5px 20px rgba(229, 9, 20, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .movie-card:nth-child(1) .movie-thumbnail {
+            background-image: url('https://firebasestorage.googleapis.com/v0/b/moddy-store.appspot.com/o/cd6e6e0e08584dfc71f70c207a299076.jpg?alt=media&token=d1021634-7a63-42e9-b23e-64a910c3e829');
+        }
+
+        .movie-card:nth-child(2) .movie-thumbnail {
+            background-image: url('https://firebasestorage.googleapis.com/v0/b/moddy-store.appspot.com/o/20696cc575deeb5018341bc843e1a360.jpg?alt=media&token=ec7e25fe-943f-4346-8255-63c7dff021ac');
+        }
+
+        .movie-card:nth-child(3) .movie-thumbnail {
+            background-image: url('https://firebasestorage.googleapis.com/v0/b/moddy-store.appspot.com/o/oANi0vEE92nuijiZQgPZ88FSxqQ.jpg?alt=media&token=a2966139-d40f-48e5-9f4f-243508c756a7');
+        }
+
+        .movie-thumbnail::after {
+            content: '▶';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            color: white;
+            opacity: 0.9;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+        }
+
+        .features {
+            padding: 6rem 5% 8rem;
+            background: linear-gradient(180deg, transparent 0%, rgba(20, 20, 20, 0.4) 100%);
+            position: relative;
+        }
+
+        .features::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(229, 9, 20, 0.5), transparent);
+        }
+
+        .features-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 5rem;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(40px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .section-title h2 {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 4.5rem;
+            letter-spacing: 3px;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--white) 0%, var(--light-gray) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-title p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, rgba(229, 9, 20, 0.08), rgba(42, 42, 42, 0.5));
+            padding: 3.5rem 2.5rem;
+            border-radius: 25px;
+            border: 1px solid rgba(229, 9, 20, 0.15);
+            transition: all 0.5s ease;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease-out backwards;
+            transform: translateZ(0);
+        }
+
+        .feature-card:nth-child(1) { animation-delay: 0.1s; }
+        .feature-card:nth-child(2) { animation-delay: 0.2s; }
+        .feature-card:nth-child(3) { animation-delay: 0.3s; }
+        .feature-card:nth-child(4) { animation-delay: 0.4s; }
+        .feature-card:nth-child(5) { animation-delay: 0.5s; }
+        .feature-card:nth-child(6) { animation-delay: 0.6s; }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .feature-card:hover::before {
+            opacity: 0.12;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-12px) translateZ(0);
+            border-color: rgba(229, 9, 20, 0.4);
+            box-shadow: 0 25px 60px rgba(229, 9, 20, 0.25);
+        }
+
+        .feature-icon {
+            font-size: 3.5rem;
+            margin-bottom: 2rem;
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 20px rgba(229, 9, 20, 0.3));
+        }
+
+        .feature-card h3 {
+            font-size: 1.6rem;
+            margin-bottom: 1.2rem;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-card p {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        footer {
+            background: var(--dark-gray);
+            padding: 4rem 5%;
+            border-top: 1px solid rgba(229, 9, 20, 0.2);
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3.5rem;
+        }
+
+        .footer-section h3 {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 2rem;
+            margin-bottom: 1.8rem;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .footer-section p {
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.8;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1.2rem;
+            margin-top: 2rem;
+        }
+
+        .social-links a {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, rgba(229, 9, 20, 0.2), rgba(42, 42, 42, 0.5));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            text-decoration: none;
+            transition: all 0.4s ease;
+            border: 1px solid rgba(229, 9, 20, 0.2);
+        }
+
+        .social-links a:hover {
+            background: var(--primary);
+            transform: translateY(-8px) rotate(360deg);
+            box-shadow: 0 10px 30px rgba(229, 9, 20, 0.4);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 3rem;
+            margin-top: 3rem;
+            border-top: 1px solid rgba(229, 9, 20, 0.15);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.95rem;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2.5rem;
+            color: var(--primary);
+            opacity: 0.6;
+            z-index: 10;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                gap: 4rem;
+                text-align: center;
+            }
+
+            .hero-text {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .hero-text p {
+                max-width: 600px;
+            }
+
+            .phone-mockup {
+                max-width: 320px;
+            }
+
+            .video-ad-frame {
+                height: 280px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                display: none;
+            }
+
+            .hero {
+                padding: 8rem 5% 2rem;
+            }
+
+            .hero-text h1 {
+                font-size: 4rem;
+            }
+
+            .hero-text .highlight {
+                font-size: 5rem;
+            }
+
+            .btn-download {
+                padding: 1.5rem 3rem;
+                font-size: 1.1rem;
+            }
+
+            .section-title h2 {
+                font-size: 3.5rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .video-ad-frame {
+                height: 200px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero {
+                padding: 7rem 5% 2rem;
+            }
+
+            .hero-text h1 {
+                font-size: 3rem;
+            }
+
+            .hero-text .highlight {
+                font-size: 3.8rem;
+            }
+
+            .hero-text p {
+                font-size: 1.1rem;
+            }
+
+            .btn-download {
+                padding: 1.3rem 2.5rem;
+                font-size: 1rem;
+                width: 100%;
+                justify-content: center;
+            }
+
+            .download-info {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .logo {
+                font-size: 2.2rem;
+            }
+
+            .modal-content {
+                padding: 2rem;
+            }
+
+            .modal-content h2 {
+                font-size: 2.5rem;
+            }
+
+            .video-ad-frame {
+                height: 180px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <header>
+        <div class="logo">STREAMIFY</div>
+        <nav>
+            <a onclick="openModal('features')">Features</a>
+            <a onclick="openModal('about')">About</a>
+        </nav>
+    </header>
+
+    <!-- Features Modal -->
+    <div id="featuresModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('features')">×</button>
+            <h2>Premium Features</h2>
+            <p>Streamify offers the most advanced streaming experience with cutting-edge technology and an extensive content library.</p>
+            <ul>
+                <li>Unlimited access to 50,000+ movies and TV series</li>
+                <li>Stream in stunning 4K Ultra HD quality</li>
+                <li>Download content for offline viewing</li>
+                <li>AI-powered personalized recommendations</li>
+                <li>Multi-device sync across all your gadgets</li>
+                <li>Zero ads, pure entertainment</li>
+                <li>New content added daily</li>
+                <li>Multiple audio tracks and subtitles</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- About Modal -->
+    <div id="aboutModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('about')">×</button>
+            <h2>About Streamify</h2>
+            <p>Streamify is a premium movie and series streaming platform designed for entertainment enthusiasts who demand the best viewing experience.</p>
+            <p>Our mission is to bring unlimited entertainment to your fingertips with a vast library of high-quality content spanning every genre imaginable. From Hollywood blockbusters to international cinema, indie films to trending series - we've got it all.</p>
+            <p>Built with cutting-edge streaming technology, Streamify ensures smooth playback, crystal-clear quality, and an intuitive user experience that makes finding your next favorite show effortless.</p>
+            <p>Join millions of users worldwide who trust Streamify for their daily entertainment needs. Experience cinema like never before.</p>
+        </div>
+    </div>
+
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <div class="tagline">⚡ Your Ultimate Entertainment Hub</div>
+                <h1>
+                    Unlimited Movies
+                    <span class="highlight">& Series</span>
+                </h1>
+
+                <div class="download-cta">
+                    <a href="https://archive.org/download/streamify-v-9.5/Streamify%20v9.5.apk" class="btn-download" download>
+                        <span class="icon">⬇</span> Download Now
+                    </a>
+                </div>
+
+                <div class="download-info">
+                    <span class="badge">✓ Free Forever</span>
+                    <span class="badge">✓ 4K Quality</span>
+                    <span class="badge">✓ No Ads</span>
+                </div>
+
+                <p>Experience cinema like never before. Stream thousands of movies and series in stunning 4K quality. Your entertainment journey starts here.</p>
+
+                <!-- SMALL BANNER AD (Below Download Button) -->
+                <div class="ad-container" style="margin-top: 2rem;">
+                    <div class="ad-label">Advertisement</div>
+                    <div class="ad-content" id="small-banner-1"></div>
+                </div>
+            </div>
+
+            <div class="hero-phone">
+                <div class="phone-mockup">
+                    <div class="phone-frame">
+                        <div class="phone-screen">
+                            <div class="phone-notch"></div>
+                            <div class="phone-content">
+                                <div class="movie-card">
+                                    <div class="movie-thumbnail"></div>
+                                    <h4>🔥 Trending Now</h4>
+                                    <p>Action • 2024 • 4K HDR</p>
+                                </div>
+                                <div class="movie-card">
+                                    <div class="movie-thumbnail"></div>
+                                    <h4>⭐ Top Rated Series</h4>
+                                    <p>Drama • S3 E5 • HD</p>
+                                </div>
+                                <div class="movie-card">
+                                    <div class="movie-thumbnail"></div>
+                                    <h4>🆕 New Releases</h4>
+                                    <p>Sci-Fi • 2024 • UHD</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-indicator">↓</div>
+    </section>
+
+    <!-- VAST VIDEO AD SECTION -->
+    <div class="ad-container" style="max-width: 1200px; margin: 40px auto;">
+        <div class="ad-label">Featured Content - Advertisement</div>
+        <div class="ad-content" id="vast-video-ad" style="min-height: 250px; display: flex; align-items: center; justify-content: center;">
+            <!-- VAST video ad will load here -->
+        </div>
+    </div>
+
+    <!-- MEDIUM BANNER AD (Before Features Section) -->
+    <div class="ad-container" style="max-width: 1200px; margin: 40px auto;">
+        <div class="ad-label">Advertisement</div>
+        <div class="ad-content" id="medium-banner-1"></div>
+    </div>
+
+    <section id="features" class="features">
+        <div class="features-container">
+            <div class="section-title">
+                <h2>WHY CHOOSE STREAMIFY?</h2>
+                <p>Experience premium entertainment with features designed for movie lovers</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎬</div>
+                    <h3>Massive Library</h3>
+                    <p>Access 50,000+ movies and series across all genres. From Hollywood blockbusters to indie masterpieces, discover unlimited entertainment.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>Multi-Device Sync</h3>
+                    <p>Start on your phone, continue on tablet. Your watchlist and progress sync seamlessly across all your devices.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Lightning Fast</h3>
+                    <p>Zero buffering, instant playback. Experience ultra-fast streaming with adaptive quality up to 4K resolution.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Smart AI Picks</h3>
+                    <p>Get personalized recommendations powered by AI. Discover hidden gems based on your unique taste and viewing history.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📥</div>
+                    <h3>Offline Mode</h3>
+                    <p>Download unlimited content and watch anywhere, anytime. Perfect for flights, commutes, or anywhere without internet.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌍</div>
+                    <h3>Global Content</h3>
+                    <p>Stream international cinema from every corner of the world. Multiple languages, subtitles, and dubbed versions available.</p>
+                </div>
+            </div>
+
+            <!-- VIDEO SLIDER AD (After Feature Cards) -->
+            <div class="ad-container" style="margin-top: 60px;">
+                <div class="ad-label">Advertisement</div>
+                <div class="ad-content" id="video-slider-1"></div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Streamify</h3>
+                <p>Your premium destination for unlimited entertainment. Watch what you love, whenever you want. Experience the future of streaming with Streamify.</p>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Platform</h3>
+                <p>Available on Android devices. Download the app and start streaming your favorite content in stunning quality. Regular updates with new features and content.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quality</h3>
+                <p>We pride ourselves on delivering the highest quality streaming experience. 4K Ultra HD, HDR support, and crystal-clear audio for your viewing pleasure.</p>
+            </div>
+        </div>
+
+        <!-- SMALL BANNER AD (Footer) -->
+        <div class="ad-container" style="margin-top: 40px;">
+            <div class="ad-label">Advertisement</div>
+            <div class="ad-content" id="small-banner-footer"></div>
+        </div>
+
+        <div class="copyright">
+            <p>&copy; 2024 Streamify. All rights reserved. | Crafted with ❤️ for entertainment lovers worldwide</p>
+        </div>
+    </footer>
+
+    <script>
+        function openModal(type) {
+            const modal = document.getElementById(type + 'Modal');
+            if (modal) {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeModal(type) {
+            const modal = document.getElementById(type + 'Modal');
+            if (modal) {
+                modal.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                document.querySelectorAll('.modal').forEach(modal => {
+                    modal.classList.remove('active');
+                });
+                document.body.style.overflow = 'auto';
+            }
+        });
+    </script>
+
+</body>
+</html>
