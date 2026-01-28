@@ -9,6 +9,8 @@
     
     <!-- Video.js CSS -->
     <link href="https://vjs.zencdn.net/8.6.1/video-js.css" rel="stylesheet" />
+    <!-- IMA Plugin CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/videojs-ima@2.3.0/dist/videojs.ima.css" rel="stylesheet">
     
     <style>
         :root {
@@ -38,7 +40,6 @@
             -moz-osx-font-smoothing: grayscale;
         }
 
-        /* Ad Container Styling */
         .ad-container {
             width: 100%;
             margin: 20px 0;
@@ -66,7 +67,7 @@
             align-items: center;
         }
 
-        /* VAST Video Player Styling */
+        /* VAST Video Player Container */
         .vast-player-wrapper {
             width: 100%;
             max-width: 640px;
@@ -78,25 +79,35 @@
             box-shadow: 0 10px 40px rgba(229, 9, 20, 0.3);
         }
 
-        .video-js {
+        #content-video {
             width: 100%;
             height: 360px;
         }
 
+        #content-video_html5_api {
+            width: 100%;
+            height: 100%;
+        }
+
         .video-js .vjs-big-play-button {
-            background-color: var(--primary);
-            border: none;
-            border-radius: 50%;
-            width: 80px;
-            height: 80px;
-            line-height: 80px;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
+            background-color: var(--primary) !important;
+            border: none !important;
+            border-radius: 50% !important;
+            width: 80px !important;
+            height: 80px !important;
+            line-height: 80px !important;
+            left: 50% !important;
+            top: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            margin: 0 !important;
         }
 
         .video-js:hover .vjs-big-play-button {
-            background-color: #ff1a1a;
+            background-color: #ff1a1a !important;
+        }
+
+        .video-js .vjs-control-bar {
+            background: rgba(0, 0, 0, 0.7) !important;
         }
 
         .bg-animation {
@@ -838,7 +849,6 @@
             z-index: 10;
         }
 
-        /* Responsive Design */
         @media (max-width: 1024px) {
             .hero-content {
                 grid-template-columns: 1fr;
@@ -860,7 +870,7 @@
                 max-width: 320px;
             }
 
-            .video-js {
+            #content-video {
                 height: 280px;
             }
         }
@@ -895,7 +905,7 @@
                 grid-template-columns: 1fr;
             }
 
-            .video-js {
+            #content-video {
                 height: 220px;
             }
         }
@@ -941,7 +951,7 @@
                 font-size: 2.5rem;
             }
 
-            .video-js {
+            #content-video {
                 height: 180px;
             }
         }
@@ -983,9 +993,9 @@
             <button class="modal-close" onclick="closeModal('about')">×</button>
             <h2>About Streamify</h2>
             <p>Streamify is a premium movie and series streaming platform designed for entertainment enthusiasts who demand the best viewing experience.</p>
-            <p>Our mission is to bring unlimited entertainment to your fingertips with a vast library of high-quality content spanning every genre imaginable. From Hollywood blockbusters to international cinema, indie films to trending series - we've got it all.</p>
-            <p>Built with cutting-edge streaming technology, Streamify ensures smooth playback, crystal-clear quality, and an intuitive user experience that makes finding your next favorite show effortless.</p>
-            <p>Join millions of users worldwide who trust Streamify for their daily entertainment needs. Experience cinema like never before.</p>
+            <p>Our mission is to bring unlimited entertainment to your fingertips with a vast library of high-quality content spanning every genre imaginable.</p>
+            <p>Built with cutting-edge streaming technology, Streamify ensures smooth playback, crystal-clear quality, and an intuitive user experience.</p>
+            <p>Join millions of users worldwide who trust Streamify for their daily entertainment needs.</p>
         </div>
     </div>
 
@@ -1012,7 +1022,7 @@
 
                 <p>Experience cinema like never before. Stream thousands of movies and series in stunning 4K quality. Your entertainment journey starts here.</p>
 
-                <!-- SMALL BANNER AD (Below Download Button) -->
+                <!-- SMALL BANNER AD -->
                 <div class="ad-container" style="margin-top: 2rem;">
                     <div class="ad-label">Advertisement</div>
                     <div class="ad-content" id="small-banner-1"></div>
@@ -1049,28 +1059,24 @@
         <div class="scroll-indicator">↓</div>
     </section>
 
-    <!-- VAST VIDEO AD SECTION -->
+    <!-- VAST VIDEO AD SECTION WITH IMA SDK -->
     <div class="ad-container" style="max-width: 1200px; margin: 40px auto; padding: 20px;">
         <div class="ad-label">Featured Content - Advertisement</div>
         <div class="ad-content">
             <div class="vast-player-wrapper">
                 <video
-                    id="vast-player"
-                    class="video-js vjs-big-play-centered vjs-fluid"
+                    id="content-video"
+                    class="video-js vjs-default-skin vjs-big-play-centered"
                     controls
                     preload="auto"
-                    poster="https://firebasestorage.googleapis.com/v0/b/moddy-store.appspot.com/o/cd6e6e0e08584dfc71f70c207a299076.jpg?alt=media&token=d1021634-7a63-42e9-b23e-64a910c3e829"
-                    data-setup="{}">
-                    <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
-                    <p class="vjs-no-js">
-                        To view this video please enable JavaScript, and consider upgrading to a web browser that supports HTML5 video.
-                    </p>
+                    poster="https://firebasestorage.googleapis.com/v0/b/moddy-store.appspot.com/o/cd6e6e0e08584dfc71f70c207a299076.jpg?alt=media&token=d1021634-7a63-42e9-b23e-64a910c3e829">
+                    <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4" type="video/mp4">
                 </video>
             </div>
         </div>
     </div>
 
-    <!-- MEDIUM BANNER AD (Before Features Section) -->
+    <!-- MEDIUM BANNER AD -->
     <div class="ad-container" style="max-width: 1200px; margin: 40px auto;">
         <div class="ad-label">Advertisement</div>
         <div class="ad-content" id="medium-banner-1"></div>
@@ -1086,36 +1092,36 @@
                 <div class="feature-card">
                     <div class="feature-icon">🎬</div>
                     <h3>Massive Library</h3>
-                    <p>Access 50,000+ movies and series across all genres. From Hollywood blockbusters to indie masterpieces, discover unlimited entertainment.</p>
+                    <p>Access 50,000+ movies and series across all genres. From Hollywood blockbusters to indie masterpieces.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">📱</div>
                     <h3>Multi-Device Sync</h3>
-                    <p>Start on your phone, continue on tablet. Your watchlist and progress sync seamlessly across all your devices.</p>
+                    <p>Start on your phone, continue on tablet. Your watchlist syncs seamlessly across all devices.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">⚡</div>
                     <h3>Lightning Fast</h3>
-                    <p>Zero buffering, instant playback. Experience ultra-fast streaming with adaptive quality up to 4K resolution.</p>
+                    <p>Zero buffering, instant playback. Experience ultra-fast streaming with adaptive quality.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">🎯</div>
                     <h3>Smart AI Picks</h3>
-                    <p>Get personalized recommendations powered by AI. Discover hidden gems based on your unique taste and viewing history.</p>
+                    <p>Get personalized recommendations powered by AI based on your unique taste.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">📥</div>
                     <h3>Offline Mode</h3>
-                    <p>Download unlimited content and watch anywhere, anytime. Perfect for flights, commutes, or anywhere without internet.</p>
+                    <p>Download unlimited content and watch anywhere, anytime without internet.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">🌍</div>
                     <h3>Global Content</h3>
-                    <p>Stream international cinema from every corner of the world. Multiple languages, subtitles, and dubbed versions available.</p>
+                    <p>Stream international cinema with multiple languages and subtitles.</p>
                 </div>
             </div>
 
-            <!-- VIDEO SLIDER AD (After Feature Cards) -->
+            <!-- VIDEO SLIDER AD -->
             <div class="ad-container" style="margin-top: 60px;">
                 <div class="ad-label">Advertisement</div>
                 <div class="ad-content" id="video-slider-1"></div>
@@ -1127,16 +1133,15 @@
         <div class="footer-content">
             <div class="footer-section">
                 <h3>Streamify</h3>
-                <p>Your premium destination for unlimited entertainment. Watch what you love, whenever you want. Experience the future of streaming with Streamify.</p>
+                <p>Your premium destination for unlimited entertainment. Watch what you love, whenever you want.</p>
             </div>
-            
             <div class="footer-section">
                 <h3>Platform</h3>
-                <p>Available on Android devices. Download the app and start streaming your favorite content in stunning quality. Regular updates with new features and content.</p>
+                <p>Available on Android devices. Download the app and start streaming in stunning quality.</p>
             </div>
             <div class="footer-section">
                 <h3>Quality</h3>
-                <p>We pride ourselves on delivering the highest quality streaming experience. 4K Ultra HD, HDR support, and crystal-clear audio for your viewing pleasure.</p>
+                <p>4K Ultra HD, HDR support, and crystal-clear audio for your viewing pleasure.</p>
             </div>
         </div>
 
@@ -1151,18 +1156,14 @@
         </div>
     </footer>
 
-    <!-- Video.js Library -->
-    <script src="https://vjs.zencdn.net/8.6.1/video.min.js"></script>
-    
-    <!-- Video.js VAST/VPAID Plugin -->
-    <script src="https://cdn.jsdelivr.net/npm/videojs-vast-vpaid@2.0.2/bin/videojs-vast-vpaid.min.js"></script>
-    
-    <!-- IMA SDK for VAST -->
+    <!-- Google IMA SDK -->
     <script src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
     
+    <!-- Video.js -->
+    <script src="https://vjs.zencdn.net/8.6.1/video.min.js"></script>
+    
     <!-- Video.js IMA Plugin -->
-    <script src="https://cdn.jsdelivr.net/npm/videojs-ima@1.11.0/dist/videojs.ima.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/videojs-ima@1.11.0/dist/videojs.ima.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/videojs-ima@2.3.0/dist/videojs.ima.min.js"></script>
 
     <script>
         // Modal Functions
@@ -1198,41 +1199,56 @@
             }
         });
 
-        // Initialize Video.js with VAST
-        document.addEventListener('DOMContentLoaded', function() {
-            var player = videojs('vast-player', {
+        // ============ VAST VIDEO AD WITH IMA SDK ============
+        var player;
+        var adsLoaded = false;
+        var adContainer;
+        var adDisplayContainer;
+        var adsLoader;
+        var adsManager;
+        var videoElement;
+
+        // Your HilltopAds VAST URL for Google IMA SDK
+        var VAST_TAG_URL = 'https://physicaldad.com/dTmkFezZd.GLN/vQZLGvU-/QeYmy9UuIZIUHl/kOPkTfYI3ENvTXk/z/McTrYAtUNbj-ck1lODTzMFxiNDyHZCscaaWr1LpadWDN0-xN';
+
+        window.addEventListener('load', function() {
+            // Initialize Video.js player
+            player = videojs('content-video', {
                 controls: true,
                 autoplay: false,
                 preload: 'auto',
                 fluid: true
             });
 
-            // VAST Ad Tag URL
-            var vastUrl = 'https://physicaldad.com/dwmxF/z.dVGTNnvxZMGcUe/-ecmo9tu/ZQUNlVkRP/TZYO3ONfT-k/zUMYTwYSt/NmjRcf1WOWTbMTxwN/wL';
+            // Initialize IMA plugin with your VAST tag
+            var imaOptions = {
+                adTagUrl: VAST_TAG_URL,
+                adsManagerLoadedCallback: adsManagerLoadedCallback,
+                debug: true,
+                showControlsForJSAds: true
+            };
 
-            // Initialize IMA plugin
-            try {
-                player.ima({
-                    adTagUrl: vastUrl,
-                    adsManagerLoadedCallback: function() {
-                        console.log('VAST ads manager loaded');
-                    }
-                });
+            player.ima(imaOptions);
 
-                // Request ads when player is ready
-                player.on('ready', function() {
-                    console.log('Player ready, requesting ads...');
-                });
+            // Initialize ad display container on first user interaction
+            player.one('play', function() {
+                player.ima.initializeAdDisplayContainer();
+                player.ima.requestAds();
+            });
 
-                // Handle ad errors
-                player.on('adserror', function(e) {
-                    console.log('Ad error:', e);
-                    // Continue with content if ad fails
-                    player.play();
-                });
+            console.log('VAST Video Player initialized with IMA SDK');
+        });
 
-            } catch (e) {
-                console.log('IMA plugin error:', e);
+        function adsManagerLoadedCallback() {
+            console.log('Ads Manager loaded successfully');
+        }
+
+        // Handle errors
+        player?.on('adserror', function(event) {
+            console.log('Ad error occurred:', event);
+            // Continue playing content if ad fails
+            if (player) {
+                player.play();
             }
         });
     </script>
