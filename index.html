@@ -7,11 +7,6 @@
     <title>Streamify - Ultimate Movie & Series Streaming Experience</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     
-    <!-- Video.js CSS -->
-    <link href="https://vjs.zencdn.net/8.6.1/video-js.css" rel="stylesheet" />
-    <!-- IMA Plugin CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/videojs-ima@2.3.0/dist/videojs.ima.css" rel="stylesheet">
-    
     <style>
         :root {
             --primary: #e50914;
@@ -67,7 +62,7 @@
             align-items: center;
         }
 
-        /* VAST Video Player Container */
+        /* VAST Video Container */
         .vast-player-wrapper {
             width: 100%;
             max-width: 640px;
@@ -79,35 +74,68 @@
             box-shadow: 0 10px 40px rgba(229, 9, 20, 0.3);
         }
 
-        #content-video {
+        #vast-container {
             width: 100%;
             height: 360px;
+            background: #000;
+            position: relative;
         }
 
-        #content-video_html5_api {
+        #vast-video {
+            width: 100%;
+            height: 100%;
+            background: #000;
+        }
+
+        #ad-container {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
         }
 
-        .video-js .vjs-big-play-button {
-            background-color: var(--primary) !important;
-            border: none !important;
-            border-radius: 50% !important;
-            width: 80px !important;
-            height: 80px !important;
-            line-height: 80px !important;
-            left: 50% !important;
-            top: 50% !important;
-            transform: translate(-50%, -50%) !important;
-            margin: 0 !important;
+        .play-button-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
         }
 
-        .video-js:hover .vjs-big-play-button {
-            background-color: #ff1a1a !important;
+        .play-button-overlay:hover {
+            background: rgba(0,0,0,0.5);
         }
 
-        .video-js .vjs-control-bar {
-            background: rgba(0, 0, 0, 0.7) !important;
+        .play-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            margin-bottom: 15px;
+            box-shadow: 0 10px 30px rgba(229, 9, 20, 0.5);
+            transition: transform 0.3s ease;
+        }
+
+        .play-button-overlay:hover .play-icon {
+            transform: scale(1.1);
+        }
+
+        .play-button-overlay p {
+            color: #fff;
+            font-size: 1rem;
         }
 
         .bg-animation {
@@ -154,7 +182,6 @@
             backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(229, 9, 20, 0.2);
             animation: slideDown 0.8s ease-out;
-            will-change: transform;
         }
 
         @keyframes slideDown {
@@ -176,24 +203,6 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            position: relative;
-        }
-
-        .logo::after {
-            content: 'STREAMIFY';
-            position: absolute;
-            left: 0;
-            top: 0;
-            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .logo:hover::after {
-            opacity: 0.3;
         }
 
         nav {
@@ -213,23 +222,8 @@
             cursor: pointer;
         }
 
-        nav a::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
-            transition: width 0.3s ease;
-        }
-
         nav a:hover {
             color: var(--white);
-        }
-
-        nav a:hover::after {
-            width: 100%;
         }
 
         .modal {
@@ -242,12 +236,6 @@
             height: 100%;
             background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(5px);
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
         }
 
         .modal.active {
@@ -265,19 +253,6 @@
             border: 1px solid rgba(229, 9, 20, 0.3);
             box-shadow: 0 30px 80px rgba(229, 9, 20, 0.4);
             position: relative;
-            animation: slideUp 0.4s ease;
-            transform: translateZ(0);
-        }
-
-        @keyframes slideUp {
-            from {
-                transform: translateY(50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
         }
 
         .modal-close {
@@ -287,21 +262,8 @@
             font-size: 2rem;
             color: var(--light-gray);
             cursor: pointer;
-            transition: all 0.3s ease;
             background: none;
             border: none;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-        }
-
-        .modal-close:hover {
-            color: var(--primary);
-            background: rgba(229, 9, 20, 0.1);
-            transform: rotate(90deg);
         }
 
         .modal-content h2 {
@@ -312,7 +274,6 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            letter-spacing: 2px;
         }
 
         .modal-content p {
@@ -324,22 +285,18 @@
 
         .modal-content ul {
             list-style: none;
-            margin-top: 1.5rem;
         }
 
         .modal-content ul li {
             padding: 0.8rem 0;
             color: rgba(255, 255, 255, 0.7);
-            font-size: 1rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .modal-content ul li:before {
             content: '✓';
             color: var(--accent);
-            font-weight: bold;
             margin-right: 1rem;
-            font-size: 1.2rem;
         }
 
         .hero {
@@ -349,18 +306,6 @@
             justify-content: center;
             padding: 10rem 5% 2rem;
             position: relative;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: -30%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 150%;
-            height: 150%;
-            background: radial-gradient(ellipse at center, rgba(229, 9, 20, 0.12) 0%, transparent 60%);
-            pointer-events: none;
         }
 
         .hero-content {
@@ -419,7 +364,6 @@
             font-weight: 300;
             max-width: 550px;
             line-height: 1.8;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
         }
 
         .hero-text .tagline {
@@ -451,40 +395,16 @@
             font-family: 'Outfit', sans-serif;
             background: linear-gradient(135deg, var(--primary) 0%, #b20710 100%);
             color: var(--white);
-            box-shadow: 
-                0 15px 45px rgba(229, 9, 20, 0.4),
-                0 0 60px rgba(229, 9, 20, 0.3);
+            box-shadow: 0 15px 45px rgba(229, 9, 20, 0.4);
             position: relative;
             overflow: hidden;
             text-transform: uppercase;
             letter-spacing: 2px;
-            transform: translateZ(0);
-        }
-
-        .btn-download::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-            transition: left 0.6s ease;
-        }
-
-        .btn-download:hover::before {
-            left: 100%;
         }
 
         .btn-download:hover {
-            transform: translateY(-5px) scale(1.05) translateZ(0);
-            box-shadow: 
-                0 25px 70px rgba(229, 9, 20, 0.6),
-                0 0 100px rgba(229, 9, 20, 0.5);
-        }
-
-        .btn-download:active {
-            transform: translateY(-2px) scale(1.02) translateZ(0);
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 25px 70px rgba(229, 9, 20, 0.6);
         }
 
         .btn-download .icon {
@@ -493,17 +413,9 @@
 
         .download-info {
             margin-top: 1.5rem;
-            font-size: 0.95rem;
-            color: rgba(255, 255, 255, 0.6);
             display: flex;
             align-items: center;
             gap: 1.5rem;
-        }
-
-        .download-info span {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
         }
 
         .download-info .badge {
@@ -519,7 +431,6 @@
         .hero-phone {
             position: relative;
             animation: fadeInRight 1s ease-out;
-            perspective: 1500px;
         }
 
         @keyframes fadeInRight {
@@ -538,13 +449,12 @@
             width: 100%;
             max-width: 380px;
             margin: 0 auto;
-            transform: translateY(0) rotateY(-12deg) rotateX(5deg) translateZ(0);
+            transform: rotateY(-12deg) rotateX(5deg);
             filter: drop-shadow(0 30px 80px rgba(229, 9, 20, 0.3));
-            will-change: transform;
         }
 
         .phone-mockup:hover {
-            transform: translateY(-15px) rotateY(-12deg) rotateX(5deg) translateZ(0);
+            transform: translateY(-15px) rotateY(-12deg) rotateX(5deg);
             transition: transform 0.6s ease;
         }
 
@@ -552,10 +462,7 @@
             background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
             border-radius: 50px;
             padding: 16px;
-            box-shadow: 
-                0 40px 80px rgba(0, 0, 0, 0.6),
-                0 0 60px rgba(229, 9, 20, 0.2);
-            position: relative;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
         }
 
         .phone-screen {
@@ -576,7 +483,6 @@
             background: #0a0a0a;
             border-radius: 0 0 22px 22px;
             z-index: 10;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
         }
 
         .phone-content {
@@ -593,57 +499,27 @@
             border-radius: 22px;
             padding: 22px;
             border: 1px solid rgba(229, 9, 20, 0.2);
-            animation: slideUpCard 0.6s ease-out backwards;
-            transition: all 0.3s ease;
         }
-
-        @keyframes slideUpCard {
-            from {
-                transform: translateY(40px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .movie-card:hover {
-            transform: translateY(-3px);
-            border-color: rgba(229, 9, 20, 0.5);
-            box-shadow: 0 10px 30px rgba(229, 9, 20, 0.3);
-        }
-
-        .movie-card:nth-child(1) { animation-delay: 0.2s; }
-        .movie-card:nth-child(2) { animation-delay: 0.4s; }
-        .movie-card:nth-child(3) { animation-delay: 0.6s; }
 
         .movie-card h4 {
             font-size: 0.95rem;
             margin-bottom: 6px;
             font-weight: 700;
-            color: var(--white);
         }
 
         .movie-card p {
             font-size: 0.75rem;
             color: var(--light-gray);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
         }
 
         .movie-thumbnail {
             width: 100%;
             height: 110px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
             border-radius: 14px;
             margin-bottom: 12px;
             background-size: cover;
             background-position: center;
-            box-shadow: 0 5px 20px rgba(229, 9, 20, 0.3);
             position: relative;
-            overflow: hidden;
         }
 
         .movie-card:nth-child(1) .movie-thumbnail {
@@ -667,23 +543,11 @@
             font-size: 2rem;
             color: white;
             opacity: 0.9;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
         }
 
         .features {
             padding: 6rem 5% 8rem;
             background: linear-gradient(180deg, transparent 0%, rgba(20, 20, 20, 0.4) 100%);
-            position: relative;
-        }
-
-        .features::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(229, 9, 20, 0.5), transparent);
         }
 
         .features-container {
@@ -694,18 +558,6 @@
         .section-title {
             text-align: center;
             margin-bottom: 5rem;
-            animation: fadeInUp 1s ease-out;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                transform: translateY(40px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
         }
 
         .section-title h2 {
@@ -738,37 +590,10 @@
             border-radius: 25px;
             border: 1px solid rgba(229, 9, 20, 0.15);
             transition: all 0.5s ease;
-            position: relative;
-            overflow: hidden;
-            animation: fadeInUp 0.8s ease-out backwards;
-            transform: translateZ(0);
-        }
-
-        .feature-card:nth-child(1) { animation-delay: 0.1s; }
-        .feature-card:nth-child(2) { animation-delay: 0.2s; }
-        .feature-card:nth-child(3) { animation-delay: 0.3s; }
-        .feature-card:nth-child(4) { animation-delay: 0.4s; }
-        .feature-card:nth-child(5) { animation-delay: 0.5s; }
-        .feature-card:nth-child(6) { animation-delay: 0.6s; }
-
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
-
-        .feature-card:hover::before {
-            opacity: 0.12;
         }
 
         .feature-card:hover {
-            transform: translateY(-12px) translateZ(0);
+            transform: translateY(-12px);
             border-color: rgba(229, 9, 20, 0.4);
             box-shadow: 0 25px 60px rgba(229, 9, 20, 0.25);
         }
@@ -776,27 +601,17 @@
         .feature-icon {
             font-size: 3.5rem;
             margin-bottom: 2rem;
-            display: inline-block;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            filter: drop-shadow(0 0 20px rgba(229, 9, 20, 0.3));
         }
 
         .feature-card h3 {
             font-size: 1.6rem;
             margin-bottom: 1.2rem;
             font-weight: 700;
-            position: relative;
-            z-index: 1;
         }
 
         .feature-card p {
             color: rgba(255, 255, 255, 0.7);
             line-height: 1.9;
-            position: relative;
-            z-index: 1;
         }
 
         footer {
@@ -817,7 +632,6 @@
             font-family: 'Bebas Neue', cursive;
             font-size: 2rem;
             margin-bottom: 1.8rem;
-            letter-spacing: 2px;
             background: linear-gradient(135deg, var(--primary), var(--accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -835,7 +649,6 @@
             margin-top: 3rem;
             border-top: 1px solid rgba(229, 9, 20, 0.15);
             color: rgba(255, 255, 255, 0.5);
-            font-size: 0.95rem;
         }
 
         .scroll-indicator {
@@ -846,7 +659,6 @@
             font-size: 2.5rem;
             color: var(--primary);
             opacity: 0.6;
-            z-index: 10;
         }
 
         @media (max-width: 1024px) {
@@ -862,70 +674,42 @@
                 align-items: center;
             }
 
-            .hero-text p {
-                max-width: 600px;
-            }
-
             .phone-mockup {
                 max-width: 320px;
             }
 
-            #content-video {
+            #vast-container {
                 height: 280px;
             }
         }
 
         @media (max-width: 768px) {
-            nav {
-                display: none;
-            }
+            nav { display: none; }
 
-            .hero {
-                padding: 8rem 5% 2rem;
-            }
+            .hero { padding: 8rem 5% 2rem; }
 
-            .hero-text h1 {
-                font-size: 4rem;
-            }
+            .hero-text h1 { font-size: 4rem; }
 
-            .hero-text .highlight {
-                font-size: 5rem;
-            }
+            .hero-text .highlight { font-size: 5rem; }
 
             .btn-download {
                 padding: 1.5rem 3rem;
                 font-size: 1.1rem;
             }
 
-            .section-title h2 {
-                font-size: 3.5rem;
-            }
+            .section-title h2 { font-size: 3.5rem; }
 
-            .features-grid {
-                grid-template-columns: 1fr;
-            }
+            .features-grid { grid-template-columns: 1fr; }
 
-            #content-video {
-                height: 220px;
-            }
+            #vast-container { height: 220px; }
         }
 
         @media (max-width: 480px) {
-            .hero {
-                padding: 7rem 5% 2rem;
-            }
+            .hero { padding: 7rem 5% 2rem; }
 
-            .hero-text h1 {
-                font-size: 3rem;
-            }
+            .hero-text h1 { font-size: 3rem; }
 
-            .hero-text .highlight {
-                font-size: 3.8rem;
-            }
-
-            .hero-text p {
-                font-size: 1.1rem;
-            }
+            .hero-text .highlight { font-size: 3.8rem; }
 
             .btn-download {
                 padding: 1.3rem 2.5rem;
@@ -934,26 +718,11 @@
                 justify-content: center;
             }
 
-            .download-info {
-                flex-direction: column;
-                gap: 1rem;
-            }
+            .download-info { flex-direction: column; gap: 1rem; }
 
-            .logo {
-                font-size: 2.2rem;
-            }
+            .logo { font-size: 2.2rem; }
 
-            .modal-content {
-                padding: 2rem;
-            }
-
-            .modal-content h2 {
-                font-size: 2.5rem;
-            }
-
-            #content-video {
-                height: 180px;
-            }
+            #vast-container { height: 180px; }
         }
     </style>
 </head>
@@ -973,7 +742,7 @@
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal('features')">×</button>
             <h2>Premium Features</h2>
-            <p>Streamify offers the most advanced streaming experience with cutting-edge technology and an extensive content library.</p>
+            <p>Streamify offers the most advanced streaming experience with cutting-edge technology.</p>
             <ul>
                 <li>Unlimited access to 50,000+ movies and TV series</li>
                 <li>Stream in stunning 4K Ultra HD quality</li>
@@ -992,9 +761,8 @@
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal('about')">×</button>
             <h2>About Streamify</h2>
-            <p>Streamify is a premium movie and series streaming platform designed for entertainment enthusiasts who demand the best viewing experience.</p>
-            <p>Our mission is to bring unlimited entertainment to your fingertips with a vast library of high-quality content spanning every genre imaginable.</p>
-            <p>Built with cutting-edge streaming technology, Streamify ensures smooth playback, crystal-clear quality, and an intuitive user experience.</p>
+            <p>Streamify is a premium movie and series streaming platform designed for entertainment enthusiasts.</p>
+            <p>Our mission is to bring unlimited entertainment to your fingertips with a vast library of content.</p>
             <p>Join millions of users worldwide who trust Streamify for their daily entertainment needs.</p>
         </div>
     </div>
@@ -1020,7 +788,7 @@
                     <span class="badge">✓ No Ads</span>
                 </div>
 
-                <p>Experience cinema like never before. Stream thousands of movies and series in stunning 4K quality. Your entertainment journey starts here.</p>
+                <p>Experience cinema like never before. Stream thousands of movies and series in stunning 4K quality.</p>
 
                 <!-- SMALL BANNER AD -->
                 <div class="ad-container" style="margin-top: 2rem;">
@@ -1059,19 +827,19 @@
         <div class="scroll-indicator">↓</div>
     </section>
 
-    <!-- VAST VIDEO AD SECTION WITH IMA SDK -->
+    <!-- VAST VIDEO AD SECTION - Direct IMA Implementation -->
     <div class="ad-container" style="max-width: 1200px; margin: 40px auto; padding: 20px;">
         <div class="ad-label">Featured Content - Advertisement</div>
         <div class="ad-content">
             <div class="vast-player-wrapper">
-                <video
-                    id="content-video"
-                    class="video-js vjs-default-skin vjs-big-play-centered"
-                    controls
-                    preload="auto"
-                    poster="https://firebasestorage.googleapis.com/v0/b/moddy-store.appspot.com/o/cd6e6e0e08584dfc71f70c207a299076.jpg?alt=media&token=d1021634-7a63-42e9-b23e-64a910c3e829">
-                    <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4" type="video/mp4">
-                </video>
+                <div id="vast-container">
+                    <video id="vast-video" playsinline></video>
+                    <div id="ad-container"></div>
+                    <div class="play-button-overlay" id="play-overlay" onclick="initializeAd()">
+                        <div class="play-icon">▶</div>
+                        <p>Click to Play Ad</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1092,32 +860,32 @@
                 <div class="feature-card">
                     <div class="feature-icon">🎬</div>
                     <h3>Massive Library</h3>
-                    <p>Access 50,000+ movies and series across all genres. From Hollywood blockbusters to indie masterpieces.</p>
+                    <p>Access 50,000+ movies and series across all genres.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">📱</div>
                     <h3>Multi-Device Sync</h3>
-                    <p>Start on your phone, continue on tablet. Your watchlist syncs seamlessly across all devices.</p>
+                    <p>Start on your phone, continue on tablet seamlessly.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">⚡</div>
                     <h3>Lightning Fast</h3>
-                    <p>Zero buffering, instant playback. Experience ultra-fast streaming with adaptive quality.</p>
+                    <p>Zero buffering, instant playback up to 4K resolution.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">🎯</div>
                     <h3>Smart AI Picks</h3>
-                    <p>Get personalized recommendations powered by AI based on your unique taste.</p>
+                    <p>Get personalized recommendations powered by AI.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">📥</div>
                     <h3>Offline Mode</h3>
-                    <p>Download unlimited content and watch anywhere, anytime without internet.</p>
+                    <p>Download content and watch anywhere without internet.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">🌍</div>
                     <h3>Global Content</h3>
-                    <p>Stream international cinema with multiple languages and subtitles.</p>
+                    <p>Stream international cinema with multiple languages.</p>
                 </div>
             </div>
 
@@ -1133,15 +901,15 @@
         <div class="footer-content">
             <div class="footer-section">
                 <h3>Streamify</h3>
-                <p>Your premium destination for unlimited entertainment. Watch what you love, whenever you want.</p>
+                <p>Your premium destination for unlimited entertainment.</p>
             </div>
             <div class="footer-section">
                 <h3>Platform</h3>
-                <p>Available on Android devices. Download the app and start streaming in stunning quality.</p>
+                <p>Available on Android devices with regular updates.</p>
             </div>
             <div class="footer-section">
                 <h3>Quality</h3>
-                <p>4K Ultra HD, HDR support, and crystal-clear audio for your viewing pleasure.</p>
+                <p>4K Ultra HD, HDR support, and crystal-clear audio.</p>
             </div>
         </div>
 
@@ -1152,35 +920,23 @@
         </div>
 
         <div class="copyright">
-            <p>&copy; 2024 Streamify. All rights reserved. | Crafted with ❤️ for entertainment lovers worldwide</p>
+            <p>&copy; 2024 Streamify. All rights reserved.</p>
         </div>
     </footer>
 
     <!-- Google IMA SDK -->
     <script src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
-    
-    <!-- Video.js -->
-    <script src="https://vjs.zencdn.net/8.6.1/video.min.js"></script>
-    
-    <!-- Video.js IMA Plugin -->
-    <script src="https://cdn.jsdelivr.net/npm/videojs-ima@2.3.0/dist/videojs.ima.min.js"></script>
 
     <script>
         // Modal Functions
         function openModal(type) {
-            const modal = document.getElementById(type + 'Modal');
-            if (modal) {
-                modal.classList.add('active');
-                document.body.style.overflow = 'hidden';
-            }
+            document.getElementById(type + 'Modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
         }
 
         function closeModal(type) {
-            const modal = document.getElementById(type + 'Modal');
-            if (modal) {
-                modal.classList.remove('active');
-                document.body.style.overflow = 'auto';
-            }
+            document.getElementById(type + 'Modal').classList.remove('active');
+            document.body.style.overflow = 'auto';
         }
 
         window.onclick = function(event) {
@@ -1190,65 +946,130 @@
             }
         }
 
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                document.querySelectorAll('.modal').forEach(modal => {
-                    modal.classList.remove('active');
-                });
-                document.body.style.overflow = 'auto';
-            }
-        });
-
-        // ============ VAST VIDEO AD WITH IMA SDK ============
-        var player;
-        var adsLoaded = false;
-        var adContainer;
+        // ============ VAST VIDEO AD WITH GOOGLE IMA SDK ============
+        var videoElement;
         var adDisplayContainer;
         var adsLoader;
         var adsManager;
-        var videoElement;
+        var adContainer;
 
-        // Your HilltopAds VAST URL for Google IMA SDK
-        var VAST_TAG_URL = 'https://physicaldad.com/dTmkFezZd.GLN/vQZLGvU-/QeYmy9UuIZIUHl/kOPkTfYI3ENvTXk/z/McTrYAtUNbj-ck1lODTzMFxiNDyHZCscaaWr1LpadWDN0-xN';
+        // VAST URL for Google Ad Manager / IMA SDK
+        var VAST_URL = 'https://physicaldad.com/dTmkFezZd.GLN/vQZLGvU-/QeYmy9UuIZIUHl/kOPkTfYI3ENvTXk/z/McTrYAtUNbj-ck1lODTzMFxiNDyHZCscaaWr1LpadWDN0-xN';
 
-        window.addEventListener('load', function() {
-            // Initialize Video.js player
-            player = videojs('content-video', {
-                controls: true,
-                autoplay: false,
-                preload: 'auto',
-                fluid: true
-            });
-
-            // Initialize IMA plugin with your VAST tag
-            var imaOptions = {
-                adTagUrl: VAST_TAG_URL,
-                adsManagerLoadedCallback: adsManagerLoadedCallback,
-                debug: true,
-                showControlsForJSAds: true
-            };
-
-            player.ima(imaOptions);
-
-            // Initialize ad display container on first user interaction
-            player.one('play', function() {
-                player.ima.initializeAdDisplayContainer();
-                player.ima.requestAds();
-            });
-
-            console.log('VAST Video Player initialized with IMA SDK');
-        });
-
-        function adsManagerLoadedCallback() {
-            console.log('Ads Manager loaded successfully');
+        function initializeAd() {
+            // Hide play overlay
+            document.getElementById('play-overlay').style.display = 'none';
+            
+            videoElement = document.getElementById('vast-video');
+            adContainer = document.getElementById('ad-container');
+            
+            // Create ad display container
+            adDisplayContainer = new google.ima.AdDisplayContainer(adContainer, videoElement);
+            adDisplayContainer.initialize();
+            
+            // Create ads loader
+            adsLoader = new google.ima.AdsLoader(adDisplayContainer);
+            
+            // Add event listeners
+            adsLoader.addEventListener(
+                google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
+                onAdsManagerLoaded,
+                false
+            );
+            
+            adsLoader.addEventListener(
+                google.ima.AdErrorEvent.Type.AD_ERROR,
+                onAdError,
+                false
+            );
+            
+            // Request ads
+            var adsRequest = new google.ima.AdsRequest();
+            adsRequest.adTagUrl = VAST_URL;
+            
+            // Set ad dimensions
+            var vastContainer = document.getElementById('vast-container');
+            adsRequest.linearAdSlotWidth = vastContainer.clientWidth;
+            adsRequest.linearAdSlotHeight = vastContainer.clientHeight;
+            adsRequest.nonLinearAdSlotWidth = vastContainer.clientWidth;
+            adsRequest.nonLinearAdSlotHeight = vastContainer.clientHeight;
+            
+            adsLoader.requestAds(adsRequest);
+            console.log('VAST Ad requested');
         }
 
-        // Handle errors
-        player?.on('adserror', function(event) {
-            console.log('Ad error occurred:', event);
-            // Continue playing content if ad fails
-            if (player) {
-                player.play();
+        function onAdsManagerLoaded(adsManagerLoadedEvent) {
+            console.log('Ads Manager Loaded');
+            
+            var adsRenderingSettings = new google.ima.AdsRenderingSettings();
+            adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
+            
+            adsManager = adsManagerLoadedEvent.getAdsManager(videoElement, adsRenderingSettings);
+            
+            // Add event listeners
+            adsManager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, onAdError);
+            adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED, onContentPauseRequested);
+            adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, onContentResumeRequested);
+            adsManager.addEventListener(google.ima.AdEvent.Type.ALL_ADS_COMPLETED, onAllAdsCompleted);
+            adsManager.addEventListener(google.ima.AdEvent.Type.STARTED, onAdStarted);
+            adsManager.addEventListener(google.ima.AdEvent.Type.COMPLETE, onAdComplete);
+            
+            try {
+                var vastContainer = document.getElementById('vast-container');
+                adsManager.init(vastContainer.clientWidth, vastContainer.clientHeight, google.ima.ViewMode.NORMAL);
+                adsManager.start();
+                console.log('Ads Manager Started');
+            } catch (adError) {
+                console.log('Ads Manager Error:', adError);
+                showErrorMessage();
+            }
+        }
+
+        function onAdError(adErrorEvent) {
+            console.log('Ad Error:', adErrorEvent.getError());
+            if (adsManager) {
+                adsManager.destroy();
+            }
+            showErrorMessage();
+        }
+
+        function onContentPauseRequested() {
+            console.log('Content paused for ad');
+        }
+
+        function onContentResumeRequested() {
+            console.log('Content resumed after ad');
+            showCompletedMessage();
+        }
+
+        function onAllAdsCompleted() {
+            console.log('All ads completed');
+            showCompletedMessage();
+        }
+
+        function onAdStarted() {
+            console.log('Ad Started Playing');
+        }
+
+        function onAdComplete() {
+            console.log('Ad Completed');
+        }
+
+        function showErrorMessage() {
+            var container = document.getElementById('vast-container');
+            container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#999;flex-direction:column;"><p style="font-size:1.2rem;">Ad not available</p><p style="font-size:0.9rem;margin-top:10px;">Try again later or disable ad blocker</p></div>';
+        }
+
+        function showCompletedMessage() {
+            var container = document.getElementById('vast-container');
+            container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#00d4ff;flex-direction:column;"><p style="font-size:1.5rem;">✓ Thanks for watching!</p><p style="font-size:1rem;margin-top:10px;color:#999;">Download Streamify for unlimited entertainment</p></div>';
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (adsManager) {
+                var vastContainer = document.getElementById('vast-container');
+                adsManager.resize(vastContainer.clientWidth, vastContainer.clientHeight, google.ima.ViewMode.NORMAL);
             }
         });
     </script>
