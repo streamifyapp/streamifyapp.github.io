@@ -95,48 +95,8 @@
             height: 100%;
         }
 
-        .play-button-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.6);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 10;
-        }
-
-        .play-button-overlay:hover {
-            background: rgba(0,0,0,0.5);
-        }
-
-        .play-icon {
-            width: 80px;
-            height: 80px;
-            background: var(--primary);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            color: white;
-            margin-bottom: 15px;
-            box-shadow: 0 10px 30px rgba(229, 9, 20, 0.5);
-            transition: transform 0.3s ease;
-        }
-
-        .play-button-overlay:hover .play-icon {
-            transform: scale(1.1);
-        }
-
-        .play-button-overlay p {
-            color: #fff;
-            font-size: 1rem;
-        }
+    
+        
 
         .bg-animation {
             position: fixed;
@@ -833,12 +793,9 @@
         <div class="ad-content">
             <div class="vast-player-wrapper">
                 <div id="vast-container">
-                    <video id="vast-video" playsinline></video>
-                    <div id="ad-container"></div>
-                    <div class="play-button-overlay" id="play-overlay" onclick="initializeAd()">
-                        <div class="play-icon">▶</div>
-                        <p>Click to Play Ad</p>
-                    </div>
+    <video id="vast-video" playsinline muted></video>
+    <div id="ad-container"></div>
+</div>
                 </div>
             </div>
         </div>
@@ -946,133 +903,174 @@
             }
         }
 
-        // ============ VAST VIDEO AD WITH GOOGLE IMA SDK ============
-        var videoElement;
-        var adDisplayContainer;
-        var adsLoader;
-        var adsManager;
-        var adContainer;
+       // ============ VAST VIDEO AD WITH GOOGLE IMA SDK - AUTOPLAY ============
+var videoElement;
+var adDisplayContainer;
+var adsLoader;
+var adsManager;
+var adContainer;
+var adInitialized = false;
 
-        // VAST URL for Google Ad Manager / IMA SDK
-        var VAST_URL = 'https://physicaldad.com/dTmkFezZd.GLN/vQZLGvU-/QeYmy9UuIZIUHl/kOPkTfYI3ENvTXk/z/McTrYAtUNbj-ck1lODTzMFxiNDyHZCscaaWr1LpadWDN0-xN';
+// VAST URL for Google Ad Manager / IMA SDK
+var VAST_URL = 'https://physicaldad.com/dTmkFezZd.GLN/vQZLGvU-/QeYmy9UuIZIUHl/kOPkTfYI3ENvTXk/z/McTrYAtUNbj-ck1lODTzMFxiNDyHZCscaaWr1LpadWDN0-xN';
 
-        function initializeAd() {
-            // Hide play overlay
-            document.getElementById('play-overlay').style.display = 'none';
-            
-            videoElement = document.getElementById('vast-video');
-            adContainer = document.getElementById('ad-container');
-            
-            // Create ad display container
-            adDisplayContainer = new google.ima.AdDisplayContainer(adContainer, videoElement);
-            adDisplayContainer.initialize();
-            
-            // Create ads loader
-            adsLoader = new google.ima.AdsLoader(adDisplayContainer);
-            
-            // Add event listeners
-            adsLoader.addEventListener(
-                google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
-                onAdsManagerLoaded,
-                false
-            );
-            
-            adsLoader.addEventListener(
-                google.ima.AdErrorEvent.Type.AD_ERROR,
-                onAdError,
-                false
-            );
-            
-            // Request ads
-            var adsRequest = new google.ima.AdsRequest();
-            adsRequest.adTagUrl = VAST_URL;
-            
-            // Set ad dimensions
-            var vastContainer = document.getElementById('vast-container');
-            adsRequest.linearAdSlotWidth = vastContainer.clientWidth;
-            adsRequest.linearAdSlotHeight = vastContainer.clientHeight;
-            adsRequest.nonLinearAdSlotWidth = vastContainer.clientWidth;
-            adsRequest.nonLinearAdSlotHeight = vastContainer.clientHeight;
-            
-            adsLoader.requestAds(adsRequest);
-            console.log('VAST Ad requested');
+// Auto-initialize when page loads
+window.addEventListener('load', function() {
+    // Small delay to ensure everything is loaded
+    setTimeout(initializeAd, 1000);
+});
+
+// Also trigger on scroll (in case user scrolls to ad section)
+var scrollTriggered = false;
+window.addEventListener('scroll', function() {
+    if (scrollTriggered) return;
+    
+    var vastContainer = document.getElementById('vast-container');
+    if (vastContainer) {
+        var rect = vastContainer.getBoundingClientRect();
+        // If ad container is in viewport
+        if (rect.top < window.innerHeight && rect.bottom > 0) {
+            scrollTriggered = true;
+            initializeAd();
         }
+    }
+});
 
-        function onAdsManagerLoaded(adsManagerLoadedEvent) {
-            console.log('Ads Manager Loaded');
-            
-            var adsRenderingSettings = new google.ima.AdsRenderingSettings();
-            adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
-            
-            adsManager = adsManagerLoadedEvent.getAdsManager(videoElement, adsRenderingSettings);
-            
-            // Add event listeners
-            adsManager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, onAdError);
-            adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED, onContentPauseRequested);
-            adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, onContentResumeRequested);
-            adsManager.addEventListener(google.ima.AdEvent.Type.ALL_ADS_COMPLETED, onAllAdsCompleted);
-            adsManager.addEventListener(google.ima.AdEvent.Type.STARTED, onAdStarted);
-            adsManager.addEventListener(google.ima.AdEvent.Type.COMPLETE, onAdComplete);
-            
-            try {
-                var vastContainer = document.getElementById('vast-container');
-                adsManager.init(vastContainer.clientWidth, vastContainer.clientHeight, google.ima.ViewMode.NORMAL);
-                adsManager.start();
-                console.log('Ads Manager Started');
-            } catch (adError) {
-                console.log('Ads Manager Error:', adError);
-                showErrorMessage();
-            }
+function initializeAd() {
+    if (adInitialized) return;
+    adInitialized = true;
+    
+    videoElement = document.getElementById('vast-video');
+    adContainer = document.getElementById('ad-container');
+    
+    if (!videoElement || !adContainer) return;
+    
+    // For autoplay - must be muted
+    videoElement.muted = true;
+    videoElement.load();
+    
+    // Create ad display container
+    adDisplayContainer = new google.ima.AdDisplayContainer(adContainer, videoElement);
+    adDisplayContainer.initialize();
+    
+    // Create ads loader
+    adsLoader = new google.ima.AdsLoader(adDisplayContainer);
+    
+    adsLoader.addEventListener(
+        google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
+        onAdsManagerLoaded,
+        false
+    );
+    
+    adsLoader.addEventListener(
+        google.ima.AdErrorEvent.Type.AD_ERROR,
+        onAdError,
+        false
+    );
+    
+    // Request ads
+    var adsRequest = new google.ima.AdsRequest();
+    adsRequest.adTagUrl = VAST_URL;
+    
+    // Set ad dimensions
+    var vastContainer = document.getElementById('vast-container');
+    adsRequest.linearAdSlotWidth = vastContainer.clientWidth;
+    adsRequest.linearAdSlotHeight = vastContainer.clientHeight;
+    adsRequest.nonLinearAdSlotWidth = vastContainer.clientWidth;
+    adsRequest.nonLinearAdSlotHeight = vastContainer.clientHeight;
+    
+    // IMPORTANT: Set autoplay muted
+    adsRequest.setAdWillAutoPlay(true);
+    adsRequest.setAdWillPlayMuted(true);
+    
+    adsLoader.requestAds(adsRequest);
+    console.log('VAST Ad requested - Autoplay');
+}
+
+function onAdsManagerLoaded(adsManagerLoadedEvent) {
+    console.log('Ads Manager Loaded');
+    
+    var adsRenderingSettings = new google.ima.AdsRenderingSettings();
+    adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
+    
+    adsManager = adsManagerLoadedEvent.getAdsManager(videoElement, adsRenderingSettings);
+    
+    // Add event listeners
+    adsManager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, onAdError);
+    adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED, onContentPauseRequested);
+    adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, onContentResumeRequested);
+    adsManager.addEventListener(google.ima.AdEvent.Type.ALL_ADS_COMPLETED, onAllAdsCompleted);
+    adsManager.addEventListener(google.ima.AdEvent.Type.STARTED, onAdStarted);
+    adsManager.addEventListener(google.ima.AdEvent.Type.COMPLETE, onAdComplete);
+    
+    try {
+        var vastContainer = document.getElementById('vast-container');
+        adsManager.init(vastContainer.clientWidth, vastContainer.clientHeight, google.ima.ViewMode.NORMAL);
+        
+        // Set volume to 0 for autoplay
+        adsManager.setVolume(0);
+        
+        adsManager.start();
+        console.log('Ads Manager Started - Autoplay Muted');
+    } catch (adError) {
+        console.log('Ads Manager Error:', adError);
+        showErrorMessage();
+    }
+}
+
+function onAdError(adErrorEvent) {
+    console.log('Ad Error:', adErrorEvent.getError());
+    if (adsManager) {
+        adsManager.destroy();
+    }
+    showErrorMessage();
+}
+
+function onContentPauseRequested() {
+    console.log('Content paused for ad');
+}
+
+function onContentResumeRequested() {
+    console.log('Content resumed after ad');
+    showCompletedMessage();
+}
+
+function onAllAdsCompleted() {
+    console.log('All ads completed');
+    showCompletedMessage();
+}
+
+function onAdStarted() {
+    console.log('Ad Started Playing');
+}
+
+function onAdComplete() {
+    console.log('Ad Completed');
+}
+
+function showErrorMessage() {
+    var container = document.getElementById('vast-container');
+    if (container) {
+        container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#999;flex-direction:column;"><p style="font-size:1.2rem;">Ad not available</p><p style="font-size:0.9rem;margin-top:10px;">Check back later</p></div>';
+    }
+}
+
+function showCompletedMessage() {
+    var container = document.getElementById('vast-container');
+    if (container) {
+        container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#00d4ff;flex-direction:column;"><p style="font-size:1.5rem;">✓ Thanks for watching!</p><p style="font-size:1rem;margin-top:10px;color:#999;">Download Streamify for unlimited entertainment</p></div>';
+    }
+}
+
+// Handle window resize
+window.addEventListener('resize', function() {
+    if (adsManager) {
+        var vastContainer = document.getElementById('vast-container');
+        if (vastContainer) {
+            adsManager.resize(vastContainer.clientWidth, vastContainer.clientHeight, google.ima.ViewMode.NORMAL);
         }
-
-        function onAdError(adErrorEvent) {
-            console.log('Ad Error:', adErrorEvent.getError());
-            if (adsManager) {
-                adsManager.destroy();
-            }
-            showErrorMessage();
-        }
-
-        function onContentPauseRequested() {
-            console.log('Content paused for ad');
-        }
-
-        function onContentResumeRequested() {
-            console.log('Content resumed after ad');
-            showCompletedMessage();
-        }
-
-        function onAllAdsCompleted() {
-            console.log('All ads completed');
-            showCompletedMessage();
-        }
-
-        function onAdStarted() {
-            console.log('Ad Started Playing');
-        }
-
-        function onAdComplete() {
-            console.log('Ad Completed');
-        }
-
-        function showErrorMessage() {
-            var container = document.getElementById('vast-container');
-            container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#999;flex-direction:column;"><p style="font-size:1.2rem;">Ad not available</p><p style="font-size:0.9rem;margin-top:10px;">Try again later or disable ad blocker</p></div>';
-        }
-
-        function showCompletedMessage() {
-            var container = document.getElementById('vast-container');
-            container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#00d4ff;flex-direction:column;"><p style="font-size:1.5rem;">✓ Thanks for watching!</p><p style="font-size:1rem;margin-top:10px;color:#999;">Download Streamify for unlimited entertainment</p></div>';
-        }
-
-        // Handle window resize
-        window.addEventListener('resize', function() {
-            if (adsManager) {
-                var vastContainer = document.getElementById('vast-container');
-                adsManager.resize(vastContainer.clientWidth, vastContainer.clientHeight, google.ima.ViewMode.NORMAL);
-            }
-        });
-    </script>
+    }
+});
 
     <!-- ========== BANNER AD SCRIPTS ========== -->
 
