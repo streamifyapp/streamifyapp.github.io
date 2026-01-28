@@ -930,14 +930,14 @@
     <script>
         // Modal Functions
         function openModal(type) {
-            document.getElementById(type + 'Modal').classList.add('active');
-            document.body.style.overflow = 'hidden';
-        
+    document.getElementById(type + 'Modal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+} // ✅ Add this closing brace
 
-        function closeModal(type) {
-            document.getElementById(type + 'Modal').classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
+function closeModal(type) {
+    document.getElementById(type + 'Modal').classList.remove('active');
+    document.body.style.overflow = 'auto';
+}
 
         window.onclick = function(event) {
             if (event.target.classList.contains('modal')) {
