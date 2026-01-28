@@ -63,23 +63,64 @@
             align-items: center;
         }
 
-        /* Video Ad Container */
-        .video-ad-container {
+        /* VAST Video Player Styling */
+        .vast-player-wrapper {
             width: 100%;
             max-width: 640px;
-            margin: 30px auto;
-            padding: 15px;
-            background: rgba(229, 9, 20, 0.05);
-            border-radius: 15px;
-            border: 1px solid rgba(229, 9, 20, 0.2);
+            margin: 0 auto;
+            position: relative;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(229, 9, 20, 0.3);
         }
 
-        .video-ad-frame {
+        .vast-player-wrapper video {
             width: 100%;
-            height: 360px;
-            border: none;
-            border-radius: 10px;
-            background: #000;
+            height: auto;
+            display: block;
+            aspect-ratio: 16/9;
+        }
+
+        .video-placeholder {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .video-placeholder:hover {
+            background: linear-gradient(135deg, #2a2a2a, #3a3a3a);
+        }
+
+        .video-placeholder .play-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            margin-bottom: 15px;
+            box-shadow: 0 10px 30px rgba(229, 9, 20, 0.5);
+            transition: transform 0.3s ease;
+        }
+
+        .video-placeholder:hover .play-icon {
+            transform: scale(1.1);
+        }
+
+        .video-placeholder p {
+            color: var(--light-gray);
+            font-size: 0.9rem;
         }
 
         .bg-animation {
@@ -868,10 +909,6 @@
             .phone-mockup {
                 max-width: 320px;
             }
-
-            .video-ad-frame {
-                height: 280px;
-            }
         }
 
         @media (max-width: 768px) {
@@ -902,10 +939,6 @@
 
             .features-grid {
                 grid-template-columns: 1fr;
-            }
-
-            .video-ad-frame {
-                height: 200px;
             }
         }
 
@@ -948,10 +981,6 @@
 
             .modal-content h2 {
                 font-size: 2.5rem;
-            }
-
-            .video-ad-frame {
-                height: 180px;
             }
         }
     </style>
@@ -1059,10 +1088,17 @@
     </section>
 
     <!-- VAST VIDEO AD SECTION -->
-    <div class="ad-container" style="max-width: 1200px; margin: 40px auto;">
+    <div class="ad-container" style="max-width: 1200px; margin: 40px auto; padding: 20px;">
         <div class="ad-label">Featured Content - Advertisement</div>
-        <div class="ad-content" id="vast-video-ad" style="min-height: 250px; display: flex; align-items: center; justify-content: center;">
-            <!-- VAST video ad will load here -->
+        <div class="ad-content">
+            <div class="vast-player-wrapper">
+                <div id="vast-video-container">
+                    <div class="video-placeholder" id="video-placeholder" onclick="loadVastAd()">
+                        <div class="play-icon">▶</div>
+                        <p>Click to play video ad</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1164,7 +1200,6 @@
             }
         }
 
-        // Close modal when clicking outside
         window.onclick = function(event) {
             if (event.target.classList.contains('modal')) {
                 event.target.classList.remove('active');
@@ -1172,7 +1207,6 @@
             }
         }
 
-        // Close modal with Escape key
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape') {
                 document.querySelectorAll('.modal').forEach(modal => {
@@ -1180,6 +1214,32 @@
                 });
                 document.body.style.overflow = 'auto';
             }
+        });
+
+        // VAST Video Ad Function
+        function loadVastAd() {
+            var container = document.getElementById('vast-video-container');
+            var placeholder = document.getElementById('video-placeholder');
+            
+            // Hide placeholder
+            if(placeholder) {
+                placeholder.style.display = 'none';
+            }
+            
+            // Create and load the VAST ad script
+            var script = document.createElement('script');
+            script.src = "//physicaldad.com/dwmxF/z.dVGTNnvxZMGcUe/-ecmo9tu/ZQUNlVkRP/TZYO3ONfT-k/zUMYTwYSt/NmjRcf1WOWTbMTxwN/wL";
+            script.async = true;
+            script.referrerPolicy = 'no-referrer-when-downgrade';
+            container.appendChild(script);
+        }
+
+        // Auto-load VAST ad when page loads (optional - remove if you want click-to-play only)
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                // Uncomment the line below if you want auto-play
+                // loadVastAd();
+            }, 2000);
         });
     </script>
 
@@ -1193,20 +1253,6 @@
             l = d.getElementById('small-banner-1');
         s.settings = fbfygsg || {};
         s.src = "//noxious-theme.com/bKXwVks.ddG/l_0kY/WucJ/beGmj9/uUZKUJl/kJPVTRYX3sN/T/kGzkMiDIENtTN/jDcy1HOET/MnwbMugu";
-        s.async = true;
-        s.referrerPolicy = 'no-referrer-when-downgrade';
-        if(l) l.appendChild(s);
-    })({});
-    </script>
-
-    <!-- VAST Video Ad -->
-    <script>
-    (function(vastAd){
-        var d = document,
-            s = d.createElement('script'),
-            l = d.getElementById('vast-video-ad');
-        s.settings = vastAd || {};
-        s.src = "//physicaldad.com/dwmxF/z.dVGTNnvxZMGcUe/-ecmo9tu/ZQUNlVkRP/TZYO3ONfT-k/zUMYTwYSt/NmjRcf1WOWTbMTxwN/wL";
         s.async = true;
         s.referrerPolicy = 'no-referrer-when-downgrade';
         if(l) l.appendChild(s);
@@ -1241,14 +1287,14 @@
     })({});
     </script>
 
-    <!-- Small Banner Ad (Footer) - Delayed to avoid conflicts -->
+    <!-- Small Banner Ad (Footer) -->
     <script>
     setTimeout(function(){
-        (function(fbfygsg){
+        (function(fbfygsg2){
             var d = document,
                 s = d.createElement('script'),
                 l = d.getElementById('small-banner-footer');
-            s.settings = fbfygsg || {};
+            s.settings = fbfygsg2 || {};
             s.src = "//noxious-theme.com/bKXwVks.ddG/l_0kY/WucJ/beGmj9/uUZKUJl/kJPVTRYX3sN/T/kGzkMiDIENtTN/jDcy1HOET/MnwbMugu";
             s.async = true;
             s.referrerPolicy = 'no-referrer-when-downgrade';
