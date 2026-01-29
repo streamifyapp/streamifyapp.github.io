@@ -35,109 +35,6 @@
             -moz-osx-font-smoothing: grayscale;
         }
 
-        .ad-container {
-            width: 100%;
-            margin: 20px 0;
-            padding: 10px;
-            background: rgba(20, 20, 20, 0.3);
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 60px;
-        }
-
-        .ad-label {
-            font-size: 10px;
-            color: #666;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .ad-content {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* VAST Video Container */
-        .vast-player-wrapper {
-            width: 100%;
-            max-width: 640px;
-            margin: 0 auto;
-            position: relative;
-            background: #000;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 10px 40px rgba(229, 9, 20, 0.3);
-        }
-
-        #vast-container {
-            width: 100%;
-            height: 360px;
-            background: #000;
-            position: relative;
-        }
-
-        #vast-video {
-            width: 100%;
-            height: 100%;
-            background: #000;
-        }
-
-        #ad-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        .play-button-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.6);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 10;
-        }
-
-        .play-button-overlay:hover {
-            background: rgba(0,0,0,0.5);
-        }
-
-        .play-icon {
-            width: 80px;
-            height: 80px;
-            background: var(--primary);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            color: white;
-            margin-bottom: 15px;
-            box-shadow: 0 10px 30px rgba(229, 9, 20, 0.5);
-            transition: transform 0.3s ease;
-        }
-
-        .play-button-overlay:hover .play-icon {
-            transform: scale(1.1);
-        }
-
-        .play-button-overlay p {
-            color: #fff;
-            font-size: 1rem;
-        }
-
         .bg-animation {
             position: fixed;
             top: 0;
@@ -677,10 +574,6 @@
             .phone-mockup {
                 max-width: 320px;
             }
-
-            #vast-container {
-                height: 280px;
-            }
         }
 
         @media (max-width: 768px) {
@@ -700,8 +593,6 @@
             .section-title h2 { font-size: 3.5rem; }
 
             .features-grid { grid-template-columns: 1fr; }
-
-            #vast-container { height: 220px; }
         }
 
         @media (max-width: 480px) {
@@ -721,8 +612,6 @@
             .download-info { flex-direction: column; gap: 1rem; }
 
             .logo { font-size: 2.2rem; }
-
-            #vast-container { height: 180px; }
         }
     </style>
 </head>
@@ -779,7 +668,7 @@
                 <div class="download-cta">
                     <a href="https://archive.org/download/streamify_app/Streamify%20v9.6.apk" class="btn-download" download>
                         <span class="icon">⬇</span> Download Now
-                    </a>
+                                            </a>
                 </div>
 
                 <div class="download-info">
@@ -789,12 +678,6 @@
                 </div>
 
                 <p>Experience cinema like never before. Stream thousands of movies and series in stunning 4K quality.</p>
-
-                <!-- SMALL BANNER AD -->
-                <div class="ad-container" style="margin-top: 2rem;">
-                    <div class="ad-label">Advertisement</div>
-                    <div class="ad-content" id="small-banner-1"></div>
-                </div>
             </div>
 
             <div class="hero-phone">
@@ -826,29 +709,6 @@
         </div>
         <div class="scroll-indicator">↓</div>
     </section>
-
-    <!-- VAST VIDEO AD SECTION -->
-    <div class="ad-container" style="max-width: 1200px; margin: 40px auto; padding: 20px;">
-        <div class="ad-label">Featured Content - Advertisement</div>
-        <div class="ad-content">
-            <div class="vast-player-wrapper">
-                <div id="vast-container">
-                    <video id="vast-video" playsinline muted></video>
-                    <div id="ad-container"></div>
-                    <div class="play-button-overlay" id="play-overlay" style="display:none;">
-                        <div class="play-icon">▶</div>
-                        <p>Click to Play Ad</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- MEDIUM BANNER AD -->
-    <div class="ad-container" style="max-width: 1200px; margin: 40px auto;">
-        <div class="ad-label">Advertisement</div>
-        <div class="ad-content" id="medium-banner-1"></div>
-    </div>
 
     <section id="features" class="features">
         <div class="features-container">
@@ -888,12 +748,6 @@
                     <p>Stream international cinema with multiple languages.</p>
                 </div>
             </div>
-
-            <!-- VIDEO SLIDER AD -->
-            <div class="ad-container" style="margin-top: 60px;">
-                <div class="ad-label">Advertisement</div>
-                <div class="ad-content" id="video-slider-1"></div>
-            </div>
         </div>
     </section>
 
@@ -913,31 +767,22 @@
             </div>
         </div>
 
-        <!-- SMALL BANNER AD (Footer) -->
-        <div class="ad-container" style="margin-top: 40px;">
-            <div class="ad-label">Advertisement</div>
-            <div class="ad-content" id="small-banner-footer"></div>
-        </div>
-
         <div class="copyright">
             <p>&copy; 2024 Streamify. All rights reserved.</p>
         </div>
     </footer>
 
-    <!-- Google IMA SDK -->
-    <script src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
-
     <script>
         // Modal Functions
         function openModal(type) {
-    document.getElementById(type + 'Modal').classList.add('active');
-    document.body.style.overflow = 'hidden';
-} // ✅ Add this closing brace
+            document.getElementById(type + 'Modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
 
-function closeModal(type) {
-    document.getElementById(type + 'Modal').classList.remove('active');
-    document.body.style.overflow = 'auto';
-}
+        function closeModal(type) {
+            document.getElementById(type + 'Modal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
 
         window.onclick = function(event) {
             if (event.target.classList.contains('modal')) {
@@ -945,261 +790,9 @@ function closeModal(type) {
                 document.body.style.overflow = 'auto';
             }
         }
-
-        // ============ VAST VIDEO AD WITH GOOGLE IMA SDK ============
-        var videoElement;
-        var adDisplayContainer;
-        var adsLoader;
-        var adsManager;
-        var adContainer;
-        var adInitialized = false;
-
-        var VAST_URL = 'https://physicaldad.com/dWm.FqzddsGVN/vpZGGfUl/JeAmU9/uWZ/UIl-kfPaTJY/3xNtTak/z/MJTMYvtiNZjacQ1SOYT/MKxqNxyzZisBaYWo1kpWdYDj0/xs';
-
-        // Try autoplay when visible
-        var autoplayAttempted = false;
-
-        function isElementInViewport(el) {
-            var rect = el.getBoundingClientRect();
-            return (
-                rect.top < window.innerHeight &&
-                rect.bottom > 0
-            );
-        }
-
-        function tryAutoplay() {
-            if (autoplayAttempted || adInitialized) return;
-            
-            var vastContainer = document.getElementById('vast-container');
-            if (vastContainer && isElementInViewport(vastContainer)) {
-                autoplayAttempted = true;
-                initializeAd(true);
-            }
-        }
-
-        // Check on scroll
-        window.addEventListener('scroll', tryAutoplay);
-
-        // Check on load
-        window.addEventListener('load', function() {
-            setTimeout(tryAutoplay, 1500);
-        });
-
-        // Click handler for fallback
-        document.addEventListener('DOMContentLoaded', function() {
-            var overlay = document.getElementById('play-overlay');
-            if (overlay) {
-                overlay.onclick = function() {
-                    initializeAd(false);
-                };
-            }
-        });
-
-        function initializeAd(isAutoplay) {
-            if (adInitialized) return;
-            adInitialized = true;
-            
-            var overlay = document.getElementById('play-overlay');
-            if (overlay) overlay.style.display = 'none';
-            
-            videoElement = document.getElementById('vast-video');
-            adContainer = document.getElementById('ad-container');
-            
-            if (!videoElement || !adContainer) {
-                console.log('Video elements not found');
-                return;
-            }
-            
-            videoElement.muted = true;
-            
-            try {
-                adDisplayContainer = new google.ima.AdDisplayContainer(adContainer, videoElement);
-                adDisplayContainer.initialize();
-                
-                adsLoader = new google.ima.AdsLoader(adDisplayContainer);
-                
-                adsLoader.addEventListener(
-                    google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
-                    onAdsManagerLoaded,
-                    false
-                );
-                
-                adsLoader.addEventListener(
-                    google.ima.AdErrorEvent.Type.AD_ERROR,
-                    onAdError,
-                    false
-                );
-                
-                var adsRequest = new google.ima.AdsRequest();
-                adsRequest.adTagUrl = VAST_URL;
-                
-                var vastContainer = document.getElementById('vast-container');
-                adsRequest.linearAdSlotWidth = vastContainer.clientWidth || 640;
-                adsRequest.linearAdSlotHeight = vastContainer.clientHeight || 360;
-                adsRequest.nonLinearAdSlotWidth = vastContainer.clientWidth || 640;
-                adsRequest.nonLinearAdSlotHeight = vastContainer.clientHeight || 360;
-                
-                adsRequest.setAdWillAutoPlay(isAutoplay);
-                adsRequest.setAdWillPlayMuted(true);
-                
-                adsLoader.requestAds(adsRequest);
-                console.log('VAST Ad requested');
-                
-            } catch (e) {
-                console.log('IMA init error:', e);
-                showFallback();
-            }
-        }
-
-        function onAdsManagerLoaded(adsManagerLoadedEvent) {
-            console.log('Ads Manager Loaded');
-            
-            var adsRenderingSettings = new google.ima.AdsRenderingSettings();
-            adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
-            
-            adsManager = adsManagerLoadedEvent.getAdsManager(videoElement, adsRenderingSettings);
-            
-            adsManager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, onAdError);
-            adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED, function() {
-                console.log('Content paused for ad');
-            });
-            adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, function() {
-                console.log('Content resumed');
-                showCompletedMessage();
-            });
-            adsManager.addEventListener(google.ima.AdEvent.Type.ALL_ADS_COMPLETED, function() {
-                console.log('All ads completed');
-                showCompletedMessage();
-            });
-            adsManager.addEventListener(google.ima.AdEvent.Type.STARTED, function() {
-                console.log('Ad Started Playing');
-            });
-            adsManager.addEventListener(google.ima.AdEvent.Type.COMPLETE, function() {
-                console.log('Ad Completed');
-            });
-            
-            try {
-                var vastContainer = document.getElementById('vast-container');
-                var width = vastContainer.clientWidth || 640;
-                var height = vastContainer.clientHeight || 360;
-                
-                adsManager.init(width, height, google.ima.ViewMode.NORMAL);
-                adsManager.setVolume(0);
-                adsManager.start();
-                console.log('Ads Manager Started');
-                
-            } catch (adError) {
-                console.log('AdsManager start error:', adError);
-                showFallback();
-            }
-        }
-
-        function onAdError(adErrorEvent) {
-            console.log('Ad Error:', adErrorEvent.getError());
-            if (adsManager) {
-                adsManager.destroy();
-            }
-            showFallback();
-        }
-
-        function showFallback() {
-            var overlay = document.getElementById('play-overlay');
-            if (overlay && !adInitialized) {
-                overlay.style.display = 'flex';
-                adInitialized = false;
-                autoplayAttempted = false;
-            } else {
-                showErrorMessage();
-            }
-        }
-
-        function showErrorMessage() {
-            var container = document.getElementById('vast-container');
-            if (container) {
-                container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;min-height:200px;color:#999;flex-direction:column;background:#111;border-radius:10px;"><p style="font-size:1.1rem;">Ad not available right now</p></div>';
-            }
-        }
-
-        function showCompletedMessage() {
-            var container = document.getElementById('vast-container');
-            if (container) {
-                container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;min-height:200px;color:#00d4ff;flex-direction:column;background:#111;border-radius:10px;"><p style="font-size:1.3rem;">✓ Thanks for watching!</p><p style="font-size:0.95rem;margin-top:10px;color:#999;">Download Streamify for unlimited entertainment</p></div>';
-            }
-        }
-
-        window.addEventListener('resize', function() {
-            if (adsManager) {
-                var vastContainer = document.getElementById('vast-container');
-                if (vastContainer) {
-                    adsManager.resize(
-                        vastContainer.clientWidth || 640,
-                        vastContainer.clientHeight || 360,
-                        google.ima.ViewMode.NORMAL
-                    );
-                }
-            }
-        });
-    </script>
-
-    <!-- ========== BANNER AD SCRIPTS ========== -->
-
-    <!-- Small Banner Ad (Hero Section) -->
-    <script>
-    (function(fbfygsg){
-        var d = document,
-            s = d.createElement('script'),
-            l = d.getElementById('small-banner-1');
-        s.settings = fbfygsg || {};
-        s.src = "//noxious-theme.com/bKXwVks.ddG/l_0kY/WucJ/beGmj9/uUZKUJl/kJPVTRYX3sN/T/kGzkMiDIENtTN/jDcy1HOET/MnwbMugu";
-        s.async = true;
-        s.referrerPolicy = 'no-referrer-when-downgrade';
-        if(l) l.appendChild(s);
-    })({});
-    </script>
-
-    <!-- Medium Banner Ad -->
-    <script>
-    (function(mnfa){
-        var d = document,
-            s = d.createElement('script'),
-            l = d.getElementById('medium-banner-1');
-        s.settings = mnfa || {};
-        s.src = "//noxious-theme.com/bIXDVjs.d_G/lb0hYjWVcN/geCmR9-uRZEUPlWkaPmTkYx3fN/TNkkz/M/DgQit/NrjGcJ1pOoTiMbw/NUQj";
-        s.async = true;
-        s.referrerPolicy = 'no-referrer-when-downgrade';
-        if(l) l.appendChild(s);
-    })({});
-    </script>
-
-    <!-- Video Slider Ad -->
-    <script>
-    (function(oyd){
-        var d = document,
-            s = d.createElement('script'),
-            l = d.getElementById('video-slider-1');
-        s.settings = oyd || {};
-        s.src = "//noxious-theme.com/btXXV.svdNG_lG0eYMWucK/yeDmM9juUZfUPl/kcPTTwYx3pNqTQkzzMM/TjIatyNFjIc/1/OaT/M-xNMXwZ";
-        s.async = true;
-        s.referrerPolicy = 'no-referrer-when-downgrade';
-        if(l) l.appendChild(s);
-    })({});
-    </script>
-
-    <!-- Small Banner Ad (Footer) -->
-    <script>
-    setTimeout(function(){
-        (function(fbfygsg2){
-            var d = document,
-                s = d.createElement('script'),
-                l = d.getElementById('small-banner-footer');
-            s.settings = fbfygsg2 || {};
-            s.src = "//noxious-theme.com/bKXwVks.ddG/l_0kY/WucJ/beGmj9/uUZKUJl/kJPVTRYX3sN/T/kGzkMiDIENtTN/jDcy1HOET/MnwbMugu";
-            s.async = true;
-            s.referrerPolicy = 'no-referrer-when-downgrade';
-            if(l) l.appendChild(s);
-        })({});
-    }, 1500);
     </script>
 
 </body>
 </html>
+
+        
