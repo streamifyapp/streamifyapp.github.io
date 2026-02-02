@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="6999466a7278575e1c9345a6b6f7a847f34a64e8" content="6999466a7278575e1c9345a6b6f7a847f34a64e8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Streamify - Ultimate Movie & Series Streaming Experience</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
-
+    
     <style>
-        /* ===== YOUR ORIGINAL STYLES 100% PRESERVED ===== */
         :root {
             --primary: #e50914;
             --secondary: #ffd700;
@@ -18,79 +18,1189 @@
             --light-gray: #999;
             --white: #ffffff;
         }
-        *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:'Outfit',sans-serif;background:var(--dark);color:var(--white);overflow-x:hidden;line-height:1.6}
 
-        .ad-container{width:100%;margin:20px 0;padding:10px;background:rgba(20,20,20,.3);border-radius:10px;display:flex;flex-direction:column;align-items:center;min-height:60px}
-        .ad-label{font-size:10px;color:#666;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
-        .ad-content{width:100%;display:flex;justify-content:center;align-items:center}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-        header{position:fixed;top:0;width:100%;padding:1.2rem 5%;display:flex;justify-content:space-between;align-items:center;background:rgba(10,10,10,.85);backdrop-filter:blur(10px);z-index:1000}
-        .logo{font-family:'Bebas Neue',cursive;font-size:2.8rem;letter-spacing:4px;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--dark);
+            color: var(--white);
+            overflow-x: hidden;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
 
-        .hero{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:10rem 5% 2rem}
-        .hero-content{max-width:1400px;width:100%;display:grid;grid-template-columns:1.2fr 1fr;gap:5rem;align-items:center}
-        .hero-text h1{font-family:'Bebas Neue';font-size:6rem;line-height:.95}
-        .highlight{display:block;font-size:7rem;background:linear-gradient(135deg,var(--primary),var(--secondary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-        .btn-download{padding:1.8rem 4rem;border-radius:60px;font-size:1.3rem;background:linear-gradient(135deg,var(--primary),#b20710);color:white;text-decoration:none}
+        .ad-container {
+            width: 100%;
+            margin: 20px 0;
+            padding: 10px;
+            background: rgba(20, 20, 20, 0.3);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 60px;
+        }
 
-        footer{background:var(--dark-gray);padding:4rem 5%;margin-top:4rem}
+        .ad-label {
+            font-size: 10px;
+            color: #666;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .ad-content {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* VAST Video Container */
+        .vast-player-wrapper {
+            width: 100%;
+            max-width: 640px;
+            margin: 0 auto;
+            position: relative;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(229, 9, 20, 0.3);
+        }
+
+        #vast-container {
+            width: 100%;
+            height: 360px;
+            background: #000;
+            position: relative;
+        }
+
+        #vast-video {
+            width: 100%;
+            height: 100%;
+            background: #000;
+        }
+
+        #ad-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .play-button-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .play-button-overlay:hover {
+            background: rgba(0,0,0,0.5);
+        }
+
+        .play-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            margin-bottom: 15px;
+            box-shadow: 0 10px 30px rgba(229, 9, 20, 0.5);
+            transition: transform 0.3s ease;
+        }
+
+        .play-button-overlay:hover .play-icon {
+            transform: scale(1.1);
+        }
+
+        .play-button-overlay p {
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(ellipse at center, #1a1a2e 0%, #0a0a0a 100%);
+            will-change: transform;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 25% 25%, rgba(229, 9, 20, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.08) 0%, transparent 70%);
+            animation: bgRotate 25s linear infinite;
+            will-change: transform;
+        }
+
+        @keyframes bgRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1.2rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(229, 9, 20, 0.2);
+            animation: slideDown 0.8s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .logo {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 2.8rem;
+            letter-spacing: 4px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        nav {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        nav a {
+            color: var(--light-gray);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+        }
+
+        nav a:hover {
+            color: var(--white);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, rgba(20, 20, 30, 0.95), rgba(42, 42, 42, 0.95));
+            padding: 3rem;
+            border-radius: 25px;
+            max-width: 700px;
+            width: 90%;
+            border: 1px solid rgba(229, 9, 20, 0.3);
+            box-shadow: 0 30px 80px rgba(229, 9, 20, 0.4);
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            color: var(--light-gray);
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        .modal-content h2 {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .modal-content p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-content ul {
+            list-style: none;
+        }
+
+        .modal-content ul li {
+            padding: 0.8rem 0;
+            color: rgba(255, 255, 255, 0.7);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .modal-content ul li:before {
+            content: '✓';
+            color: var(--accent);
+            margin-right: 1rem;
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10rem 5% 2rem;
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 5rem;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-text {
+            animation: fadeInLeft 1s ease-out;
+        }
+
+        @keyframes fadeInLeft {
+            from {
+                transform: translateX(-80px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .hero-text h1 {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 6rem;
+            line-height: 0.95;
+            margin-bottom: 1.5rem;
+            letter-spacing: 3px;
+            background: linear-gradient(135deg, var(--white) 0%, var(--light-gray) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+        }
+
+        .hero-text .highlight {
+            display: block;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 7rem;
+            margin-top: 0.3rem;
+        }
+
+        .hero-text p {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 3rem;
+            font-weight: 300;
+            max-width: 550px;
+            line-height: 1.8;
+        }
+
+        .hero-text .tagline {
+            font-size: 1.1rem;
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .download-cta {
+            display: inline-block;
+            margin-top: 1rem;
+        }
+
+        .btn-download {
+            padding: 1.8rem 4rem;
+            border: none;
+            border-radius: 60px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, #b20710 100%);
+            color: var(--white);
+            box-shadow: 0 15px 45px rgba(229, 9, 20, 0.4);
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 25px 70px rgba(229, 9, 20, 0.6);
+        }
+
+        .btn-download .icon {
+            font-size: 1.8rem;
+        }
+
+        .download-info {
+            margin-top: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .download-info .badge {
+            background: rgba(0, 212, 255, 0.2);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--accent);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            font-weight: 600;
+        }
+
+        .hero-phone {
+            position: relative;
+            animation: fadeInRight 1s ease-out;
+        }
+
+        @keyframes fadeInRight {
+            from {
+                transform: translateX(80px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .phone-mockup {
+            position: relative;
+            width: 100%;
+            max-width: 380px;
+            margin: 0 auto;
+            transform: rotateY(-12deg) rotateX(5deg);
+            filter: drop-shadow(0 30px 80px rgba(229, 9, 20, 0.3));
+        }
+
+        .phone-mockup:hover {
+            transform: translateY(-15px) rotateY(-12deg) rotateX(5deg);
+            transition: transform 0.6s ease;
+        }
+
+        .phone-frame {
+            background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+            border-radius: 50px;
+            padding: 16px;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
+        }
+
+        .phone-screen {
+            background: var(--dark);
+            border-radius: 40px;
+            overflow: hidden;
+            position: relative;
+            aspect-ratio: 9/19.5;
+        }
+
+        .phone-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 130px;
+            height: 32px;
+            background: #0a0a0a;
+            border-radius: 0 0 22px 22px;
+            z-index: 10;
+        }
+
+        .phone-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(180deg, #141414 0%, #0a0a0a 100%);
+            padding: 55px 22px 22px;
+            gap: 18px;
+        }
+
+        .movie-card {
+            background: linear-gradient(135deg, rgba(229, 9, 20, 0.15), rgba(42, 42, 42, 0.8));
+            border-radius: 22px;
+            padding: 22px;
+            border: 1px solid rgba(229, 9, 20, 0.2);
+        }
+
+        .movie-card h4 {
+            font-size: 0.95rem;
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+
+        .movie-card p {
+            font-size: 0.75rem;
+            color: var(--light-gray);
+        }
+
+        .movie-thumbnail {
+            width: 100%;
+            height: 110px;
+            border-radius: 14px;
+            margin-bottom: 12px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .movie-card:nth-child(1) .movie-thumbnail {
+            background-image: url('https://firebasestorage.googleapis.com/v0/b/moddy-store.appspot.com/o/cd6e6e0e08584dfc71f70c207a299076.jpg?alt=media&token=d1021634-7a63-42e9-b23e-64a910c3e829');
+        }
+
+        .movie-card:nth-child(2) .movie-thumbnail {
+            background-image: url('https://firebasestorage.googleapis.com/v0/b/moddy-store.appspot.com/o/20696cc575deeb5018341bc843e1a360.jpg?alt=media&token=ec7e25fe-943f-4346-8255-63c7dff021ac');
+        }
+
+        .movie-card:nth-child(3) .movie-thumbnail {
+            background-image: url('https://firebasestorage.googleapis.com/v0/b/moddy-store.appspot.com/o/oANi0vEE92nuijiZQgPZ88FSxqQ.jpg?alt=media&token=a2966139-d40f-48e5-9f4f-243508c756a7');
+        }
+
+        .movie-thumbnail::after {
+            content: '▶';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            color: white;
+            opacity: 0.9;
+        }
+
+        .features {
+            padding: 6rem 5% 8rem;
+            background: linear-gradient(180deg, transparent 0%, rgba(20, 20, 20, 0.4) 100%);
+        }
+
+        .features-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 5rem;
+        }
+
+        .section-title h2 {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 4.5rem;
+            letter-spacing: 3px;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--white) 0%, var(--light-gray) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-title p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, rgba(229, 9, 20, 0.08), rgba(42, 42, 42, 0.5));
+            padding: 3.5rem 2.5rem;
+            border-radius: 25px;
+            border: 1px solid rgba(229, 9, 20, 0.15);
+            transition: all 0.5s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-12px);
+            border-color: rgba(229, 9, 20, 0.4);
+            box-shadow: 0 25px 60px rgba(229, 9, 20, 0.25);
+        }
+
+        .feature-icon {
+            font-size: 3.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.6rem;
+            margin-bottom: 1.2rem;
+            font-weight: 700;
+        }
+
+        .feature-card p {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.9;
+        }
+
+        footer {
+            background: var(--dark-gray);
+            padding: 4rem 5%;
+            border-top: 1px solid rgba(229, 9, 20, 0.2);
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3.5rem;
+        }
+
+        .footer-section h3 {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 2rem;
+            margin-bottom: 1.8rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .footer-section p {
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.8;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 3rem;
+            margin-top: 3rem;
+            border-top: 1px solid rgba(229, 9, 20, 0.15);
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2.5rem;
+            color: var(--primary);
+            opacity: 0.6;
+        }
+
+        @media (max-width: 1024px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                gap: 4rem;
+                text-align: center;
+            }
+
+            .hero-text {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .phone-mockup {
+                max-width: 320px;
+            }
+
+            #vast-container {
+                height: 280px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav { display: none; }
+
+            .hero { padding: 8rem 5% 2rem; }
+
+            .hero-text h1 { font-size: 4rem; }
+
+            .hero-text .highlight { font-size: 5rem; }
+
+            .btn-download {
+                padding: 1.5rem 3rem;
+                font-size: 1.1rem;
+            }
+
+            .section-title h2 { font-size: 3.5rem; }
+
+            .features-grid { grid-template-columns: 1fr; }
+
+            #vast-container { height: 220px; }
+        }
+
+        @media (max-width: 480px) {
+            .hero { padding: 7rem 5% 2rem; }
+
+            .hero-text h1 { font-size: 3rem; }
+    .hero-text .highlight { font-size: 3.8rem; }
+
+            .btn-download {
+                padding: 1.3rem 2.5rem;
+                font-size: 1rem;
+                width: 100%;
+                justify-content: center;
+            }
+
+            .download-info { flex-direction: column; gap: 1rem; }
+
+            .logo { font-size: 2.2rem; }
+
+            #vast-container { height: 180px; }
+        }
     </style>
 </head>
-
 <body>
+    <div class="bg-animation"></div>
 
-<header>
-    <div class="logo">STREAMIFY</div>
-</header>
+    <header>
+        <div class="logo">STREAMIFY</div>
+        <nav>
+            <a onclick="openModal('features')">Features</a>
+            <a onclick="openModal('about')">About</a>
+        </nav>
+    </header>
 
-<section class="hero">
-<div class="hero-content">
-<div class="hero-text">
-<h1>Unlimited Movies <span class="highlight">& Series</span></h1>
-
-<a href="https://archive.org/download/streamify-9.8_202602/Streamify%209.8.apk" class="btn-download">⬇ Download Now</a>
-
-<p>Experience cinema like never before.</p>
-
-<!-- ✅ SMALL BANNER (UPDATED ONLY) -->
-<div class="ad-container">
-    <div class="ad-label">Advertisement</div>
-    <div class="ad-content">
-        <script>
-          atOptions = {'key':'a0d5b5f1326c126f650c482f872fb82c','format':'iframe','height':50,'width':320,'params':{}};
-        </script>
-        <script src="https://www.highperformanceformat.com/a0d5b5f1326c126f650c482f872fb82c/invoke.js"></script>
+    <!-- Features Modal -->
+    <div id="featuresModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('features')">×</button>
+            <h2>Premium Features</h2>
+            <p>Streamify offers the most advanced streaming experience with cutting-edge technology.</p>
+            <ul>
+                <li>Unlimited access to 50,000+ movies and TV series</li>
+                <li>Stream in stunning 4K Ultra HD quality</li>
+                <li>Download content for offline viewing</li>
+                <li>AI-powered personalized recommendations</li>
+                <li>Multi-device sync across all your gadgets</li>
+                <li>Zero ads, pure entertainment</li>
+                <li>New content added daily</li>
+                <li>Multiple audio tracks and subtitles</li>
+            </ul>
+        </div>
     </div>
-</div>
 
-</div>
-</div>
-</section>
-
-<!-- ✅ MEDIUM BANNER (UPDATED ONLY) -->
-<div class="ad-container" style="max-width:1200px;margin:40px auto;">
-    <div class="ad-label">Advertisement</div>
-    <div class="ad-content">
-        <script>
-          atOptions = {'key':'05640c5548ff6e2662f9769bcbbeb043','format':'iframe','height':250,'width':300,'params':{}};
-        </script>
-        <script src="https://www.highperformanceformat.com/05640c5548ff6e2662f9769bcbbeb043/invoke.js"></script>
+    <!-- About Modal -->
+    <div id="aboutModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('about')">×</button>
+            <h2>About Streamify</h2>
+            <p>Streamify is a premium movie and series streaming platform designed for entertainment enthusiasts.</p>
+            <p>Our mission is to bring unlimited entertainment to your fingertips with a vast library of content.</p>
+            <p>Join millions of users worldwide who trust Streamify for their daily entertainment needs.</p>
+        </div>
     </div>
-</div>
 
-<footer>
-<div class="ad-container">
-    <div class="ad-label">Advertisement</div>
-    <div class="ad-content">
-        <script>
-          atOptions = {'key':'a0d5b5f1326c126f650c482f872fb82c','format':'iframe','height':50,'width':320,'params':{}};
-        </script>
-        <script src="https://www.highperformanceformat.com/a0d5b5f1326c126f650c482f872fb82c/invoke.js"></script>
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <div class="tagline">⚡ Your Ultimate Entertainment Hub</div>
+                <h1>
+                    Unlimited Movies
+                    <span class="highlight">& Series</span>
+                </h1>
+
+                <div class="download-cta">
+                    <a href="https://archive.org/download/streamify_app/Streamify%20v9.6.apk" class="btn-download" download>
+                        <span class="icon">⬇</span> Download Now
+                    </a>
+                </div>
+
+                <div class="download-info">
+                    <span class="badge">✓ Free Forever</span>
+                    <span class="badge">✓ 4K Quality</span>
+                    <span class="badge">✓ No Ads</span>
+                </div>
+
+                <p>Experience cinema like never before. Stream thousands of movies and series in stunning 4K quality.</p>
+
+                <!-- SMALL BANNER AD -->
+                <div class="ad-container" style="margin-top: 2rem;">
+                    <div class="ad-label">Advertisement</div>
+                    <div class="ad-content" id="small-banner-1"></div>
+                </div>
+            </div>
+
+            <div class="hero-phone">
+                <div class="phone-mockup">
+                    <div class="phone-frame">
+                        <div class="phone-screen">
+                            <div class="phone-notch"></div>
+                            <div class="phone-content">
+                                <div class="movie-card">
+                                    <div class="movie-thumbnail"></div>
+                                    <h4>🔥 Trending Now</h4>
+                                    <p>Action • 2024 • 4K HDR</p>
+                                </div>
+                                <div class="movie-card">
+                                    <div class="movie-thumbnail"></div>
+                                    <h4>⭐ Top Rated Series</h4>
+                                    <p>Drama • S3 E5 • HD</p>
+                                </div>
+                                <div class="movie-card">
+                                    <div class="movie-thumbnail"></div>
+                                    <h4>🆕 New Releases</h4>
+                                    <p>Sci-Fi • 2024 • UHD</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-indicator">↓</div>
+    </section>
+
+    <!-- VAST VIDEO AD SECTION -->
+    <div class="ad-container" style="max-width: 1200px; margin: 40px auto; padding: 20px;">
+        <div class="ad-label">Featured Content - Advertisement</div>
+        <div class="ad-content">
+            <div class="vast-player-wrapper">
+                <div id="vast-container">
+                    <video id="vast-video" playsinline muted></video>
+                    <div id="ad-container"></div>
+                    <div class="play-button-overlay" id="play-overlay" style="display:none;">
+                        <div class="play-icon">▶</div>
+                        <p>Click to Play Ad</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
-<p style="text-align:center;margin-top:20px;">© 2024 Streamify</p>
-</footer>
+
+    <!-- MEDIUM BANNER AD -->
+    <div class="ad-container" style="max-width: 1200px; margin: 40px auto;">
+        <div class="ad-label">Advertisement</div>
+        <div class="ad-content" id="medium-banner-1"></div>
+    </div>
+
+    <section id="features" class="features">
+        <div class="features-container">
+            <div class="section-title">
+                <h2>WHY CHOOSE STREAMIFY?</h2>
+                <p>Experience premium entertainment with features designed for movie lovers</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎬</div>
+                    <h3>Massive Library</h3>
+                    <p>Access 50,000+ movies and series across all genres.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>Multi-Device Sync</h3>
+                    <p>Start on your phone, continue on tablet seamlessly.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Lightning Fast</h3>
+                    <p>Zero buffering, instant playback up to 4K resolution.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Smart AI Picks</h3>
+                    <p>Get personalized recommendations powered by AI.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📥</div>
+                    <h3>Offline Mode</h3>
+                    <p>Download content and watch anywhere without internet.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌍</div>
+                    <h3>Global Content</h3>
+                    <p>Stream international cinema with multiple languages.</p>
+                </div>
+            </div>
+
+            <!-- VIDEO SLIDER AD -->
+            <div class="ad-container" style="margin-top: 60px;">
+                <div class="ad-label">Advertisement</div>
+                <div class="ad-content" id="video-slider-1"></div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Streamify</h3>
+                <p>Your premium destination for unlimited entertainment.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Platform</h3>
+                <p>Available on Android devices with regular updates.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quality</h3>
+                <p>4K Ultra HD, HDR support, and crystal-clear audio.</p>
+            </div>
+        </div>
+
+        <!-- SMALL BANNER AD (Footer) -->
+        <div class="ad-container" style="margin-top: 40px;">
+            <div class="ad-label">Advertisement</div>
+            <div class="ad-content" id="small-banner-footer"></div>
+        </div>
+
+        <div class="copyright">
+            <p>&copy; 2024 Streamify. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Google IMA SDK -->
+    <script src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
+
+    <script>
+        // Modal Functions
+        function openModal(type) {
+    document.getElementById(type + 'Modal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+} // ✅ Add this closing brace
+
+function closeModal(type) {
+    document.getElementById(type + 'Modal').classList.remove('active');
+    document.body.style.overflow = 'auto';
+}
+
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // ============ VAST VIDEO AD WITH GOOGLE IMA SDK ============
+        var videoElement;
+        var adDisplayContainer;
+        var adsLoader;
+        var adsManager;
+        var adContainer;
+        var adInitialized = false;
+
+        var VAST_URL = 'https://physicaldad.com/dWm.FqzddsGVN/vpZGGfUl/JeAmU9/uWZ/UIl-kfPaTJY/3xNtTak/z/MJTMYvtiNZjacQ1SOYT/MKxqNxyzZisBaYWo1kpWdYDj0/xs';
+
+        // Try autoplay when visible
+        var autoplayAttempted = false;
+
+        function isElementInViewport(el) {
+            var rect = el.getBoundingClientRect();
+            return (
+                rect.top < window.innerHeight &&
+                rect.bottom > 0
+            );
+        }
+
+        function tryAutoplay() {
+            if (autoplayAttempted || adInitialized) return;
+            
+            var vastContainer = document.getElementById('vast-container');
+            if (vastContainer && isElementInViewport(vastContainer)) {
+                autoplayAttempted = true;
+                initializeAd(true);
+            }
+        }
+
+        // Check on scroll
+        window.addEventListener('scroll', tryAutoplay);
+
+        // Check on load
+        window.addEventListener('load', function() {
+            setTimeout(tryAutoplay, 1500);
+        });
+
+        // Click handler for fallback
+        document.addEventListener('DOMContentLoaded', function() {
+            var overlay = document.getElementById('play-overlay');
+            if (overlay) {
+                overlay.onclick = function() {
+                    initializeAd(false);
+                };
+            }
+        });
+
+        function initializeAd(isAutoplay) {
+            if (adInitialized) return;
+            adInitialized = true;
+            
+            var overlay = document.getElementById('play-overlay');
+            if (overlay) overlay.style.display = 'none';
+            
+            videoElement = document.getElementById('vast-video');
+            adContainer = document.getElementById('ad-container');
+            
+            if (!videoElement || !adContainer) {
+                console.log('Video elements not found');
+                return;
+            }
+            
+            videoElement.muted = true;
+            
+            try {
+                adDisplayContainer = new google.ima.AdDisplayContainer(adContainer, videoElement);
+                adDisplayContainer.initialize();
+                
+                adsLoader = new google.ima.AdsLoader(adDisplayContainer);
+                
+                adsLoader.addEventListener(
+                    google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
+                    onAdsManagerLoaded,
+                    false
+                );
+                
+                adsLoader.addEventListener(
+                    google.ima.AdErrorEvent.Type.AD_ERROR,
+                    onAdError,
+                    false
+                );
+                
+                var adsRequest = new google.ima.AdsRequest();
+                adsRequest.adTagUrl = VAST_URL;
+                
+                var vastContainer = document.getElementById('vast-container');
+                adsRequest.linearAdSlotWidth = vastContainer.clientWidth || 640;
+                adsRequest.linearAdSlotHeight = vastContainer.clientHeight || 360;
+                adsRequest.nonLinearAdSlotWidth = vastContainer.clientWidth || 640;
+                adsRequest.nonLinearAdSlotHeight = vastContainer.clientHeight || 360;
+                
+                adsRequest.setAdWillAutoPlay(isAutoplay);
+                adsRequest.setAdWillPlayMuted(true);
+                
+                adsLoader.requestAds(adsRequest);
+                console.log('VAST Ad requested');
+                
+            } catch (e) {
+                console.log('IMA init error:', e);
+                showFallback();
+            }
+        }
+
+        function onAdsManagerLoaded(adsManagerLoadedEvent) {
+            console.log('Ads Manager Loaded');
+            
+            var adsRenderingSettings = new google.ima.AdsRenderingSettings();
+            adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
+            
+            adsManager = adsManagerLoadedEvent.getAdsManager(videoElement, adsRenderingSettings);
+            
+            adsManager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, onAdError);
+            adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED, function() {
+                console.log('Content paused for ad');
+            });
+            adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, function() {
+                console.log('Content resumed');
+                showCompletedMessage();
+            });
+            adsManager.addEventListener(google.ima.AdEvent.Type.ALL_ADS_COMPLETED, function() {
+                console.log('All ads completed');
+                showCompletedMessage();
+            });
+            adsManager.addEventListener(google.ima.AdEvent.Type.STARTED, function() {
+                console.log('Ad Started Playing');
+            });
+            adsManager.addEventListener(google.ima.AdEvent.Type.COMPLETE, function() {
+                console.log('Ad Completed');
+            });
+            
+            try {
+                var vastContainer = document.getElementById('vast-container');
+                var width = vastContainer.clientWidth || 640;
+                var height = vastContainer.clientHeight || 360;
+                
+                adsManager.init(width, height, google.ima.ViewMode.NORMAL);
+                adsManager.setVolume(0);
+                adsManager.start();
+                console.log('Ads Manager Started');
+                
+            } catch (adError) {
+                console.log('AdsManager start error:', adError);
+                showFallback();
+            }
+        }
+
+        function onAdError(adErrorEvent) {
+            console.log('Ad Error:', adErrorEvent.getError());
+            if (adsManager) {
+                adsManager.destroy();
+            }
+            showFallback();
+        }
+
+        function showFallback() {
+            var overlay = document.getElementById('play-overlay');
+            if (overlay && !adInitialized) {
+                overlay.style.display = 'flex';
+                adInitialized = false;
+                autoplayAttempted = false;
+            } else {
+                showErrorMessage();
+            }
+        }
+
+        function showErrorMessage() {
+            var container = document.getElementById('vast-container');
+            if (container) {
+                container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;min-height:200px;color:#999;flex-direction:column;background:#111;border-radius:10px;"><p style="font-size:1.1rem;">Ad not available right now</p></div>';
+            }
+        }
+
+        function showCompletedMessage() {
+            var container = document.getElementById('vast-container');
+            if (container) {
+                container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;min-height:200px;color:#00d4ff;flex-direction:column;background:#111;border-radius:10px;"><p style="font-size:1.3rem;">✓ Thanks for watching!</p><p style="font-size:0.95rem;margin-top:10px;color:#999;">Download Streamify for unlimited entertainment</p></div>';
+            }
+        }
+
+        window.addEventListener('resize', function() {
+            if (adsManager) {
+                var vastContainer = document.getElementById('vast-container');
+                if (vastContainer) {
+                    adsManager.resize(
+                        vastContainer.clientWidth || 640,
+                        vastContainer.clientHeight || 360,
+                        google.ima.ViewMode.NORMAL
+                    );
+                }
+            }
+        });
+    </script>
+
+    <!-- ========== BANNER AD SCRIPTS ========== -->
+
+    <!-- Small Banner Ad (Hero Section) -->
+    <script>
+    (function(fbfygsg){
+        var d = document,
+            s = d.createElement('script'),
+            l = d.getElementById('small-banner-1');
+        s.settings = fbfygsg || {};
+        s.src = "//noxious-theme.com/bKXwVks.ddG/l_0kY/WucJ/beGmj9/uUZKUJl/kJPVTRYX3sN/T/kGzkMiDIENtTN/jDcy1HOET/MnwbMugu";
+        s.async = true;
+        s.referrerPolicy = 'no-referrer-when-downgrade';
+        if(l) l.appendChild(s);
+    })({});
+    </script>
+
+    <!-- Medium Banner Ad -->
+    <script>
+    (function(mnfa){
+        var d = document,
+            s = d.createElement('script'),
+            l = d.getElementById('medium-banner-1');
+        s.settings = mnfa || {};
+        s.src = "//noxious-theme.com/bIXDVjs.d_G/lb0hYjWVcN/geCmR9-uRZEUPlWkaPmTkYx3fN/TNkkz/M/DgQit/NrjGcJ1pOoTiMbw/NUQj";
+        s.async = true;
+        s.referrerPolicy = 'no-referrer-when-downgrade';
+        if(l) l.appendChild(s);
+    })({});
+    </script>
+
+    <!-- Video Slider Ad -->
+    <script>
+    (function(oyd){
+        var d = document,
+            s = d.createElement('script'),
+            l = d.getElementById('video-slider-1');
+        s.settings = oyd || {};
+        s.src = "//noxious-theme.com/btXXV.svdNG_lG0eYMWucK/yeDmM9juUZfUPl/kcPTTwYx3pNqTQkzzMM/TjIatyNFjIc/1/OaT/M-xNMXwZ";
+        s.async = true;
+        s.referrerPolicy = 'no-referrer-when-downgrade';
+        if(l) l.appendChild(s);
+    })({});
+    </script>
+
+    <!-- Small Banner Ad (Footer) -->
+    <script>
+    setTimeout(function(){
+        (function(fbfygsg2){
+            var d = document,
+                s = d.createElement('script'),
+                l = d.getElementById('small-banner-footer');
+            s.settings = fbfygsg2 || {};
+            s.src = "//noxious-theme.com/bKXwVks.ddG/l_0kY/WucJ/beGmj9/uUZKUJl/kJPVTRYX3sN/T/kGzkMiDIENtTN/jDcy1HOET/MnwbMugu";
+            s.async = true;
+            s.referrerPolicy = 'no-referrer-when-downgrade';
+            if(l) l.appendChild(s);
+        })({});
+    }, 1500);
+    </script>
 
 </body>
 </html>
+
+     
