@@ -139,7 +139,7 @@ $$('[data-ic]').forEach(e=>e.insertAdjacentHTML('afterbegin',ic(e.dataset.ic)));
 /* ---- state ---- */
 let DB={liked:[],pls:{},rec:[],sp:[]};try{DB=Object.assign(DB,JSON.parse(localStorage.getItem('musify')||'{}'))}catch{}
 const save=()=>{try{localStorage.setItem('musify',JSON.stringify(DB))}catch{}};
-const M={},L={},SPN={};let Q=[],qi=-1,sh=false,rp=0,busy=false,sc=0;
+const M={},L={},SPN={};let Q=[],qi=-1,sh=false,rp=0,busy=false,sc=0,hv=0;
 const au=new Audio(),V=$('#view'),vol=$('#vol'),lyr=$('#lyr'),inp=$('#inp'),sg=$('#sg'),bar=$('#bar');
 const cur=()=>Q[qi],liked=id=>DB.liked.some(x=>x.id==id);
 const reg=a=>(a||[]).map(x=>(M[x.id]=x));
@@ -159,8 +159,9 @@ const cbtn=`<button class="btn o" data-a="connect">+ Connect Spotify</button>`;
 
 /* ---- views ---- */
 const views={
-async home(){const g=new Date().getHours(),[d,mine]=await Promise.all([api('/home'),mySp()]);
- V.innerHTML=`<h1>${g<12?'Good morning':g<18?'Good afternoon':'Good evening'}</h1><div style="margin:8px 0 4px">${cbtn}</div>`+shelf('Your Spotify playlists',mine)+shelf('Recently played',DB.rec)+d.sections.map(s=>shelf(s.title,s.items)).join('')},
+async home(){const tok=++hv,g=new Date().getHours(),[d,mine]=await Promise.all([api('/home?part=0'),mySp()]),S=a=>a.map(s=>shelf(s.title,s.items)).join('');
+ V.innerHTML=`<h1>${g<12?'Good morning':g<18?'Good afternoon':'Good evening'}</h1><div style="margin:8px 0 4px">${cbtn}</div>`+shelf('Your Spotify playlists',mine)+shelf('Recently played',DB.rec)+S(d.sections)+'<div id="more"><p style="color:var(--m);padding:20px 0">Loading more…</p></div>';
+ (async()=>{for(let i=1;i<(d.parts||1)&&tok==hv;i++){try{const n=await api('/home?part='+i);if(tok!=hv)return;$('#more')?.insertAdjacentHTML('beforebegin',S(n.sections))}catch{}}if(tok==hv)$('#more')?.remove()})()},
 async search(t){if(!t){V.innerHTML=`<h1>Browse</h1><h2>Start with a mood</h2><div class="chips">${MOODS.map(m=>`<div class="chip" data-q="${m}" style="background:linear-gradient(135deg,hsl(${hue(m)} 55% 38%),hsl(${hue(m)+50} 55% 22%))">${m}</div>`).join('')}</div>`;return}
  const d=await api('/search?q='+q(t));
  V.innerHTML=`<h1>Results for “${esc(t)}”</h1>`+(d.songs?.length?`<h2>Songs</h2>`+rows('s',d.songs):'')+shelf('Videos',d.videos)+shelf('Albums',d.albums)+shelf('Artists',d.artists)+shelf('Playlists',d.playlists)},
