@@ -104,7 +104,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
  /lyrics?id=      -> {text}
  /upcoming?id=    -> [Item]   (songs that play next / radio)
  /stream?id=      -> audio bytes (proxied, supports Range) */
-const API='https://musify-api.musify.workers.dev/ ';
+const API='https://musify-api.musify.workers.dev';
 const DEMO=API.includes('YOUR-WORKER');
 
 const $=(s,e=document)=>e.querySelector(s),$$=s=>document.querySelectorAll(s),q=encodeURIComponent;
