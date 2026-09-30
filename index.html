@@ -172,7 +172,7 @@ const side=()=>$('#pls').innerHTML=Object.keys(DB.pls).map(n=>`<div class="nv" d
 /* ---- player ---- */
 function play(l,i){Q=l.slice();qi=i;load()}
 function load(){const s=cur();if(!s)return;
- if(DEMO)toast('Demo mode: connect your backend to play audio');else{au.src=`${API}/stream?id=${q(s.id)}`;au.play().catch(()=>{})}
+ if(DEMO)toast('Demo mode: connect your backend to play audio');else{au.src=`${API}/stream?id=${q(s.id)}&t=${q(s.title)}&a=${q(s.sub)}`;au.play().catch(()=>{})}
  DB.rec=[s,...DB.rec.filter(x=>x.id!=s.id)].slice(0,20);save();ui();meta(s);document.title=s.title+' • Musify';
  if(Q.length-qi<3)more();if(lyr.classList.contains('on'))lyrics()}
 async function more(){if(busy||DEMO)return;busy=true;try{const u=reg(await api('/upcoming?id='+q(cur().id)));Q.push(...u.filter(x=>!Q.some(y=>y.id==x.id)))}catch{}busy=false}
