@@ -25,10 +25,12 @@ main{overflow:auto;padding:0 30px 50px}
 #sg{position:absolute;top:50px;left:0;right:0;background:var(--p2);border-radius:14px;overflow:hidden;display:none;box-shadow:0 20px 50px #000b}
 #sg div{padding:12px 18px;cursor:pointer}#sg div:hover{background:#ffffff12}
 .sh{display:flex;gap:16px;overflow:auto;padding-bottom:10px}
-.card{flex:0 0 172px;padding:12px;border-radius:var(--r);background:#ffffff08;cursor:pointer;transition:background .2s}
+.card{flex:0 0 172px;width:172px;min-width:0;padding:12px;border-radius:var(--r);background:#ffffff08;cursor:pointer;transition:background .2s}
 .card:hover{background:#ffffff16}
 .cv{width:100%;aspect-ratio:1;border-radius:10px;object-fit:cover;display:grid;place-items:center;font:800 34px Sora,sans-serif;color:#ffffffcc}
 .card.artist .cv{border-radius:50%}
+img.cv{display:block;height:auto;background:#ffffff10}
+.sh{align-items:flex-start}
 .t{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .card b{margin-top:10px}.card small{color:var(--m);margin-top:3px}
 .row{display:grid;grid-template-columns:30px 46px 1fr auto;gap:14px;align-items:center;padding:8px 12px;border-radius:10px;cursor:pointer}
