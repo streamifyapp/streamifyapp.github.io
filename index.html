@@ -233,7 +233,7 @@ const side=()=>$('#pls').innerHTML=Object.keys(DB.pls).map(n=>`<div class="nv" d
 function shufRest(){const r=Q.slice(qi+1);for(let i=r.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[r[i],r[j]]=[r[j],r[i]]}Q=[...Q.slice(0,qi+1),...r]}
 function play(l,i){Q=l.slice();qi=i;Q0=Q.slice();if(sh)shufRest();load()}
 function load(){const s=cur();if(!s)return;
- au.src=`${API}/stream?id=${q(s.id)}&t=${q(s.title)}&a=${q(s.sub)}`;au.play().catch(()=>{});
+ au.src=`${API}/stream?v=2&id=${q(s.id)}&t=${q(s.title)}&a=${q(s.sub)}`;au.play().catch(()=>{});
  DB.rec=[s,...DB.rec.filter(x=>x.id!=s.id)].slice(0,20);save();ui();meta(s);document.title=s.title+' • Musify';
  if(Q.length-qi<4)more();if(lyr.classList.contains('on'))lyrics();if(location.hash=='#/queue')route()}
 /* Auto-queue = YouTube Music "radio" of the playing song (related songs), shared promise so next() can await it */
