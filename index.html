@@ -204,9 +204,8 @@ const cbtn=`<button class="btn o" data-a="connect">+ Connect Spotify</button>`;
 
 /* ---- views ---- */
 const views={
-async home(){const tok=++hv,g=new Date().getHours(),[d,mine]=await Promise.all([api('/home?part=0'),mySp()]),S=a=>a.map(s=>shelf(s.title,s.items)).join('');
- V.innerHTML=`<h1>${g<12?'Good morning':g<18?'Good afternoon':'Good evening'}</h1><div style="margin:8px 0 4px">${cbtn}</div>`+shelf('Your Spotify playlists',mine)+shelf('Recently played',DB.rec)+S(d.sections)+'<div id="more" class="skl"><i></i></div>';
- (async()=>{for(let i=1;i<(d.parts||1)&&tok==hv;i++){try{const n=await api('/home?part='+i);if(tok!=hv)return;$('#more')?.insertAdjacentHTML('beforebegin',S(n.sections))}catch{}}if(tok==hv)$('#more')?.remove()})()},
+async home(){const g=new Date().getHours(),mine=await mySp();
+ V.innerHTML=`<h1>${g<12?'Good morning':g<18?'Good afternoon':'Good evening'}</h1><div style="margin:8px 0 4px">${cbtn}</div>`+(mine.length?shelf('Your Spotify playlists',mine):empty('Connect a public Spotify playlist to fill your Home page.'))+shelf('Recently played',DB.rec)},
 async search(t){if(!t){V.innerHTML=`<h1>Browse</h1><h2 style="margin:18px 0 12px">Start with a mood</h2><div class="chips">${MOODS.map(m=>`<div class="chip" data-q="${m}" style="background:linear-gradient(135deg,hsl(${hue(m)} 60% 45%/.7),hsl(${hue(m)+50} 60% 25%/.7)),var(--gl)">${m}</div>`).join('')}</div>`;return}
  const d=await api('/search?q='+q(t));
  V.innerHTML=`<h1>Results for “${esc(t)}”</h1>`+(d.songs?.length?`<h2 style="margin:18px 0 8px">Songs</h2>`+rows('s',d.songs):'')+shelf('Videos',d.videos)+shelf('Albums',d.albums)+shelf('Artists',d.artists)+shelf('Playlists',d.playlists)||empty('No results found.')},
@@ -233,7 +232,7 @@ const side=()=>$('#pls').innerHTML=Object.keys(DB.pls).map(n=>`<div class="nv" d
 function shufRest(){const r=Q.slice(qi+1);for(let i=r.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[r[i],r[j]]=[r[j],r[i]]}Q=[...Q.slice(0,qi+1),...r]}
 function play(l,i){Q=l.slice();qi=i;Q0=Q.slice();if(sh)shufRest();load()}
 function load(){const s=cur();if(!s)return;
- au.src=`${API}/stream?v=4&id=${q(s.id)}&t=${q(s.title)}&a=${q(s.sub)}&d=${s.dur||''}`;au.play().catch(()=>{});
+ au.src=`${API}/stream?v=6&id=${q(s.id)}&t=${q(s.title)}&a=${q(s.sub)}&d=${s.dur||''}`;au.play().catch(()=>{});
  DB.rec=[s,...DB.rec.filter(x=>x.id!=s.id)].slice(0,20);save();ui();meta(s);document.title=s.title+' • Musify';
  if(Q.length-qi<4)more();if(lyr.classList.contains('on'))lyrics();if(location.hash=='#/queue')route()}
 /* Auto-queue = YouTube Music "radio" of the playing song (related songs), shared promise so next() can await it */
