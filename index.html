@@ -205,7 +205,7 @@ const cbtn=`<button class="btn o" data-a="connect">+ Connect Spotify</button>`;
 /* ---- views ---- */
 const views={
 async home(){const tok=++hv,g=new Date().getHours(),[d,mine]=await Promise.all([api('/home?part=0'),mySp()]),S=a=>a.map(s=>shelf(s.title,s.items)).join('');
- V.innerHTML=`<h1>${g<12?'Good morning':g<18?'Good afternoon':'Good evening'}</h1><div style="margin:8px 0 4px">${cbtn}</div>`+shelf('Your Spotify playlists',mine)+shelf('Recently played',DB.rec)+S(d.sections)+'<div id="more" class="skl"><i></i></div>';
+ V.innerHTML=`<h1>${g<12?'Musify':g<18?'Musify':'Musify'}</h1><div style="margin:8px 0 4px">${cbtn}</div>`+shelf('Your Spotify playlists',mine)+shelf('Recently played',DB.rec)+S(d.sections)+'<div id="more" class="skl"><i></i></div>';
  (async()=>{for(let i=1;i<(d.parts||1)&&tok==hv;i++){try{const n=await api('/home?part='+i);if(tok!=hv)return;$('#more')?.insertAdjacentHTML('beforebegin',S(n.sections))}catch{}}if(tok==hv)$('#more')?.remove()})()},
 async search(t){if(!t){V.innerHTML=`<h1>Browse</h1><h2 style="margin:18px 0 12px">Start with a mood</h2><div class="chips">${MOODS.map(m=>`<div class="chip" data-q="${m}" style="background:linear-gradient(135deg,hsl(${hue(m)} 60% 45%/.7),hsl(${hue(m)+50} 60% 25%/.7)),var(--gl)">${m}</div>`).join('')}</div>`;return}
  const d=await api('/search?q='+q(t));
