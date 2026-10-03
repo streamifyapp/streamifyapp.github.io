@@ -1144,5 +1144,48 @@ const _l=load;load=function(fx){PNS.delete(cur()?.id);_l(fx);clearTimeout(wd);co
  wd=setTimeout(()=>{if(cur()?.id===id&&!au.paused&&au.currentTime<.5&&au.readyState<3)skipBad()},20000)};
 })();
 </script>
+
+<!-- ===== MUSIFY UPDATE v6.1 =====
+PASTE THIS BLOCK right before the final </body>, AFTER the v6 block (keep v6, don't delete it).
+ - Neon lyrics replaced by "Pop": each new line springs in with a glass card and a pink gradient sweep
+ - Unplayable tracks skip within ~1 second (hard timeout 8s instead of 20s)
+ - Icons swapped: Play next now uses "+", Add to playlist now uses the list+ icon -->
+<style>
+@keyframes lpop{0%{opacity:0;transform:translateY(38px) scale(.7)}60%{opacity:1;transform:translateY(-4px) scale(1.08)}100%{transform:scale(1.04)}}
+html #lyr[data-ly=neon]{--h1:#fff;--h2:#ff9be8;--lo:#ffffffa8;--gw:transparent}
+html #lyr[data-ly=neon] #lyt.sy{text-align:center}
+html #lyr[data-ly=neon] #lyt.sy p{padding:12px 20px;margin:0 auto 6px;opacity:.2;transform:scale(.82);transform-origin:center;transition:transform .6s var(--ease),opacity .5s var(--ease)}
+html #lyr[data-ly=neon] #lyt.sy p[data-d="1"]{opacity:.42;transform:scale(.89)}
+html #lyr[data-ly=neon] #lyt.sy p[data-d="2"]{opacity:.28}
+html #lyr[data-ly=neon] #lyt.sy p[data-d="-1"]{opacity:.22;transform:scale(.8)}
+html #lyr[data-ly=neon] #lyt.sy p[data-d="0"]{opacity:1;transform:scale(1.04);text-shadow:none;animation:lpop .7s var(--spring) backwards}
+html #lyr[data-ly=neon] #lyt.sy p[data-d="0"]::before{inset:0;border-radius:30px;background:linear-gradient(135deg,#7be8ff26,#ff6ad524 60%,#ffffff12);border:1px solid #ffffff38;box-shadow:inset 0 1px 0 #ffffff66,0 20px 44px -20px #000;animation:lpin .5s var(--ease) backwards}
+html #lyr[data-ly=neon] #lyt.sy .lt{-webkit-text-stroke:0}
+html #lyr[data-ly=neon] #lyt.sy p:not([data-d="0"]) .lt{background:linear-gradient(90deg,var(--h1),var(--h2) var(--p,0%),var(--lo) calc(var(--p,0%) + 4%));-webkit-background-clip:text;background-clip:text}
+</style>
+<script>
+(()=>{
+/* lyrics style label */
+$$('#smod [data-a=lys][data-s=neon]').forEach(b=>b.textContent='Pop');
+
+/* fast auto-skip: error event, rejected play(), dead source, or 8s without audio */
+let fail=0,tk=0,skid='';
+const bad=()=>{const s=cur();if(!s||skid===s.id+':'+qi)return;skid=s.id+':'+qi;clearInterval(tk);
+ if(++fail>6){fail=0;au.pause();ui();return toast('Several tracks failed. Check your connection.')}
+ toast('Can’t play this one, skipping…');xfId++;au.pause();next(true)};
+A.forEach(a=>{a.onerror=function(){if(this===au)bad()};a.addEventListener('playing',function(){if(this===au){fail=0;clearInterval(tk)}})});
+const _l=load;load=function(fx){_l(fx);clearInterval(tk);const id=cur()?.id,t0=Date.now();
+ const p=au.play();if(p&&p.catch)p.catch(e=>{if(e.name=='NotSupportedError'&&cur()?.id==id)bad()});
+ tk=setInterval(()=>{if(cur()?.id!=id)return clearInterval(tk);
+  if(au.error||(au.networkState==3&&Date.now()-t0>1500))return bad();
+  if(au.currentTime>.3||au.readyState>=3)return clearInterval(tk);
+  if(Date.now()-t0>8000&&au.readyState<2&&!au.paused)bad()},300)};
+
+/* icon swap: Play next = "+", Add to playlist = list+ */
+const sw=()=>{document.querySelectorAll('[data-a=add] path').forEach(p=>{if(p.getAttribute('d')!=P.pn)p.setAttribute('d',P.pn)});
+ document.querySelectorAll('[data-a=pnext] path').forEach(p=>{if(p.getAttribute('d')!=P.plus)p.setAttribute('d',P.plus)})};
+let sr=0;new MutationObserver(()=>{cancelAnimationFrame(sr);sr=requestAnimationFrame(sw)}).observe(document.body,{childList:true,subtree:true});sw();
+})();
+</script>
    
 </body></html>
