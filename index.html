@@ -4,7 +4,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* ONE THEME: midnight violet. Every colour below comes from hue 258 (a single accent + neutrals), nothing changes per song.
-   PERF: backdrop-filter is used ONLY on the two fixed bars (player + mobile nav). Cards, rows, sidebar, panels use fake glass
+   PERF: no backdrop-filter anywhere (it re-blurs on every scroll frame). Cards, rows, sidebar, panels use fake glass
    (translucent gradient + inner highlight) so scrolling never re-blurs. Background is static. Off-screen work is skipped
    with content-visibility, cards are contained, and there are no blur filters/animated shadows on scrolling content. */
 :root{--bg:#0a0916;--t:#f4f2ff;--m:#9c98b8;--a:#b8a9ff;--a2:#8b78ff;--ink:#0d0820;--sb:env(safe-area-inset-bottom,0px);--bh:calc(150px + var(--sb));--ease:cubic-bezier(.22,1,.36,1);
@@ -16,8 +16,8 @@ body{background:var(--bg);color:var(--t);font:14px Manrope,system-ui,sans-serif;
 h1,h2,.logo{font-family:'Bricolage Grotesque',Manrope,sans-serif}
 h1{font-size:32px;font-weight:800;letter-spacing:-.035em;margin:6px 0;line-height:1.05}
 h2{font-size:20px;font-weight:700;letter-spacing:-.02em}
-aside.sd,.card,.btn.o,.ib.g,.chip,.sb input,.seg,.gc,#bar,#mnav,#menu,.mb{background:var(--gl);border:var(--bd);box-shadow:var(--edge)}
-#bar,#mnav{background:linear-gradient(150deg,#2a2152d9,#14102bd9);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);box-shadow:var(--edge),0 10px 30px #0007}
+aside.sd,.btn.o,.ib.g,.chip,.sb input,.seg,.gc,#bar,#mnav,#menu,.mb{background:var(--gl);border:var(--bd);box-shadow:var(--edge)}
+#bar,#mnav{background:linear-gradient(150deg,#2d2559,#171233);box-shadow:var(--edge),0 8px 24px #0006}
 #menu,.mb{background:var(--pop);box-shadow:var(--edge),0 24px 60px #000a}
 #app{height:100dvh}
 aside.sd{display:none;padding:22px 14px;overflow:auto;border-radius:30px}
@@ -36,9 +36,9 @@ main{overflow:auto;padding:0 16px var(--bh);overscroll-behavior:contain;height:1
 #sg div{padding:13px 18px;cursor:pointer}#sg div:hover{background:#ffffff12}
 .shw{margin:28px -16px 0;padding:0 16px;content-visibility:auto;contain-intrinsic-size:auto 280px}
 .shh{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.ar{display:none;gap:6px}
-.sh{display:flex;gap:14px;overflow-x:auto;padding:12px 16px 30px;margin:-8px -16px -20px;align-items:flex-start;scroll-snap-type:x proximity;scrollbar-width:none;overscroll-behavior-x:contain}
+.sh{display:flex;gap:14px;overflow-x:auto;padding:12px 16px 30px;margin:-8px -16px -20px;align-items:flex-start;scrollbar-width:none;overscroll-behavior-x:contain}
 .sh::-webkit-scrollbar{display:none}
-.card{position:relative;flex:0 0 150px;width:150px;min-width:0;padding:10px;border-radius:22px;cursor:pointer;scroll-snap-align:start;contain:layout paint style;transition:transform .3s var(--ease)}
+.card{position:relative;flex:0 0 150px;width:150px;min-width:0;padding:10px;border-radius:22px;cursor:pointer;contain:content;background:#ffffff0d;border:1px solid #ffffff14;transition:transform .3s var(--ease)}
 .card:active{transform:scale(.96)}
 @media(hover:hover){.card:hover{transform:translateY(-4px)}}
 .qa{position:absolute;right:16px;top:16px;padding:7px;min-width:34px;min-height:34px;background:#0a0916cc;color:#fff}
@@ -67,7 +67,7 @@ main{overflow:auto;padding:0 16px var(--bh);overscroll-behavior:contain;height:1
 .rpb.one::after{content:'1';position:absolute;font:800 9px 'Bricolage Grotesque';right:6px;top:5px;color:var(--a)}
 button:focus-visible,input:focus-visible,textarea:focus-visible,.card:focus-visible{outline:2px solid var(--a);outline-offset:2px}
 #bar{position:fixed;left:12px;right:12px;bottom:calc(74px + var(--sb));height:66px;display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;padding:0 10px;border-radius:28px;z-index:9;overflow:hidden}
-#bar::before{content:'';position:absolute;bottom:0;left:0;height:3px;width:var(--pr,0%);background:linear-gradient(90deg,var(--a2),var(--a))}
+#prg{position:absolute;left:0;bottom:0;height:3px;width:100%;transform-origin:left;transform:scaleX(0);background:linear-gradient(90deg,var(--a2),var(--a))}
 .np{display:flex;gap:8px;align-items:center;min-width:0}.npl{display:flex;gap:12px;align-items:center;min-width:0;flex:1;cursor:pointer}.npl>div:last-child{min-width:0;flex:1}.np .cv{width:48px;height:48px;border-radius:14px;flex:none;font-size:16px}
 .ctl{display:flex;flex-direction:column;align-items:center;gap:6px}.cb{display:flex;gap:8px;align-items:center;justify-content:center}
 .pp{width:48px;height:48px;background:linear-gradient(135deg,#d3c9ff,#8b78ff);color:var(--ink)!important;box-shadow:inset 0 1px 0 #fff9,0 6px 18px #8b78ff55}
@@ -122,7 +122,6 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border:0;border-radiu
 #toast{position:fixed;bottom:calc(var(--bh) + 8px);left:50%;transform:translateX(-50%);max-width:90vw;background:#f4f2fff2;color:#14101f;padding:11px 20px;border-radius:30px;font-weight:700;opacity:0;pointer-events:none;transition:opacity .25s;z-index:80;text-align:center;box-shadow:0 10px 40px #0008}
 #toast.on{opacity:1}
 .skl i{display:block;height:150px;border-radius:24px;margin:18px 0;background:linear-gradient(90deg,#ffffff08,#ffffff1a,#ffffff08);background-size:200% 100%;animation:sm 1.3s infinite}@keyframes sm{to{background-position:-200% 0}}
-#view{animation:vi .35s var(--ease)}@keyframes vi{from{opacity:0;transform:translateY(6px)}}
 @media(max-width:800px){#menu{left:12px!important;right:12px;top:auto!important;bottom:calc(var(--bh) + 4px)}}
 @media(min-width:801px){
 :root{--bh:112px}
@@ -133,7 +132,7 @@ h1{font-size:44px}.card{flex-basis:180px;width:180px}.ar{display:flex}
 .hero{flex-direction:row;align-items:flex-end;gap:28px}.hero .cv{width:230px}
 .chips{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
 #bar{left:14px;right:14px;bottom:14px;height:86px;grid-template-columns:1fr 2fr 1fr;gap:16px;padding:0 22px;border-radius:32px}
-#bar::before{left:22px;right:22px;width:auto;bottom:0;height:0}
+#prg{display:none}
 .x{display:grid}.ctl .sk{display:flex}.rt{display:flex}.pp{width:46px;height:46px}
 #mnav{display:none}
 .mb{border-radius:30px;margin-bottom:10vh;align-self:center}.mod{align-items:center}}
@@ -158,7 +157,7 @@ h1{font-size:44px}.card{flex-basis:180px;width:180px}.ar{display:flex}
 <div id="mod" class="mod"><div class="mb"><h2>Connect Spotify</h2><p style="margin-top:6px">Paste one or more <b>public</b> Spotify playlist links. They are saved on this device and shown on your Home page.</p><textarea id="mti" placeholder="https://open.spotify.com/playlist/..."></textarea><div style="display:flex;gap:10px"><button class="btn" data-a="spsave">Save</button><button class="btn o" data-a="mod">Close</button></div><div id="msp"></div></div></div>
 <div id="ymod" class="mod"><div class="mb"><h2>YT Music</h2><div id="ybody"></div></div></div>
 <div id="menu"></div><div id="toast"></div>
-<footer id="bar">
+<footer id="bar"><i id="prg"></i>
 <div class="np" id="np"></div>
 <div class="ctl"><div class="cb">
 <button class="ib x shb" data-a="shuffle" data-ic="shuffle" title="Shuffle"></button>
@@ -193,12 +192,13 @@ const cur=()=>Q[qi],liked=id=>DB.liked.some(x=>x.id==id);
 const reg=a=>(a||[]).map(x=>(M[x.id]=x));
 const YA=()=>DB.yt?btoa(JSON.stringify(DB.yt)):'';
 /* api: one automatic retry (covers cold starts / flaky first request); auth header only sent to YT account routes */
-const api=async(p,auth,n=1)=>{try{const r=await fetch(API+p,auth&&DB.yt?{headers:{'x-yt-auth':YA()}}:undefined);if(!r.ok)throw Error(r.status);return await r.json()}catch(e){if(n>0){await sleep(500);return api(p,auth,n-1)}throw e}};
+const api=async(p,auth,n=1)=>{try{const r=await fetch(API+p,auth&&DB.yt?{headers:{'x-yt-auth':YA()}}:undefined);if(!r.ok){let m='';try{m=(await r.json()).error}catch{}throw Error(m||'HTTP '+r.status)}return await r.json()}catch(e){if(n>0){await sleep(500);return api(p,auth,n-1)}throw e}};
 const put=(my,h)=>my==RT?(V.innerHTML=h,true):false;
 
 /* ---- templates ---- */
 const lt=s=>24+Math.abs([...String(s)].reduce((a,c)=>a*31+c.charCodeAt(0)|0,7))%14;
-const cv=x=>{const l=lt(x.id);return `<div class="cv" style="background:${x.id=='liked'?'linear-gradient(135deg,#8b78ff,#4b3bb0)':`linear-gradient(135deg,hsl(258 40% ${l}%),hsl(250 44% ${l-12}%))`}">${x.icon||esc((x.title||'?')[0])}${x.thumb?`<img src="${esc(x.thumb)}" loading="lazy" decoding="async" alt="" onerror="this.remove()">`:''}</div>`};
+const sz=u=>String(u).replace(/=w\d+-h\d+/,'=w320-h320').replace(/=s\d+$/,'=s320');
+const cv=x=>{const l=lt(x.id);return `<div class="cv" style="background:${x.id=='liked'?'linear-gradient(135deg,#8b78ff,#4b3bb0)':`linear-gradient(135deg,hsl(258 40% ${l}%),hsl(250 44% ${l-12}%))`}">${x.icon||esc((x.title||'?')[0])}${x.thumb?`<img src="${esc(sz(x.thumb))}" loading="lazy" decoding="async" alt="" onerror="this.remove()">`:''}</div>`};
 const card=(x,k,i)=>`<div class="card ${x.type}" tabindex="0" data-id="${esc(x.id)}" data-k="${k}" data-i="${i}">${cv(x)}${x.type=='song'?`<button class="ib qa" data-a="add" data-id="${esc(x.id)}" aria-label="Add to playlist">${ic('plus')}</button>`:''}<b class="t">${esc(x.title)}</b><small class="t">${esc(x.sub)}</small></div>`;
 const shelf=(t,a)=>{if(!a?.length)return'';const k='h'+sc++;L[k]=reg(a);return`<section class="shw"><div class="shh"><h2>${esc(t)}</h2><div class="ar"><button class="ib g" data-a="sl" data-d="-1" aria-label="Scroll left">${ic('left')}</button><button class="ib g" data-a="sl" data-d="1" aria-label="Scroll right">${ic('right')}</button></div></div><div class="sh">${L[k].map((x,i)=>card(x,k,i)).join('')}</div></section>`};
 const empty=t=>`<p style="color:var(--m);padding:24px 0">${t}</p>`;
@@ -220,7 +220,7 @@ async home(){const my=RT,src=DB.src=='yt'?'yt':'sp';
   put(my,hd+'<div class="skl"><i style="height:30px;width:50%"></i><i></i><i></i></div>');
   const[lib,fd]=await Promise.allSettled([api('/ymlib',1),api('/ymhome',1)]);if(my!=RT)return;
   const h=(lib.value?SECS(lib.value.sections):'')+(fd.value?SECS(fd.value.sections):'');
-  put(my,hd+(h||`<div class="gc"><h2>Couldn’t load your feed</h2><p>Your sign-in may have expired, or YT Music didn’t respond.</p>${retry('<button class="btn o" data-a="ytlogin">Sign in again</button>')}</div>`));return}
+  put(my,hd+(h||`<div class="gc"><h2>Couldn’t load your feed</h2><p>${esc(fd.reason?.message||lib.reason?.message||'Your sign-in may have expired.')}</p>${retry('<button class="btn o" data-a="ytlogin">Sign in again</button>')}</div>`));return}
  const[d,mine]=await Promise.all([api('/home?part=0'),mySp()]);
  if(!put(my,hd+`<div style="margin:12px 0 0">${cbtn}</div>`+shelf('Your Spotify playlists',mine)+shelf('Recently played',DB.rec)+SECS(d.sections)+'<div id="more" class="skl"><i></i></div>'))return;
  for(let i=1;i<(d.parts||1)&&my==RT;i++){try{const n=await api('/home?part='+i);if(my!=RT)return;$('#more')?.insertAdjacentHTML('beforebegin',SECS(n.sections))}catch{}}
@@ -249,7 +249,7 @@ async function route(){const my=++RT,h=location.hash.slice(2).split('/'),k=h[0]|
  inp.value=k=='search'?a:'';   /* the box always mirrors the page: results page shows its query, every other page clears it */
  loading();$('main').scrollTop=0;
  try{['album','artist','playlist'].includes(k)?await views.detail(k,a):await(views[k]||views.home)(a)}
- catch(e){console.error(e);put(my,`<h1 style="margin-top:18px">Couldn’t load this page</h1>`+empty('The server didn’t respond. Check your connection and try again.')+retry())}}
+ catch(e){console.error(e);put(my,`<h1 style="margin-top:18px">Couldn’t load this page</h1>`+empty('Couldn’t reach the server: '+esc(e.message||e)+'. Try again in a moment.')+retry())}}
 addEventListener('hashchange',route);
 const go=v=>{if(!v)return;clearTimeout(tm);sgT++;inp.value=v;sg.style.display='none';inp.blur();const h='#/search/'+q(v);location.hash==h?route():location.hash=h};
 const side=()=>$('#pls').innerHTML=Object.keys(DB.pls).map(n=>`<div class="nv" data-my="${esc(n)}">${ic('list')}<span class="t">${esc(n)}</span></div>`).join('')||'<div class="lab" style="padding-top:0">None yet</div>';
@@ -284,7 +284,9 @@ function meta(s){if(!('mediaSession'in navigator))return;const m=navigator.media
  m.metadata=new MediaMetadata({title:s.title,artist:s.sub,artwork:s.thumb?[{src:s.thumb}]:[]});
  [['play',()=>au.play()],['pause',()=>au.pause()],['nexttrack',()=>next()],['previoustrack',prev]].forEach(([a,f])=>{try{m.setActionHandler(a,f)}catch{}})}
 const fmt=s=>isFinite(s)?(s/60|0)+':'+String(s%60|0).padStart(2,'0'):'0:00';
-au.ontimeupdate=()=>{const p=au.duration?au.currentTime/au.duration*1000:0;$$('.seekr').forEach(s=>{s.value=p;s.style.setProperty('--v',p/10+'%')});bar.style.setProperty('--pr',p/10+'%');$$('.tc').forEach(e=>e.textContent=fmt(au.currentTime));$$('.td').forEach(e=>e.textContent=fmt(au.duration))};
+const SK=$$('.seekr'),TC=$$('.tc'),TD=$$('.td'),PRG=$('#prg');let lastS=-1;
+au.ontimeupdate=()=>{const d=au.duration,p=d?au.currentTime/d:0;PRG.style.transform=`scaleX(${p})`;const t=au.currentTime|0;if(t==lastS)return;lastS=t;
+ SK.forEach(s=>{s.value=p*1000;s.style.setProperty('--v',p*100+'%')});TC.forEach(e=>e.textContent=fmt(au.currentTime));TD.forEach(e=>e.textContent=fmt(d))};
 $$('.seekr').forEach(s=>s.oninput=()=>{if(au.duration)au.currentTime=s.value/1000*au.duration});
 vol.oninput=()=>{au.volume=vol.value/100;vol.style.setProperty('--v',vol.value+'%')};vol.oninput();
 au.onplay=au.onpause=ui;au.onended=()=>rp==2?(au.currentTime=0,au.play()):next(true);
