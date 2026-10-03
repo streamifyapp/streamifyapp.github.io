@@ -1013,5 +1013,136 @@ more=function(){
 const _l=load;load=function(fx){_l(fx);if(Q.length-qi<4)more()};
 })();
 </script>
+
+<!-- ===== MUSIFY UPDATE v6 =====
+PASTE THIS WHOLE BLOCK right before the final </body> (after the last </script>). Nothing else to edit.
+ - Liquid-glass full-screen player that fits ONE screen (no scrolling)
+ - Brand-new lyrics screen (glass header, glass line cards, floating control dock)
+ - "Play next" on songs, albums, playlists (rows, cards, and Play next button on detail pages)
+ - Queue: drag handle to reorder, "move to next" and remove buttons
+ - Unavailable / stuck tracks skip automatically -->
+<style>
+@keyframes drift{to{transform:translate3d(-4%,3%,0) scale(1.14) rotate(8deg)}}
+@keyframes lpin{from{opacity:0;transform:scale(.94)}}
+/* ===== player: one screen, no scroll ===== */
+#fs{overflow:hidden!important;height:100dvh;gap:10px!important;padding-top:max(10px,env(safe-area-inset-top))!important;padding-bottom:calc(14px + var(--sb))!important;justify-content:flex-start}
+#fs::before{inset:-20%;filter:blur(70px) saturate(2);opacity:.62;will-change:transform;animation:drift 24s ease-in-out infinite alternate}
+#fs:not(.on)::before,#lyr:not(.on)::before{animation-play-state:paused}
+#fsn{flex:1 1 0!important;min-height:0!important;padding:0!important;container-type:size;display:flex;align-items:center;justify-content:center}
+.art{width:min(76vw,38dvh)!important;min-width:0!important;width:min(100cqw,100cqh)!important;height:min(100cqw,100cqh)}
+#fs #fsn .art .cv,#fs.pl #fsn .art .cv{border-radius:38px}
+.art::after{border-radius:38px}
+.fh .ib{width:42px!important;height:42px!important}
+.fpn{position:relative;overflow:hidden;padding:16px 16px 14px!important;gap:12px!important;border-radius:36px!important;max-width:none!important;background:linear-gradient(155deg,#ffffff38,#ffffff0b 46%,#ffffff1f)!important;border:1px solid #ffffff3d!important;box-shadow:inset 0 1px 0 #ffffff88,inset 0 -14px 24px -16px #8f7bff55,0 30px 70px -26px #000!important}
+.fpn::before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(120% 70% at 18% 0,#ffffff40,transparent 55%)}
+.fpn>*{position:relative}
+.fpn .ti b{font-size:22px!important}.fpn .ti small{font-size:14px!important}
+#fs .sk input[type=range]{height:7px;background:linear-gradient(90deg,var(--a2),var(--a),var(--a3)) 0/var(--v,0%) 100% no-repeat,#ffffff2b;box-shadow:0 0 14px #8f7bff55}
+#fs .cb.m>.ib{width:46px!important;height:46px!important}
+#fs .cb.m>.pp{width:70px!important;height:70px!important;box-shadow:inset 0 2px 0 #fffa,0 10px 30px -4px #9d89ffcc!important}
+#fs .cb.s .ib.pb{height:44px!important}
+@media(max-height:700px){.fpn{gap:8px!important;padding:12px 14px 12px!important}#fs .cb.m>.pp{width:60px!important;height:60px!important}#fs .cb.m>.ib{width:42px!important;height:42px!important}#fs .cb.s .ib.pb{height:40px!important}.fpn .ti b{font-size:19px!important}}
+@media(min-width:900px) and (min-height:540px){#fs{display:grid!important}.fpn{align-self:center}}
+@media(max-height:539px) and (min-width:600px){#fs{display:grid!important;grid-template-columns:1fr 1fr;grid-template-rows:auto minmax(0,1fr);column-gap:24px}.fh{grid-column:1/-1}#fsn{grid-row:2;grid-column:1}.fpn{grid-row:2;grid-column:2;align-self:center}}
+
+/* ===== lyrics: glass header, glass active-line card, floating dock ===== */
+#lyr::before{inset:-20%;filter:blur(70px) saturate(2);opacity:.6;will-change:transform;animation:drift 26s ease-in-out infinite alternate}
+html .lhd{left:12px;right:12px;top:max(10px,env(safe-area-inset-top));padding:8px 10px;border-radius:32px;background:linear-gradient(150deg,#ffffff30,#ffffff0d);border:1px solid #ffffff33;box-shadow:inset 0 1px 0 #ffffff66,0 14px 30px -14px #000}
+html #lsc{padding-top:calc(max(14px,env(safe-area-inset-top)) + 96px);padding-bottom:0}
+#lyr::after{height:34%!important}
+html #lyr #lyt.sy{font-size:clamp(28px,6.2vw,48px);line-height:1.18;letter-spacing:-.035em;max-width:800px}
+html #lyr[data-ly=aurora]{--h1:#fff;--h2:#e3d8ff;--lo:#ffffff4a}
+html #lyr[data-ly=aurora] #lyt.sy p{padding:14px 20px;margin:0 -20px 4px;opacity:.26;transform:scale(.93);transform-origin:left center}
+html #lyr[data-ly=aurora] #lyt.sy p[data-d="0"]{opacity:1;transform:none}
+html #lyr[data-ly=aurora] #lyt.sy p[data-d="1"],html #lyr[data-ly=aurora] #lyt.sy p[data-d="-1"]{opacity:.5}
+html #lyr[data-ly=aurora] #lyt.sy p[data-d="2"],html #lyr[data-ly=aurora] #lyt.sy p[data-d="-2"]{opacity:.36}
+html #lyr[data-ly=aurora] #lyt.sy p[data-d="0"]::before{inset:0;border-radius:32px;background:linear-gradient(150deg,#ffffff30,#ffffff0c 60%,#ffffff1a);border:1px solid #ffffff38;box-shadow:inset 0 1px 0 #ffffff70,0 22px 46px -20px #000;animation:lpin .5s var(--ease) backwards}
+html #lyr[data-ly=neon] #lyt.sy p[data-d="0"]{text-shadow:0 0 28px #ff4fd899}
+.ldk{position:absolute;z-index:3;left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom));max-width:620px;margin:0 auto;padding:12px 16px 8px;border-radius:36px;display:flex;flex-direction:column;gap:2px;background:linear-gradient(155deg,#ffffff34,#ffffff0b 50%,#ffffff1c);border:1px solid #ffffff38;box-shadow:inset 0 1px 0 #ffffff77,0 24px 50px -20px #000}
+@supports(backdrop-filter:blur(1px)){.ldk{backdrop-filter:blur(26px) saturate(1.7)}}
+#lyr.on .ldk{animation:up .7s var(--ease) .1s backwards}
+.lrow{display:flex;align-items:center;gap:10px;font-size:11px;font-weight:600;color:#cfc9ec}
+.lrow input{flex:1}
+.lcb{display:flex;justify-content:space-between;align-items:center}
+.lcb .ib{width:44px;height:44px}.lcb .pp{width:58px;height:58px}
+
+/* ===== play next + queue ===== */
+.card>.qa.pnb{left:16px;right:auto}.card:has(.rx)>.qa.pnb{left:56px}
+.qr{position:relative;display:grid;grid-template-columns:auto 48px minmax(0,1fr) auto auto;gap:8px;align-items:center;padding:8px 6px 8px 0;margin-bottom:8px;border-radius:20px;cursor:pointer;background:linear-gradient(90deg,#ffffff18,#ffffff06);border:1px solid #ffffff17;box-shadow:inset 0 1px 0 #ffffff2e;transition:transform .28s var(--ease),background-color .2s}
+.qr .cv{width:48px;height:48px;font-size:16px;border-radius:12px}
+.qr .qt{min-width:0}.qr .qt small{color:var(--m)}
+.qr .gr{touch-action:none;cursor:grab;color:var(--m);min-width:40px;min-height:46px}
+.qr .gr svg{stroke-width:3.6}
+.qr.drg{transition:none;z-index:6;cursor:grabbing;background:linear-gradient(90deg,#cbbfff48,#cbbfff1a);box-shadow:0 22px 44px -12px #000d,inset 0 1px 0 #ffffff70}
+</style>
+<script>
+(()=>{
+P.grip='M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01';P.up='M12 19V5M6 11l6-6 6 6';P.pn='M4 6h11M4 12h7M4 18h7M17 11v8M13 15h8';
+const PNS=new Set(),main=$('main');
+
+/* ---- lyrics dock + style names ---- */
+lyr.insertAdjacentHTML('beforeend',`<div class="ldk"><div class="lrow"><span class="ltc">0:00</span><input type="range" class="lsk" min="0" max="1000" value="0" aria-label="Seek"><span class="ltd">0:00</span></div><div class="lcb"><button class="ib shb" data-a="shuffle">${ic('shuffle')}</button><button class="ib" data-a="prev">${ic('prev')}</button><button class="ib pp ppb" data-a="pp"></button><button class="ib" data-a="next">${ic('next')}</button><button class="ib rpb" data-a="repeat">${ic('repeat')}</button></div></div>`);
+const LK=$('.lsk'),LT=$('.ltc'),LD=$('.ltd');
+A.forEach(a=>a.addEventListener('timeupdate',function(){if(this!==au||!lyr.classList.contains('on'))return;const d=au.duration,p=d?au.currentTime/d:0;LK.value=p*1000;LK.style.setProperty('--v',p*100+'%');LT.textContent=fmt(au.currentTime);LD.textContent=fmt(d)}));
+LK.oninput=()=>{if(au.duration)au.currentTime=LK.value/1000*au.duration};
+const NM={aurora:'Liquid',neon:'Neon',drum:'Drum',reveal:'Reveal'};
+$$('#smod [data-a=lys]').forEach(b=>b.textContent=NM[b.dataset.s]||b.textContent);
+ui();
+
+/* ---- play next ---- */
+async function pnext(b){const d=b.dataset;let a;
+ try{if(d.k&&L[d.k])a=L[d.k];else{const x=M[d.id];if(!x)return;
+  if(x.type=='song'||x.type=='video')a=[x];else if(x.type=='mypl')a=DB.pls[x.title]||[];else if(x.type=='liked')a=DB.liked;
+  else{toast('Adding…');a=reg((await api(`/${x.type}?id=${q(x.id)}`,String(x.id).startsWith('yp:'))).songs||[])}}}
+ catch{return toast('Couldn’t load that')}
+ a=(a||[]).filter(Boolean);if(!a.length)return toast('Nothing to add');
+ if(!cur()){play(a,0);return}
+ const c=cur().id,ids=new Set(a.map(x=>x.id));a=a.filter(x=>x.id!=c);
+ const tail=Q.slice(qi+1).filter(x=>!ids.has(x.id));let k=0;while(tail[k]&&PNS.has(tail[k].id))k++;
+ const ins=a.map(x=>({...x}));ins.forEach(x=>PNS.add(x.id));tail.splice(k,0,...ins);
+ Q=Q.slice(0,qi+1).concat(tail);Q0=Q.slice();
+ toast(ins.length>1?ins.length+' songs play next':'Playing next');if(location.hash=='#/queue')rq()}
+/* buttons injected into every row, song/album/playlist card and detail page */
+function deco(){
+ V.querySelectorAll('.row[data-k]:not([data-pn])').forEach(r=>{r.dataset.pn=1;if(r.dataset.k=='np')return;const x=L[r.dataset.k]?.[r.dataset.i],a=r.querySelector('[data-a=add]');
+  if(x&&a)a.insertAdjacentHTML('beforebegin',`<button class="ib" data-a="pnext" data-id="${esc(x.id)}" title="Play next">${ic('pn')}</button>`)});
+ V.querySelectorAll('.card[data-id]:not([data-pn])').forEach(c=>{c.dataset.pn=1;const x=M[c.dataset.id];
+  if(x&&/^(song|video|album|playlist|mypl)$/.test(x.type))c.querySelector('.cv')?.insertAdjacentHTML('afterend',`<button class="ib qa pnb" data-a="pnext" data-id="${esc(x.id)}" aria-label="Play next">${ic('pn')}</button>`)});
+ V.querySelectorAll('.hero [data-a=playall]:not([data-pn])').forEach(p=>{p.dataset.pn=1;
+  (p.parentElement.querySelector('[data-a=shuf]')||p).insertAdjacentHTML('afterend',`<button class="btn o" data-a="pnext" data-k="${p.dataset.k}">Play next</button>`)})}
+let dr=0;new MutationObserver(()=>{cancelAnimationFrame(dr);dr=requestAnimationFrame(deco)}).observe(V,{childList:true,subtree:true});deco();
+
+/* ---- queue with drag-to-reorder ---- */
+const rq=()=>{const s=main.scrollTop;views.queue();main.scrollTop=s};
+views.queue=function(){const s=cur(),n=Q.slice(qi+1);L.q=n;
+ const r=(x,i)=>`<div class="qr" data-i="${i}"><button class="ib gr" aria-label="Drag to reorder">${ic('grip')}</button>${cv(x)}<div class="qt"><b class="t">${esc(x.title)}</b><small class="t">${esc(x.sub)}</small></div><button class="ib" data-a="qtop" data-i="${i}" title="Move to next">${ic('up')}</button><button class="ib" data-a="qrm" data-i="${i}" title="Remove">${ic('x')}</button></div>`;
+ V.innerHTML=`<h1>Queue</h1>`+(s?`<h2 style="margin:18px 0 8px">Now playing</h2>`+rows('np',[s])+`<div class="shh" style="margin-top:22px"><h2>Next up</h2>${n.length?`<button class="btn o" data-a="qclear">Clear</button>`:''}</div>`+(n.length?`<p style="color:var(--m);margin-bottom:10px">Hold the handle and drag to reorder, or tap the arrow to play a song next.</p><div id="ql">${n.map(r).join('')}</div>`:empty('Finding related songs…')):empty('Nothing queued. Play a song and related songs will follow.'))};
+document.addEventListener('pointerdown',e=>{const h=e.target.closest('.gr');if(!h)return;e.preventDefault();
+ const row=h.closest('.qr'),items=[...row.parentElement.children],n=items.length,from=items.indexOf(row),y0=e.clientY;
+ const st=n>1?items[1].getBoundingClientRect().top-items[0].getBoundingClientRect().top:row.offsetHeight+8;let to=from;
+ row.classList.add('drg');h.setPointerCapture(e.pointerId);
+ const mv=ev=>{const dy=ev.clientY-y0;row.style.transform=`translateY(${dy}px) scale(1.03)`;to=Math.max(0,Math.min(n-1,from+Math.round(dy/st)));
+  items.forEach((x,i)=>{if(x!==row)x.style.transform=from<to&&i>from&&i<=to?`translateY(${-st}px)`:from>to&&i<from&&i>=to?`translateY(${st}px)`:''})};
+ const up=()=>{h.removeEventListener('pointermove',mv);h.removeEventListener('pointerup',up);h.removeEventListener('pointercancel',up);
+  if(to!=from){const seg=Q.slice(qi+1),[x]=seg.splice(from,1);seg.splice(to,0,x);Q=Q.slice(0,qi+1).concat(seg);Q0=Q.slice();rq()}
+  else{row.classList.remove('drg');items.forEach(x=>x.style.transform='')}};
+ h.addEventListener('pointermove',mv);h.addEventListener('pointerup',up);h.addEventListener('pointercancel',up)});
+document.addEventListener('click',e=>{const r=e.target.closest('.qr');if(!r||e.target.closest('button'))return;qi+=1+ +r.dataset.i;load()});
+const _a=act;act=function(a,b){const d=(b&&b.dataset)||{};
+ if(a=='pnext')return pnext(b);
+ if(a=='qtop'){const[x]=Q.splice(qi+1+ +d.i,1);if(x){Q.splice(qi+1,0,x);PNS.add(x.id);Q0=Q.slice();toast('Playing next')}return rq()}
+ if(a=='qrm'){Q.splice(qi+1+ +d.i,1);Q0=Q.slice();return rq()}
+ return _a(a,b)};
+
+/* ---- unavailable tracks skip automatically ---- */
+let fail=0,wd=0,skid='';
+function skipBad(){const s=cur();if(!s||skid===s.id+':'+qi)return;skid=s.id+':'+qi;clearTimeout(wd);
+ if(++fail>5){fail=0;au.pause();ui();return toast('Several tracks failed. Check your connection.')}
+ toast('Track unavailable, skipping…');xfId++;au.pause();next(true)}
+A.forEach(a=>{a.onerror=function(){if(this===au)skipBad()};a.addEventListener('playing',function(){if(this===au){fail=0;clearTimeout(wd)}})});
+const _l=load;load=function(fx){PNS.delete(cur()?.id);_l(fx);clearTimeout(wd);const id=cur()?.id;
+ wd=setTimeout(()=>{if(cur()?.id===id&&!au.paused&&au.currentTime<.5&&au.readyState<3)skipBad()},20000)};
+})();
+</script>
    
 </body></html>
