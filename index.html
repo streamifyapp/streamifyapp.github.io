@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0a0916"><title>Musify</title>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0a0916"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Musify"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><title>Musify</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -219,10 +219,43 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.3)}
 .set{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 0;border-top:1px solid #ffffff14;flex-wrap:wrap}
 .set small{display:block;color:var(--m);margin-top:2px}.set input[type=range]{flex:0 0 150px}
 .set .seg{margin:0;flex-wrap:wrap}.set .seg button{padding:9px 14px}
+
+/* ===== v3: richer glass, nav pill, row/card removal, install sheet ===== */
+@keyframes hp{40%{transform:scale(1.35)}}
+.pill{position:absolute;left:0;top:0;width:0;height:0;border-radius:999px;pointer-events:none;opacity:0;background:linear-gradient(150deg,#ffffff3d,#ffffff10 60%,#ffffff24);border:1px solid #ffffff33;box-shadow:inset 0 1px 0 #ffffff70,inset 0 -6px 12px -6px #8f7bff55,0 8px 22px -8px #8f7bffcc;will-change:transform}
+.pill[data-r]{transition:transform .6s var(--spring),width .45s var(--ease),height .45s var(--ease),opacity .3s}
+aside.sd{position:relative}
+aside.sd .nv.on,#mnav .nv.on{background:none;box-shadow:none}.nv.on::before{display:none}
+.nv{z-index:1}#mnav .nv{transition:color .3s,transform .3s var(--spring)}#mnav .nv.on{transform:translateY(-1px) scale(1.05)}
+aside.sd{background:linear-gradient(170deg,#ffffff2b,#ffffff0a 40%,#ffffff12)}
+.card{background:linear-gradient(165deg,#ffffff26,#ffffff08 45%,#ffffff14);border:1px solid #ffffff2b;box-shadow:inset 0 1px 0 #ffffff5c,inset 0 -26px 34px -24px #00000050}
+.card::before{content:'';position:absolute;inset:0;border-radius:inherit;background:linear-gradient(115deg,transparent 30%,#ffffff26 46%,transparent 62%);transform:translateX(-130%);transition:transform 1s var(--ease);pointer-events:none;z-index:3}
+@media(hover:hover){.card:hover::before{transform:translateX(130%)}}
+.card b{padding:0 4px;margin-top:12px}.card small{padding:0 4px}
+.cv{outline:1px solid #ffffff26;outline-offset:-1px}
+.row{border:1px solid #ffffff0d;background:linear-gradient(90deg,#ffffff10,#ffffff04);max-height:96px;transition:background-color .25s,transform .4s var(--ease),max-height .4s var(--ease),opacity .3s,padding .4s,min-height .4s}
+.row.cur{background:linear-gradient(90deg,#cbbfff30,#cbbfff0a);border-color:#cbbfff40}
+.row.gone{opacity:0;transform:translateX(34px);max-height:0;min-height:0;padding-block:0;border-width:0;pointer-events:none;overflow:hidden}
+.card.gone{opacity:0;flex-basis:0;width:0;padding:0;margin-right:-14px;overflow:hidden;pointer-events:none;border-width:0;transition:opacity .25s,flex-basis .4s var(--ease),width .4s var(--ease),padding .4s,margin .4s}
+.qa{border:1px solid #ffffff2b;background:#0a0916b3;transition:background-color .25s,transform .3s var(--spring)}
+.qa.rx{left:16px;right:auto}.qa.rx:hover{background:#ff5d8fcc}.qa:active{transform:scale(.85)}
+.ib.h.on svg{animation:hp .5s var(--spring)}
+.seg,.btn.o,.chip,.sb input,.gc{background:linear-gradient(150deg,#ffffff2e,#ffffff0c 55%,#ffffff18)}
+#sg{animation:pop .22s var(--spring);transform-origin:top;background:#161233f2}
+#sg div{transition:background-color .2s,padding .25s var(--ease)}#sg div:hover{padding-left:24px}
+#toast{transform:translate(-50%,14px);transition:opacity .3s,transform .5s var(--spring)}#toast.on{transform:translate(-50%,0)}
+#bar{animation:up .8s var(--ease) .15s backwards}#mnav{animation:up .8s var(--ease) backwards}
+aside.sd>*{animation:cin .7s var(--ease) backwards}aside.sd>:nth-child(3){animation-delay:.05s}aside.sd>:nth-child(4){animation-delay:.1s}aside.sd>:nth-child(5){animation-delay:.15s}aside.sd>:nth-child(6){animation-delay:.2s}aside.sd>:nth-child(n+7){animation-delay:.25s}
+#fs.on .fh,#fs.on .sk,#fs.on .cb{animation:vin .7s var(--ease) backwards}#fs.on .sk{animation-delay:.1s}#fs.on .cb{animation-delay:.18s}#fs.on .cb+.cb{animation-delay:.25s}
+.lhd{animation:fi .6s both}#lyr.on #lyt{animation:vin .8s var(--ease) .15s backwards}
+.btn,.ib,.chip,.seg button{transition:transform .3s var(--spring),filter .2s,background-color .25s,color .25s}
+.set[hidden]{display:none}
+.stp{display:flex;gap:14px;align-items:center;padding:13px 0;border-top:1px solid #ffffff14;line-height:1.4}.stp .ic{color:var(--a)}
+.stp i{font:800 14px 'Bricolage Grotesque',sans-serif;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;flex:none;background:var(--gl);border:var(--bd);font-style:normal}
 </style></head><body>
 <div id="amb"></div>
 <div id="app">
-<aside class="sd"><div class="logo"><i>♪</i>Musify</div>
+<aside class="sd"><i class="pill"></i><div class="logo"><i>♪</i>Musify</div>
 <div class="nv" data-go="home" data-ic="home">Home</div><div class="nv" data-go="search" data-ic="search">Search</div>
 <div class="nv" data-go="library" data-ic="lib">Library</div><div class="nv" data-go="liked" data-ic="heart">Liked Songs</div><div class="nv" data-go="queue" data-ic="list">Queue</div>
 <div class="nv" data-a="connect" data-ic="plus">Connect Spotify</div>
@@ -243,7 +276,13 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.3)}
 <div class="set"><div><b>Speed</b><small id="spv"></small></div><input type="range" id="spd" min="0.5" max="2" step="0.25" aria-label="Speed"></div>
 <div class="set"><div><b>Lyrics style</b></div><div class="seg"><button data-a="lys" data-s="flow">Flow</button><button data-a="lys" data-s="karaoke">Karaoke</button><button data-a="lys" data-s="focus">Focus</button><button data-a="lys" data-s="wave">Wave</button></div></div>
 <div class="set"><div><b>Sleep timer</b><small id="slv"></small></div><div class="seg"><button data-a="sleep" data-m="0">Off</button><button data-a="sleep" data-m="15">15m</button><button data-a="sleep" data-m="30">30m</button><button data-a="sleep" data-m="60">60m</button></div></div>
+<div class="set" id="ist" hidden><div><b>Install app</b><small>Add Musify to your Home Screen</small></div><button class="btn o" data-a="ios">How to</button></div>
 <button class="btn" data-a="smod" style="margin-top:12px">Done</button></div></div>
+<div id="imod" class="mod"><div class="mb"><h2>Add to Home Screen</h2><p style="margin-top:6px">Install Musify as a full-screen app on your iPhone or iPad. Apple only allows this from Safari's Share menu:</p>
+<div class="stp"><i>1</i><span>Tap the Share button <span data-ic="share" style="display:inline-block;vertical-align:middle"></span> in Safari's toolbar</span></div>
+<div class="stp"><i>2</i><span>Scroll down and tap <b>Add to Home Screen</b></span></div>
+<div class="stp"><i>3</i><span>Tap <b>Add</b>. Musify now opens like a native app.</span></div>
+<button class="btn" data-a="imod" style="margin-top:14px">Got it</button></div></div>
 <div id="menu"></div><div id="toast"></div>
 <footer id="bar"><i id="prg"></i>
 <div class="np" id="np"></div>
@@ -257,7 +296,7 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.3)}
 <div class="rt"><button class="ib" data-a="tune" data-ic="tune" title="Playback settings"></button><button class="ib" data-a="lyrics" data-ic="lyr" title="Lyrics"></button><button class="ib" data-a="queue" data-ic="list" title="Queue"></button>
 <input type="range" id="vol" min="0" max="100" value="80" style="flex:none;width:90px" aria-label="Volume"></div>
 </footer>
-<nav id="mnav"><div class="nv" data-go="home" data-ic="home">Home</div><div class="nv" data-go="search" data-ic="search">Search</div><div class="nv" data-go="library" data-ic="lib">Library</div><div class="nv" data-go="queue" data-ic="list">Queue</div></nav>
+<nav id="mnav"><i class="pill"></i><div class="nv" data-go="home" data-ic="home">Home</div><div class="nv" data-go="search" data-ic="search">Search</div><div class="nv" data-go="library" data-ic="lib">Library</div><div class="nv" data-go="queue" data-ic="list">Queue</div></nav>
 <script>
 const API='https://musify-api.musify.workers.dev';
 const $=(s,e=document)=>e.querySelector(s),$$=s=>document.querySelectorAll(s),q=encodeURIComponent,sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -266,35 +305,35 @@ const P={play:'M8 5v14l11-7z',pause:'M6 5h4v14H6zM14 5h4v14h-4z',prev:'M6 6h2v12
 shuffle:'M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5',repeat:'M17 1l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3',
 heart:'M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z',plus:'M12 5v14M5 12h14',x:'M6 6l12 12M18 6 6 18',
 list:'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01',lyr:'M4 4h16v12H9l-5 4zM8 8h8M8 11h5',
-home:'M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM9 22V12h6v10',search:'M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.3-4.3',lib:'M4 4v16M9 4v16M14 6l6 14',tune:'M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6'};
+home:'M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM9 22V12h6v10',search:'M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.3-4.3',lib:'M4 4v16M9 4v16M14 6l6 14',tune:'M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6',share:'M12 3v12M8 7l4-4 4 4M5 12v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8'};
 const FILL=['play','pause','prev','next'];
 const ic=n=>`<svg viewBox="0 0 24 24" class="ic" ${FILL.includes(n)?'fill="currentColor"':'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"'}><path d="${P[n]}"/></svg>`;
 $$('[data-ic]').forEach(e=>e.insertAdjacentHTML('afterbegin',ic(e.dataset.ic)));
 
 /* ---- state ---- */
-let DB={liked:[],pls:{},rec:[],sp:[],yt:null,ytp:[],src:'sp',set:{xf:6,sp:1,ly:'flow'}};try{DB=Object.assign(DB,JSON.parse(localStorage.getItem('musify')||'{}'))}catch{}
+let DB={liked:[],pls:{},rec:[],sp:[],yt:null,ytp:[],src:'sp',set:{xf:6,sp:1,ly:'flow'},ov:{}};try{DB=Object.assign(DB,JSON.parse(localStorage.getItem('musify')||'{}'))}catch{}
 const save=()=>{try{localStorage.setItem('musify',JSON.stringify(DB))}catch{}};
 const M={},L={},SPN={},SC=new Map();let Q=[],Q0=[],qi=-1,sh=false,rp=0,mp=null,sc=0,RT=0,tm,sgT=0,DD=null,LY=null,lyI=-2,lyW=-1,lyUser=0,lyTw=0,lyRun=false,ytPoll=0;
-const A=[new Audio(),new Audio()];let au=A[0],XF=DB.set.xf,xfId=0,xfT=null,uiId=null,slT=0,slM=0;const V=$('#view'),vol=$('#vol'),lyr=$('#lyr'),lsc=$('#lsc'),lyt=$('#lyt'),inp=$('#inp'),sg=$('#sg'),bar=$('#bar');
+const A=[new Audio(),new Audio()];let au=A[0],XF=DB.set.xf,xfId=0,xfT=null,uiId=null,slT=0,slM=0,IMP=null,CPL=null,TS=0,lastH=null,SCR={},pend=0;const V=$('#view'),vol=$('#vol'),lyr=$('#lyr'),lsc=$('#lsc'),lyt=$('#lyt'),inp=$('#inp'),sg=$('#sg'),bar=$('#bar');
 const cur=()=>Q[qi],liked=id=>DB.liked.some(x=>x.id==id);
 const reg=a=>(a||[]).map(x=>(M[x.id]=x));
 const YA=()=>DB.yt?btoa(JSON.stringify(DB.yt)):'';
 /* api: one automatic retry (covers cold starts / flaky first request); auth header only sent to YT account routes */
-const api=async(p,auth,n=1)=>{try{const r=await fetch(API+p,auth&&DB.yt?{headers:{'x-yt-auth':YA()}}:undefined);if(!r.ok){let m='';try{m=(await r.json()).error}catch{}throw Error(m||'HTTP '+r.status)}return await r.json()}catch(e){if(n>0){await sleep(500);return api(p,auth,n-1)}throw e}};
-const put=(my,h)=>my==RT?(V.innerHTML=h,true):false;
+const api=async(p,auth,n=1)=>{const ck=!auth&&CCK.test(p)?p:0;if(ck){const c=CC[ck];if(c&&Date.now()-c.t<CT)return c.d}try{const r=await fetch(API+p,auth&&DB.yt?{headers:{'x-yt-auth':YA()}}:undefined);if(!r.ok){let m='';try{m=(await r.json()).error}catch{}throw Error(m||'HTTP '+r.status)}const j=await r.json();if(ck)ccs(ck,j);return j}catch(e){if(n>0){await sleep(500);return api(p,auth,n-1)}throw e}};
+const put=(my,h)=>my==RT?(V.innerHTML=h,rs(),true):false;
 
 /* ---- templates ---- */
 const lt=s=>24+Math.abs([...String(s)].reduce((a,c)=>a*31+c.charCodeAt(0)|0,7))%14;
 const sz=u=>String(u).replace(/=w\d+-h\d+/,'=w320-h320').replace(/=s\d+$/,'=s320');
 const cv=x=>{const l=lt(x.id);return `<div class="cv" style="background:${x.id=='liked'?'linear-gradient(135deg,#8b78ff,#4b3bb0)':`linear-gradient(135deg,hsl(258 40% ${l}%),hsl(250 44% ${l-12}%))`}">${x.icon||esc((x.title||'?')[0])}${x.thumb?`<img src="${esc(sz(x.thumb))}" loading="lazy" decoding="async" alt="" onerror="this.remove()">`:''}</div>`};
-const card=(x,k,i)=>`<div class="card ${x.type}" tabindex="0" data-id="${esc(x.id)}" data-k="${k}" data-i="${i}">${cv(x)}${x.type=='song'?`<button class="ib qa" data-a="add" data-id="${esc(x.id)}" aria-label="Add to playlist">${ic('plus')}</button>`:''}<b class="t">${esc(x.title)}</b><small class="t">${esc(x.sub)}</small></div>`;
-const shelf=(t,a)=>{if(!a?.length)return'';const k='h'+sc++;L[k]=reg(a);return`<section class="shw"><div class="shh"><h2>${esc(t)}</h2><div class="ar"><button class="ib g" data-a="sl" data-d="-1" aria-label="Scroll left">${ic('left')}</button><button class="ib g" data-a="sl" data-d="1" aria-label="Scroll right">${ic('right')}</button></div></div><div class="sh">${L[k].map((x,i)=>card(x,k,i)).join('')}</div></section>`};
+const card=(x,k,i,rm)=>`<div class="card ${x.type}" tabindex="0" data-id="${esc(x.id)}" data-k="${k}" data-i="${i}">${cv(x)}${rm?`<button class="ib qa rx" data-a="rmrec" data-id="${esc(x.id)}" aria-label="Remove from recently played">${ic('x')}</button>`:''}${x.type=='song'?`<button class="ib qa" data-a="add" data-id="${esc(x.id)}" aria-label="Add to playlist">${ic('plus')}</button>`:''}<b class="t">${esc(x.title)}</b><small class="t">${esc(x.sub)}</small></div>`;
+const shelf=(t,a,rm)=>{if(!a?.length)return'';const k='h'+sc++;L[k]=reg(a);return`<section class="shw"><div class="shh"><h2>${esc(t)}</h2><div class="ar"><button class="ib g" data-a="sl" data-d="-1" aria-label="Scroll left">${ic('left')}</button><button class="ib g" data-a="sl" data-d="1" aria-label="Scroll right">${ic('right')}</button></div></div><div class="sh">${L[k].map((x,i)=>card(x,k,i,rm)).join('')}</div></section>`};
 const empty=t=>`<p style="color:var(--m);padding:24px 0">${t}</p>`;
 const retry=(extra='')=>`<div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" data-a="retry">Try again</button>${extra}</div>`;
-const rows=(k,a)=>{L[k]=reg(a);return L[k].map((x,i)=>`<div class="row${cur()?.id==x.id?' cur':''}" data-k="${k}" data-i="${i}"><span>${i+1}</span>${cv(x)}<div style="min-width:0"><b class="t">${esc(x.title)}</b><small class="t" style="color:var(--m)">${esc(x.sub)}</small></div><div style="display:flex"><button class="ib h${liked(x.id)?' on':''}" data-a="like" data-id="${esc(x.id)}" title="Like">${ic('heart')}</button><button class="ib" data-a="add" data-id="${esc(x.id)}" title="Add to playlist">${ic('plus')}</button></div></div>`).join('')};
+const rows=(k,a)=>{L[k]=reg(a);return L[k].map((x,i)=>`<div class="row${cur()?.id==x.id?' cur':''}" data-k="${k}" data-i="${i}"><span>${i+1}</span>${cv(x)}<div style="min-width:0"><b class="t">${esc(x.title)}</b><small class="t" style="color:var(--m)">${esc(x.sub)}</small></div><div style="display:flex">${k=='my'||(k=='d'&&IMP)?`<button class="ib" data-a="rmsong" data-id="${esc(x.id)}" title="Remove from playlist">${ic('x')}</button>`:''}<button class="ib h${liked(x.id)?' on':''}" data-a="like" data-id="${esc(x.id)}" title="Like">${ic('heart')}</button><button class="ib" data-a="add" data-id="${esc(x.id)}" title="Add to playlist">${ic('plus')}</button></div></div>`).join('')};
 const hero=(x,k,extra='')=>`<div class="hero">${cv(x)}<div><small style="color:var(--m)">${esc(x.type)}</small><h1>${esc(x.title)}</h1><p>${esc(x.sub||'')}</p><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" data-a="playall" data-k="${k}">Play</button><button class="btn o" data-a="shuf" data-k="${k}">Shuffle</button>${extra}</div></div></div>`;
 const MOODS=['Chill','Workout','Focus','Party','Romance','Sleep','Hip-hop','Indie','Bollywood','Lo-fi','Rock','Jazz'];
-const mySp=()=>Promise.all(DB.sp.map(id=>api('/playlist?id='+q('sp:'+id)).then(p=>{SPN[id]=p.title;return{type:'playlist',id:'sp:'+id,title:p.title,sub:p.sub,thumb:p.thumb}}).catch(()=>null))).then(a=>a.filter(Boolean));
+const mySp=()=>Promise.all(DB.sp.map(id=>api('/playlist?id='+q('sp:'+id)).then(p=>{const t=DB.ov['sp:'+id]?.title||p.title;SPN[id]=t;return{type:'playlist',id:'sp:'+id,title:t,sub:p.sub,thumb:p.thumb}}).catch(()=>null))).then(a=>a.filter(Boolean));
 const cbtn=`<button class="btn o" data-a="connect">+ Connect Spotify</button>`;
 const ybtn=`<button class="btn o" data-a="ytconnect">+ Connect YT Music playlist</button>`;
 const SECS=a=>(a||[]).map(s=>shelf(s.title,s.items)).join('');
@@ -308,11 +347,11 @@ async home(){const my=RT,src=DB.src=='yt'?'yt':'sp';
  const hd=`<h1>Musify</h1><div class="seg"><button data-a="src" data-s="sp" class="${src=='sp'?'on':''}">Spotify</button><button data-a="src" data-s="yt" class="${src=='yt'?'on':''}">YT Music</button></div>`;
  if(src=='yt'){
   const d=await api('/ymfeed?part=0');
-  if(!put(my,hd+`<div style="margin:12px 0 0">${ybtn}</div>`+shelf('Your YT Music playlists',DB.ytp)+shelf('Recently played',DB.rec)+SECS(d.sections)+'<div id="more" class="skl"><i></i></div>'))return;
+  if(!put(my,hd+`<div style="margin:12px 0 0">${ybtn}</div>`+shelf('Your YT Music playlists',DB.ytp)+shelf('Recently played',DB.rec,1)+SECS(d.sections)+'<div id="more" class="skl"><i></i></div>'))return;
   await lazy('/ymfeed?part=',d.parts||1,my);
   if(my==RT)$('#more')?.remove();return}
  const[d,mine]=await Promise.all([api('/home?part=0'),mySp()]);
- if(!put(my,hd+`<div style="margin:12px 0 0">${cbtn}</div>`+shelf('Your Spotify playlists',mine)+shelf('Recently played',DB.rec)+SECS(d.sections)+'<div id="more" class="skl"><i></i></div>'))return;
+ if(!put(my,hd+`<div style="margin:12px 0 0">${cbtn}</div>`+shelf('Your Spotify playlists',mine)+shelf('Recently played',DB.rec,1)+SECS(d.sections)+'<div id="more" class="skl"><i></i></div>'))return;
  await lazy('/home?part=',d.parts||1,my);
  if(my==RT)$('#more')?.remove()},
 async search(t){const my=RT;
@@ -322,23 +361,23 @@ async search(t){const my=RT;
   if(ALL.some(k=>d[k]?.length)){SC.set(t,d);if(SC.size>30)SC.delete(SC.keys().next().value)}}
  if(!ALL.some(k=>d[k]?.length)){put(my,`<h1>Results for “${esc(t)}”</h1>`+empty('Nothing found. Check the spelling or try fewer words.')+retry());return}
  put(my,`<h1>Results for “${esc(t)}”</h1>`+(d.songs?.length?`<h2 style="margin:18px 0 8px">Songs</h2>`+rows('s',d.songs):'')+shelf('Albums',d.albums)+shelf('Artists',d.artists)+shelf('Playlists',d.playlists))},
-async detail(k,id){const my=RT,d=await api(`/${k}?id=${q(id)}`,id.startsWith('yp:')),x={...d,type:k,id};if(my!=RT)return;DD={title:d.title,songs:d.songs||[]};
- put(my,hero(x,'d',`<button class="btn o" data-a="savepl">Save to library</button>`)+rows('d',d.songs)+shelf('Albums',d.albums)+shelf('Fans also like',d.related))},
+async detail(k,id){const my=RT,d=ovr(await api(`/${k}?id=${q(id)}`,id.startsWith('yp:')),id),x={...d,type:k,id};if(my!=RT)return;IMP=/^(sp|yp):/.test(id)?id:null;CPL=null;DD={title:d.title,songs:d.songs||[]};
+ put(my,hero(x,'d',`<button class="btn o" data-a="savepl">Save to library</button>`+(IMP?`<button class="btn o" data-a="ren">Rename</button>`:''))+rows('d',d.songs)+shelf('Albums',d.albums)+shelf('Fans also like',d.related))},
 async library(){const my=RT,n=DB.liked.length,pl=[{type:'liked',id:'liked',title:'Liked Songs',sub:n+' songs',icon:'♥'},...Object.keys(DB.pls).map(n=>({type:'mypl',id:'my:'+n,title:n,sub:DB.pls[n].length+' songs',thumb:DB.pls[n][0]?.thumb||''}))];
  const sp=await mySp();
- put(my,`<h1>Your library</h1><div style="margin:12px 0;display:flex;gap:10px;flex-wrap:wrap"><button class="btn" data-a="newpl">New playlist</button>${cbtn}${ybtn}</div>`+shelf('Playlists',pl)+shelf('YT Music playlists',DB.ytp)+shelf('Spotify playlists',sp)+shelf('Recently played',DB.rec))},
+ put(my,`<h1>Your library</h1><div style="margin:12px 0;display:flex;gap:10px;flex-wrap:wrap"><button class="btn" data-a="newpl">New playlist</button>${cbtn}${ybtn}</div>`+shelf('Playlists',pl)+shelf('YT Music playlists',DB.ytp)+shelf('Spotify playlists',sp)+shelf('Recently played',DB.rec,1))},
 liked(){const s=DB.liked;V.innerHTML=hero({type:'playlist',id:'liked',title:'Liked Songs',sub:s.length+' songs',icon:'♥'},'lk')+(s.length?rows('lk',s):empty('Tap the heart on any song to save it here.'))},
-my(n){const s=DB.pls[n];if(!s){V.innerHTML=empty('Playlist not found.');return}const r=rows('my',s);
- V.innerHTML=hero({type:'playlist',id:'my:'+n,title:n,sub:s.length+' songs',thumb:s[0]?.thumb},'my',`<button class="btn o" data-a="delpl" data-n="${esc(n)}">Delete</button>`)+(s.length?r:empty('Use the + button on any song to add it here.'))},
+my(n){CPL=n;IMP=null;const s=DB.pls[n];if(!s){V.innerHTML=empty('Playlist not found.');return}const r=rows('my',s);
+ V.innerHTML=hero({type:'playlist',id:'my:'+n,title:n,sub:s.length+' songs',thumb:s[0]?.thumb},'my',`<button class="btn o" data-a="ren">Rename</button><button class="btn o" data-a="delpl" data-n="${esc(n)}">Delete</button>`)+(s.length?r:empty('Use the + button on any song to add it here.'))},
 queue(){const s=cur(),n=Q.slice(qi+1);L.q=n;
  V.innerHTML=`<h1>Queue</h1>`+(s?`<h2 style="margin:18px 0 8px">Now playing</h2>`+rows('np',[s])+`<div class="shh" style="margin-top:22px"><h2>Next up</h2>${n.length?`<button class="btn o" data-a="qclear">Clear</button>`:''}</div>`+(n.length?`<p style="color:var(--m);margin-bottom:8px">Songs related to “${esc(s.title)}”</p>`+rows('q',n):empty('Finding related songs…')):empty('Nothing queued. Play a song and related songs will follow.'))}
 };
 const loading=()=>V.innerHTML='<div class="skl"><i style="height:38px;width:45%"></i><i></i><i></i></div>';
 async function route(){const my=++RT,h=location.hash.slice(2).split('/'),k=h[0]||'home';let a=h.slice(1).join('/');try{a=decodeURIComponent(a)}catch{}
- $$('[data-go]').forEach(e=>e.classList.toggle('on',e.dataset.go==k));clearTimeout(tm);sgT++;sg.style.display='none';
+ $$('[data-go]').forEach(e=>e.classList.toggle('on',e.dataset.go==k));pm();if(lastH!=null)SCR[lastH]=$('main').scrollTop;lastH=location.hash;TS=SCR[lastH]||0;clearTimeout(tm);sgT++;sg.style.display='none';
  inp.value=k=='search'?a:'';   /* the box always mirrors the page: results page shows its query, every other page clears it */
  loading();$('main').scrollTop=0;
- try{['album','artist','playlist'].includes(k)?await views.detail(k,a):await(views[k]||views.home)(a)}
+ try{['album','artist','playlist'].includes(k)?await views.detail(k,a):await(views[k]||views.home)(a);if(my==RT){rs();TS=0}}
  catch(e){console.error(e);put(my,`<h1 style="margin-top:18px">Couldn’t load this page</h1>`+empty('Couldn’t reach the server: '+esc(e.message||e)+'. Try again in a moment.')+retry())}}
 addEventListener('hashchange',route);
 const go=v=>{if(!v)return;clearTimeout(tm);sgT++;inp.value=v;sg.style.display='none';inp.blur();const h='#/search/'+q(v);location.hash==h?route():location.hash=h};
@@ -347,6 +386,29 @@ const side=()=>$('#pls').innerHTML=Object.keys(DB.pls).map(n=>`<div class="nv" d
 /* ---- player ---- */
 function shufRest(){const r=Q.slice(qi+1);for(let i=r.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[r[i],r[j]]=[r[j],r[i]]}Q=[...Q.slice(0,qi+1),...r]}
 function play(l,i){Q=l.slice();qi=i;Q0=Q.slice();if(sh)shufRest();load()}
+/* overlays join browser history so the phone Back button closes player / lyrics / sheets */
+const OV=[];
+function ov(id,on){const e=$('#'+id);if(!e||on==e.classList.contains('on'))return;
+ if(on){e.classList.add('on');OV.push(id);history.pushState({ov:id},'')}else if(OV.includes(id))history.back();else e.classList.remove('on')}
+addEventListener('popstate',()=>{const id=OV.pop();if(id)$('#'+id).classList.remove('on')});
+addEventListener('hashchange',()=>OV.splice(0).forEach(id=>$('#'+id).classList.remove('on')));
+/* page-data cache (memory + localStorage): back/forward re-renders instantly, no refetch */
+const CK='musify_cache',CT=18e5,CCK=/^\/(home|ymfeed|search|album|artist|playlist)/;let CC={},ccT=0;try{CC=JSON.parse(localStorage.getItem(CK)||'{}')}catch{}
+function ccs(k,d){CC[k]={t:Date.now(),d};clearTimeout(ccT);ccT=setTimeout(()=>{const ks=Object.keys(CC).sort((a,b)=>CC[b].t-CC[a].t);ks.slice(40).forEach(x=>delete CC[x]);
+ for(let i=0;i<4;i++){try{localStorage.setItem(CK,JSON.stringify(CC));return}catch{Object.keys(CC).sort((a,b)=>CC[a].t-CC[b].t).slice(0,Math.ceil(ks.length/2)).forEach(x=>delete CC[x])}}},1500)}
+const rs=()=>{if(TS)$('main').scrollTop=TS};
+function ovr(d,id){const o=DB.ov[id];if(!o)return d;d={...d};if(o.title)d.title=o.title;if(o.rm?.length&&d.songs)d.songs=d.songs.filter(x=>!o.rm.includes(x.id));return d}
+const rn=k=>[...V.querySelectorAll(`.row[data-k="${k}"]:not(.gone)`)].forEach((e,i)=>{e.dataset.i=i;e.firstElementChild.textContent=i+1});
+/* sliding glass pill behind the active nav item (sidebar + mobile bar) */
+function pm(){$$('#mnav,aside.sd').forEach(c=>{const o=c.querySelector('.nv.on'),p=c.querySelector('.pill');if(!p)return;if(!o||!o.offsetWidth){p.style.opacity=0;return}
+ p.style.cssText=`opacity:1;width:${o.offsetWidth}px;height:${o.offsetHeight}px;transform:translate(${o.offsetLeft}px,${o.offsetTop}px)`;if(!p.dataset.r)requestAnimationFrame(()=>requestAnimationFrame(()=>p.dataset.r=1))})}
+/* auto-update: version.json is the single source of truth */
+const VK='musify_v';
+async function chk(){try{const r=await fetch('version.json?'+Date.now(),{cache:'no-store'});if(!r.ok)return;const v=String((await r.json()).version),o=localStorage.getItem(VK);
+ if(!o)return localStorage.setItem(VK,v);if(o!=v){pend=v;if(cur()&&!au.paused)toast('Update ready. It installs when you pause.');else applyUpd()}}catch{}}
+async function applyUpd(){if(!pend)return;const v=pend;pend=0;toast('Updating Musify…');
+ try{(await caches.keys()).forEach(k=>caches.delete(k));localStorage.removeItem(CK);(await navigator.serviceWorker?.getRegistration())?.update()}catch{}
+ localStorage.setItem(VK,v);setTimeout(()=>location.reload(),700)}
 function fade(o,n,s){const id=++xfId,t0=Date.now(),v=vol.value/100,iv=setInterval(()=>{if(id!=xfId)return clearInterval(iv);const k=Math.min(1,(Date.now()-t0)/(s*1e3));o.volume=Math.max(0,v*Math.cos(k*1.5708));n.volume=Math.min(1,v*Math.sin(k*1.5708));if(k>=1){clearInterval(iv);o.pause()}},40)}
 function slp(m){clearTimeout(slT);slM=m;if(m)slT=setTimeout(()=>{const v=au.volume,t0=Date.now(),iv=setInterval(()=>{const k=(Date.now()-t0)/5e3;if(k>=1){clearInterval(iv);xfId++;A.forEach(a=>{a.pause();a.volume=vol.value/100});slM=0;sm();toast('Sleep timer: paused')}else A.forEach(a=>a.volume=v*(1-k))},100)},m*6e4);toast(m?'Sleeping in '+m+' min':'Sleep timer off');sm()}
 function sm(){const s=DB.set;$('#xf').value=s.xf;$('#spd').value=s.sp;$('#xfv').textContent=s.xf?s.xf+' s overlap':'Off';$('#spv').textContent=s.sp+'×';$('#slv').textContent=slM?'Pauses in '+slM+' min':'Off';
@@ -448,15 +510,22 @@ function act(a,b={dataset:{}}){const d=b.dataset;
   $$(`[data-a=like][data-id="${id}"]`).forEach(e=>e.classList.toggle('on',liked(id)));if(/#\/(library|liked)$/.test(location.hash))route()}
  else if(a=='add')menu(b,d.id);
  else if(a=='sl'){const s=b.closest('.shw').querySelector('.sh');s.scrollBy({left:+d.d*s.clientWidth*.85,behavior:'smooth'})}
- else if(a=='lyrics'){lyr.classList.toggle('on');if(lyr.classList.contains('on')){lyrics();lyUser=0;if(!lyRun){lyRun=true;requestAnimationFrame(lyLoop)}}}
- else if(a=='fs')$('#fs').classList.toggle('on');
+ else if(a=='lyrics'){const op=!lyr.classList.contains('on');ov('lyr',op);if(op){lyrics();lyUser=0;if(!lyRun){lyRun=true;requestAnimationFrame(lyLoop)}}}
+ else if(a=='fs')ov('fs',!$('#fs').classList.contains('on'));
  else if(a=='queue'){$('#fs').classList.remove('on');location.hash=='#/queue'?route():location.hash='#/queue'}
  else if(a=='qclear'){Q=Q.slice(0,qi+1);Q0=Q.slice();route()}
- else if(a=='tune'){$('#smod').classList.add('on');sm()}else if(a=='smod')$('#smod').classList.remove('on');else if(a=='lys'){DB.set.ly=d.s;save();sm()}else if(a=='sleep')slp(+d.m);
+ else if(a=='tune'){ov('smod',true);sm()}else if(a=='smod')ov('smod',false);else if(a=='lys'){DB.set.ly=d.s;save();sm()}else if(a=='sleep')slp(+d.m);
+ else if(a=='rmrec'){DB.rec=DB.rec.filter(x=>x.id!=d.id);save();const c=b.closest('.card');c.classList.add('gone');setTimeout(()=>{const sc=c.closest('.shw');c.remove();if(sc&&!sc.querySelector('.card'))sc.remove()},420)}
+ else if(a=='rmsong'){const r=b.closest('.row'),k=r.dataset.k;if(IMP){const o=DB.ov[IMP]=DB.ov[IMP]||{};o.rm=[...(o.rm||[]),d.id];if(DD)DD.songs=DD.songs.filter(x=>x.id!=d.id)}else if(CPL&&DB.pls[CPL])DB.pls[CPL]=DB.pls[CPL].filter(x=>x.id!=d.id);
+  L[k]=L[k].filter(x=>x.id!=d.id);save();r.classList.add('gone');rn(k);setTimeout(()=>r.remove(),420);toast('Removed from playlist')}
+ else if(a=='ren'){const n=(prompt('Rename playlist',IMP?DD?.title||'':CPL||'')||'').trim();if(!n)return;
+  if(IMP){(DB.ov[IMP]=DB.ov[IMP]||{}).title=n;const y=DB.ytp.find(x=>x.id==IMP);if(y)y.title=n;save();route()}
+  else if(CPL&&n!=CPL&&!DB.pls[n]){const o={};for(const k in DB.pls)o[k==CPL?n:k]=DB.pls[k];DB.pls=o;save();side();location.hash='#/my/'+q(n)}}
+ else if(a=='ios'){ov('smod',false);setTimeout(()=>ov('imod',true),150)}else if(a=='imod')ov('imod',false);
  else if(a=='retry')route();
  else if(a=='src'){DB.src=d.s;save();if(location.hash.replace(/^#\/?/,'')=='home'||!location.hash)route();else location.hash='#/home'}
- else if(a=='connect'){$('#mod').classList.add('on');$('#mti').value='';spRender()}else if(a=='mod')$('#mod').classList.remove('on');else if(a=='spsave')spSave();
- else if(a=='ytconnect'){$('#ymod').classList.add('on');$('#ymti').value='';ytRender()}else if(a=='ymod')$('#ymod').classList.remove('on');
+ else if(a=='connect'){ov('mod',true);$('#mti').value='';spRender()}else if(a=='mod')ov('mod',false);else if(a=='spsave')spSave();
+ else if(a=='ytconnect'){ov('ymod',true);$('#ymti').value='';ytRender()}else if(a=='ymod')ov('ymod',false);
  else if(a=='ytsave')ytSave();else if(a=='ytrm'){DB.ytp=DB.ytp.filter(x=>x.id!='yp:'+d.id);save();ytRender();if(onHL())route()}
  else if(a=='sprm'){DB.sp=DB.sp.filter(x=>x!=d.id);save();spRender();if(onHL())route()}
  else if(a=='savepl'){if(DD?.songs.length){DB.pls[DD.title]=DD.songs.slice();save();side();toast('Saved to your library')}}
@@ -469,7 +538,7 @@ const inSearch=()=>location.hash.startsWith('#/search');
 function open(x,k,i){if(x.type=='song'||x.type=='video')!inSearch()&&L[k]?.[i]?.id==x.id?play(L[k],+i):play([x],0);else if(x.type=='liked')location.hash='#/liked';else if(x.type=='mypl')location.hash='#/my/'+q(x.title);else location.hash=`#/${x.type}/${q(x.id)}`}
 
 document.addEventListener('click',e=>{
- if(e.target.classList.contains('mod')){e.target.classList.remove('on');return}
+ if(e.target.classList.contains('mod')){ov(e.target.id,false);return}
  if(!e.target.closest('#menu')&&!e.target.closest('[data-a=add]'))$('#menu').style.display='none';if(!e.target.closest('.sb'))sg.style.display='none';
  const g=e.target.closest('[data-go]');if(g){location.hash='#/'+g.dataset.go;if(g.dataset.go=='search'&&innerWidth>800)inp.focus();return}
  const my=e.target.closest('[data-my]');if(my){location.hash='#/my/'+q(my.dataset.my);return}
@@ -479,7 +548,7 @@ document.addEventListener('click',e=>{
  const r=e.target.closest('.row');if(r){const k=r.dataset.k,i=+r.dataset.i;if(k=='q'){qi+=1+i;load()}else if(k=='np')act('pp');else if(k=='s')play([L.s[i]],0);else play(L[k],i);return}
  const c=e.target.closest('.card');if(c&&M[c.dataset.id])open(M[c.dataset.id],c.dataset.k,c.dataset.i)});
 document.addEventListener('keydown',e=>{
- if(e.key=='Escape'){$('#fs').classList.remove('on');lyr.classList.remove('on');$$('.mod').forEach(m=>m.classList.remove('on'))}
+ if(e.key=='Escape'&&OV.length)ov(OV[OV.length-1],false);
  if(e.key=='Enter'&&e.target.classList.contains('card')){e.target.click();return}
  if(/INPUT|TEXTAREA/.test(e.target.tagName))return;
  if(e.code=='Space'){e.preventDefault();act('pp')}
@@ -492,5 +561,10 @@ sg.onclick=e=>{const d=e.target.closest('div');if(d)go(d.textContent)};
 
 $('#xf').oninput=e=>{XF=DB.set.xf=+e.target.value;save();sm()};$('#spd').oninput=e=>{DB.set.sp=+e.target.value;A.forEach(a=>a.playbackRate=DB.set.sp);save();sm()};
 new MutationObserver(()=>[...V.children].forEach((e,i)=>e.style.setProperty('--i',Math.min(i,9)))).observe(V,{childList:true});
-sm();side();ui();route();
+sm();side();ui();route();pm();addEventListener('resize',pm);document.fonts?.ready.then(pm);
+if('serviceWorker'in navigator&&/^https?:/.test(location.protocol))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+setTimeout(chk,2500);setInterval(chk,6e4);document.addEventListener('visibilitychange',()=>!document.hidden&&chk());addEventListener('online',chk);
+A.forEach(a=>a.addEventListener('pause',()=>pend&&setTimeout(()=>au.paused&&applyUpd(),1500)));
+{const I=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform=='MacIntel'&&navigator.maxTouchPoints>1),sa=navigator.standalone||matchMedia('(display-mode:standalone)').matches;
+ $('#ist').hidden=!(I&&!sa);if(I&&!sa&&!localStorage.getItem('musify_i'))setTimeout(()=>{localStorage.setItem('musify_i',1);ov('imod',true)},6000)}
 </script></body></html>
