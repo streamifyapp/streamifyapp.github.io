@@ -797,5 +797,101 @@ document.addEventListener('click',e=>{
  else ov('imod',true)});
 })();
 </script>
+
+   <!-- ===== MUSIFY UPDATE v5 =====
+PASTE THIS WHOLE BLOCK in your index.html, right before the final </body> (after the v4 block).
+Nothing else needs to be deleted or edited. It overrides the old parts.
+ - Phone full-screen player: bigger cover, proper spacing, bigger controls, scrolls instead of squeezing
+ - "Add to Home" button at the top right of the "Musify" line on Home (iOS + Android) -->
+<style>
+/* ===== phone player: no more squeezing ===== */
+@media(max-width:899px),(max-height:539px){
+#fs{padding:max(18px,env(safe-area-inset-top)) 22px calc(26px + var(--sb));gap:20px;justify-content:flex-start;-webkit-overflow-scrolling:touch}
+.fh .ib{width:44px;height:44px}
+#fsn{flex:1 0 auto;min-height:0;padding:10px 0}
+.art{width:min(82vw,400px,40vh);width:min(82vw,400px,40dvh);min-width:200px}
+.fpn{flex:none;max-width:none;padding:24px 22px 22px;gap:22px;border-radius:34px}
+.fpn .ti{gap:10px}
+.fpn .ti b{font-size:24px}
+.fpn .ti small{font-size:15px}
+#fs .sk{gap:12px}
+#fs .cb.m>.ib{width:52px;height:52px}
+#fs .cb.m>.pp{width:80px;height:80px}
+#fs .cb.s .ib.pb{height:52px}
+}
+@media(max-height:539px) and (min-width:600px){
+.art{width:min(36vh,260px);min-width:0}
+}
+
+/* ===== phone: controls use the FULL screen width (full player + bottom mini bar) ===== */
+@media(max-width:899px){
+:root{--bh:calc(168px + var(--sb))}
+#fs{padding-left:14px!important;padding-right:14px!important}
+#fs .fpn{width:100%!important;max-width:none!important;margin:0!important;padding:22px 18px 20px}
+#fs .sk,#fs .cb.m,#fs .cb.s{width:100%;max-width:none}
+#fs .cb.m{justify-content:space-between}
+#fs .cb.m>.ib{width:56px;height:56px}
+#fs .cb.m>.pp{width:84px;height:84px}
+#fs .cb.s .ib.pb{height:54px}
+/* bottom mini player: wider, taller, with previous button */
+#bar{left:8px;right:8px;height:74px;padding:0 12px;gap:10px;border-radius:30px}
+#bar .np .cv{width:54px;height:54px}
+#bar .npl{gap:12px}
+#bar .ctl .cb{gap:4px}
+#bar .ctl .cb>[data-a=prev]{display:grid}
+#bar .ctl .ib{min-width:46px;min-height:46px}
+#bar .ctl .pp{width:54px;height:54px}
+#mnav{left:8px;right:8px}
+}
+
+/* ===== Add to Home button on the Musify line ===== */
+.hh{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.hh h1{min-width:0}
+.ins{display:inline-flex;align-items:center;gap:6px;flex:none;min-height:40px;padding:9px 16px;font-size:13px;white-space:nowrap}
+.ins svg{width:16px;height:16px}
+</style>
+<script>
+(()=>{
+const SA=()=>navigator.standalone||matchMedia('(display-mode:standalone)').matches;
+const IOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform=='MacIntel'&&navigator.maxTouchPoints>1);
+let dp=null;
+
+/* put the button on the same line as the "Musify" title, top right */
+const btn=`<button class="btn o ins" data-a="a2hs">${ic('plus')}Add to Home</button>`;
+function wrap(){
+ if(SA())return;
+ const h=V.firstElementChild;
+ if(!h||h.tagName!='H1'||h.textContent!='Musify')return;
+ const w=document.createElement('div');w.className='hh';
+ V.insertBefore(w,h);w.appendChild(h);w.insertAdjacentHTML('beforeend',btn)}
+new MutationObserver(wrap).observe(V,{childList:true});wrap();
+
+/* Android/Chrome: native install prompt when the browser offers it */
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e});
+addEventListener('appinstalled',()=>{dp=null;$$('.ins').forEach(b=>b.remove());toast('Musify installed')});
+
+/* manual steps sheet (iOS and Android), filled each time it opens */
+function how(){
+ const i=IOS();
+ $('#imod p').textContent=i
+  ?'Install Musify as a full-screen app on your iPhone or iPad. Apple only allows this from the Share menu:'
+  :'Install Musify as a full-screen app on your Android phone from your browser menu:';
+ const S=i
+  ?[`Tap the Share button <span style="display:inline-block;vertical-align:middle">${ic('share')}</span> (bottom of Safari, or in the ⋯ menu in other browsers)`,'Scroll down and tap <b>Add to Home Screen</b>','Tap <b>Add</b>. Musify now opens like a native app.']
+  :['Tap the <b>⋮</b> menu in your browser (top right)','Tap <b>Install app</b> or <b>Add to Home screen</b>','Tap <b>Install</b> / <b>Add</b>. Musify now opens like a native app.'];
+ const m=$('#imod .mb');
+ m.querySelectorAll('.stp').forEach(e=>e.remove());
+ m.querySelector('.btn').insertAdjacentHTML('beforebegin',S.map((t,k)=>`<div class="stp"><i>${k+1}</i><span>${t}</span></div>`).join(''))}
+const _ov=ov;
+ov=function(id,on){if(id=='imod'&&on)how();_ov(id,on)};
+
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-a=a2hs]');if(!b)return;
+ if(SA())return toast('Musify is already installed');
+ if(dp){const p=dp;dp=null;p.prompt();p.userChoice.catch(()=>{})}
+ else ov('imod',true)});
+})();
+</script>
+
    
 </body></html>
