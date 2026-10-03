@@ -144,7 +144,7 @@ h1{font-size:44px}.card{flex-basis:180px;width:180px}.ar{display:flex}
 <div class="nv" data-go="home" data-ic="home">Home</div><div class="nv" data-go="search" data-ic="search">Search</div>
 <div class="nv" data-go="library" data-ic="lib">Library</div><div class="nv" data-go="liked" data-ic="heart">Liked Songs</div><div class="nv" data-go="queue" data-ic="list">Queue</div>
 <div class="nv" data-a="connect" data-ic="plus">Connect Spotify</div>
-<div class="nv" data-a="ytlogin" data-ic="plus"><span id="ytl">Sign in to YT Music</span></div>
+<div class="nv" data-a="ytconnect" data-ic="plus">Connect YT Music</div>
 <div class="lab">Your playlists</div><div id="pls"></div></aside>
 <main><div class="top"><form class="sb" id="sf" action="javascript:void 0"><span data-ic="search"></span><input id="inp" type="search" enterkeyhint="search" placeholder="Search songs, artists, albums" autocomplete="off" aria-label="Search"><div id="sg"></div></form></div><div id="view"></div></main>
 </div>
@@ -155,7 +155,7 @@ h1{font-size:44px}.card{flex-basis:180px;width:180px}.ar{display:flex}
 <div class="cb"><button class="ib" data-a="lyrics" data-ic="lyr" title="Lyrics"></button></div></div>
 <div id="lyr" aria-label="Lyrics"><div class="lhd"><button class="ib" data-a="lyrics" data-ic="down" aria-label="Close lyrics"></button><div id="lmt"></div></div><div id="lsc"><div id="lyt"></div></div></div>
 <div id="mod" class="mod"><div class="mb"><h2>Connect Spotify</h2><p style="margin-top:6px">Paste one or more <b>public</b> Spotify playlist links. They are saved on this device and shown on your Home page.</p><textarea id="mti" placeholder="https://open.spotify.com/playlist/..."></textarea><div style="display:flex;gap:10px"><button class="btn" data-a="spsave">Save</button><button class="btn o" data-a="mod">Close</button></div><div id="msp"></div></div></div>
-<div id="ymod" class="mod"><div class="mb"><h2>YT Music</h2><div id="ybody"></div></div></div>
+<div id="ymod" class="mod"><div class="mb"><h2>Connect YT Music playlist</h2><p style="margin-top:6px">Paste one or more <b>public</b> YT Music or YouTube playlist links. They are saved on this device and shown on your Home page.</p><textarea id="ymti" placeholder="https://music.youtube.com/playlist?list=..."></textarea><div style="display:flex;gap:10px"><button class="btn" data-a="ytsave">Save</button><button class="btn o" data-a="ymod">Close</button></div><div id="ymsp"></div></div></div>
 <div id="menu"></div><div id="toast"></div>
 <footer id="bar"><i id="prg"></i>
 <div class="np" id="np"></div>
@@ -184,7 +184,7 @@ const ic=n=>`<svg viewBox="0 0 24 24" class="ic" ${FILL.includes(n)?'fill="curre
 $$('[data-ic]').forEach(e=>e.insertAdjacentHTML('afterbegin',ic(e.dataset.ic)));
 
 /* ---- state ---- */
-let DB={liked:[],pls:{},rec:[],sp:[],yt:null,src:'sp'};try{DB=Object.assign(DB,JSON.parse(localStorage.getItem('musify')||'{}'))}catch{}
+let DB={liked:[],pls:{},rec:[],sp:[],yt:null,ytp:[],src:'sp'};try{DB=Object.assign(DB,JSON.parse(localStorage.getItem('musify')||'{}'))}catch{}
 const save=()=>{try{localStorage.setItem('musify',JSON.stringify(DB))}catch{}};
 const M={},L={},SPN={},SC=new Map();let Q=[],Q0=[],qi=-1,sh=false,rp=0,mp=null,sc=0,RT=0,tm,sgT=0,DD=null,LY=null,lyI=-2,lyW=-1,lyUser=0,lyTw=0,lyRun=false,ytPoll=0;
 const au=new Audio(),V=$('#view'),vol=$('#vol'),lyr=$('#lyr'),lsc=$('#lsc'),lyt=$('#lyt'),inp=$('#inp'),sg=$('#sg'),bar=$('#bar');
@@ -208,6 +208,7 @@ const hero=(x,k,extra='')=>`<div class="hero">${cv(x)}<div><small style="color:v
 const MOODS=['Chill','Workout','Focus','Party','Romance','Sleep','Hip-hop','Indie','Bollywood','Lo-fi','Rock','Jazz'];
 const mySp=()=>Promise.all(DB.sp.map(id=>api('/playlist?id='+q('sp:'+id)).then(p=>{SPN[id]=p.title;return{type:'playlist',id:'sp:'+id,title:p.title,sub:p.sub,thumb:p.thumb}}).catch(()=>null))).then(a=>a.filter(Boolean));
 const cbtn=`<button class="btn o" data-a="connect">+ Connect Spotify</button>`;
+const ybtn=`<button class="btn o" data-a="ytconnect">+ Connect YT Music playlist</button>`;
 const SECS=a=>(a||[]).map(s=>shelf(s.title,s.items)).join('');
 const ALL=['songs','albums','artists','playlists'];
 
@@ -216,11 +217,10 @@ const views={
 async home(){const my=RT,src=DB.src=='yt'?'yt':'sp';
  const hd=`<h1>Musify</h1><div class="seg"><button data-a="src" data-s="sp" class="${src=='sp'?'on':''}">Spotify</button><button data-a="src" data-s="yt" class="${src=='yt'?'on':''}">YT Music</button></div>`;
  if(src=='yt'){
-  if(!DB.yt){put(my,hd+`<div class="gc"><h2>See your YT Music feed</h2><p>Sign in to get your playlists, liked music and a feed made for you. Your sign-in stays on this device.</p><button class="btn" data-a="ytlogin">Sign in to YT Music</button></div>`);return}
-  put(my,hd+'<div class="skl"><i style="height:30px;width:50%"></i><i></i><i></i></div>');
-  const[lib,fd]=await Promise.allSettled([api('/ymlib',1),api('/ymhome',1)]);if(my!=RT)return;
-  const h=(lib.value?SECS(lib.value.sections):'')+(fd.value?SECS(fd.value.sections):'');
-  put(my,hd+(h||`<div class="gc"><h2>Couldn’t load your feed</h2><p>${esc(fd.reason?.message||lib.reason?.message||'Your sign-in may have expired.')}</p>${retry('<button class="btn o" data-a="ytlogin">Sign in again</button>')}</div>`));return}
+  const d=await api('/ymfeed?part=0');
+  if(!put(my,hd+`<div style="margin:12px 0 0">${ybtn}</div>`+shelf('Your YT Music playlists',DB.ytp)+shelf('Recently played',DB.rec)+SECS(d.sections)+'<div id="more" class="skl"><i></i></div>'))return;
+  for(let i=1;i<(d.parts||1)&&my==RT;i++){try{const n=await api('/ymfeed?part='+i);if(my!=RT)return;$('#more')?.insertAdjacentHTML('beforebegin',SECS(n.sections))}catch{}}
+  if(my==RT)$('#more')?.remove();return}
  const[d,mine]=await Promise.all([api('/home?part=0'),mySp()]);
  if(!put(my,hd+`<div style="margin:12px 0 0">${cbtn}</div>`+shelf('Your Spotify playlists',mine)+shelf('Recently played',DB.rec)+SECS(d.sections)+'<div id="more" class="skl"><i></i></div>'))return;
  for(let i=1;i<(d.parts||1)&&my==RT;i++){try{const n=await api('/home?part='+i);if(my!=RT)return;$('#more')?.insertAdjacentHTML('beforebegin',SECS(n.sections))}catch{}}
@@ -235,8 +235,8 @@ async search(t){const my=RT;
 async detail(k,id){const my=RT,d=await api(`/${k}?id=${q(id)}`,id.startsWith('yp:')),x={...d,type:k,id};if(my!=RT)return;DD={title:d.title,songs:d.songs||[]};
  put(my,hero(x,'d',`<button class="btn o" data-a="savepl">Save to library</button>`)+rows('d',d.songs)+shelf('Albums',d.albums)+shelf('Fans also like',d.related))},
 async library(){const my=RT,n=DB.liked.length,pl=[{type:'liked',id:'liked',title:'Liked Songs',sub:n+' songs',icon:'♥'},...Object.keys(DB.pls).map(n=>({type:'mypl',id:'my:'+n,title:n,sub:DB.pls[n].length+' songs',thumb:DB.pls[n][0]?.thumb||''}))];
- const[sp,yl]=await Promise.all([mySp(),DB.yt?api('/ymlib',1).then(d=>d.sections).catch(()=>[]):[]]);
- put(my,`<h1>Your library</h1><div style="margin:12px 0;display:flex;gap:10px;flex-wrap:wrap"><button class="btn" data-a="newpl">New playlist</button>${cbtn}<button class="btn o" data-a="ytlogin">${DB.yt?'YT Music account':'Sign in to YT Music'}</button></div>`+shelf('Playlists',pl)+SECS(yl)+shelf('Spotify playlists',sp)+shelf('Recently played',DB.rec))},
+ const sp=await mySp();
+ put(my,`<h1>Your library</h1><div style="margin:12px 0;display:flex;gap:10px;flex-wrap:wrap"><button class="btn" data-a="newpl">New playlist</button>${cbtn}${ybtn}</div>`+shelf('Playlists',pl)+shelf('YT Music playlists',DB.ytp)+shelf('Spotify playlists',sp)+shelf('Recently played',DB.rec))},
 liked(){const s=DB.liked;V.innerHTML=hero({type:'playlist',id:'liked',title:'Liked Songs',sub:s.length+' songs',icon:'♥'},'lk')+(s.length?rows('lk',s):empty('Tap the heart on any song to save it here.'))},
 my(n){const s=DB.pls[n];if(!s){V.innerHTML=empty('Playlist not found.');return}const r=rows('my',s);
  V.innerHTML=hero({type:'playlist',id:'my:'+n,title:n,sub:s.length+' songs',thumb:s[0]?.thumb},'my',`<button class="btn o" data-a="delpl" data-n="${esc(n)}">Delete</button>`)+(s.length?r:empty('Use the + button on any song to add it here.'))},
@@ -325,23 +325,16 @@ function spSave(){const t=$('#mti').value,ids=[...t.matchAll(/playlist[\/:]([A-Z
  DB.sp=[...new Set([...DB.sp,...ids])];save();$('#mti').value='';spRender();toast('Saved '+ids.length+' playlist'+(ids.length>1?'s':''));
  if(onHL())route();else location.hash='#/home'}
 
-/* ---- YT Music login (Google device code, or pasted cookie as fallback) ---- */
-const ytLabel=()=>$('#ytl').textContent=DB.yt?'YT Music · connected':'Sign in to YT Music';
-function ytRender(){const b=$('#ybody');
- if(DB.yt){b.innerHTML=`<p style="margin:6px 0 16px">You’re signed in. Your playlists, liked music and personal feed appear on Home under the YT Music tab.</p><div style="display:flex;gap:10px"><button class="btn" data-a="ytout">Sign out</button><button class="btn o" data-a="ymod">Close</button></div>`;return}
- b.innerHTML=`<p style="margin:6px 0 16px">Sign in with Google to see your YT Music library and feed. Your sign-in is stored only on this device.</p><button class="btn" data-a="ytstart">Get sign-in code</button><div id="ycode"></div>
- <details><summary>Use a browser cookie instead</summary><p>On music.youtube.com open DevTools → Network, click any request and copy the <b>cookie</b> request header.</p><textarea id="yck" placeholder="SID=...; HSID=...; SAPISID=..."></textarea><button class="btn o" data-a="ytcookie">Save cookie</button></details>
- <button class="btn o" data-a="ymod">Close</button>`}
-async function ytStart(){const my=++ytPoll,o=$('#ycode');o.innerHTML='<p style="margin-top:14px">Getting your code…</p>';
- try{const d=await api('/ytstart',0,1);if(my!=ytPoll)return;
-  o.innerHTML=`<p style="margin-top:16px">1. Open <a href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.url.replace('https://',''))}</a> and sign in<br>2. Enter this code:</p><div class="code">${esc(d.code)}</div><p>Waiting for you to approve…</p>`;
-  const end=Date.now()+d.expires*1000;
-  while(my==ytPoll&&Date.now()<end){await sleep(d.interval*1000);if(my!=ytPoll)return;
-   try{const r=await api('/ytpoll?dc='+q(d.dc),0,0);if(r.auth){DB.yt=r.auth;DB.src='yt';save();ytLabel();ytRender();toast('YT Music connected');if(onHL())route();return}}catch{}}
-  if(my==ytPoll)o.innerHTML='<p style="margin-top:14px">That code expired. Tap “Get sign-in code” to try again.</p>'}
- catch{if(my==ytPoll)o.innerHTML='<p style="margin-top:14px">Couldn’t get a code. Try again, or use the cookie option below.</p>'}}
-function ytCookie(){const c=$('#yck').value.trim().replace(/^cookie:\s*/i,'');if(c.length<40)return toast('Paste the full cookie header');
- DB.yt={cookie:c};DB.src='yt';save();ytLabel();ytRender();toast('YT Music connected');if(onHL())route()}
+/* ---- YT Music connect (public playlists by link, no login) ---- */
+const ytIds=t=>[...new Set([...String(t).matchAll(/[?&]list=([A-Za-z0-9_-]{10,})|\/browse\/VL([A-Za-z0-9_-]{10,})|(?:^|\s)(?:VL)?((?:PL|OLAK5uy_|RDCLAK|UU|FL)[A-Za-z0-9_-]{10,})(?=\s|$)/g)].map(m=>m[1]||m[2]||m[3]))];
+function ytRender(){$('#ymsp').innerHTML=DB.ytp.length?'<h2 style="font-size:15px;margin:18px 0 6px">Saved playlists</h2>'+DB.ytp.map(x=>`<div class="spi"><span class="t">${esc(x.title)}</span><button class="ib" data-a="ytrm" data-id="${esc(x.id.slice(3))}" title="Remove">${ic('x')}</button></div>`).join(''):''}
+async function ytSave(){const ids=ytIds($('#ymti').value);if(!ids.length)return toast('No playlist link found');
+ toast('Checking playlist…');let ok=0,bad=0;
+ for(const id of ids){if(DB.ytp.some(x=>x.id=='yp:'+id))continue;
+  try{const p=await api('/playlist?id='+q('yp:'+id));if(!p.songs?.length)throw 0;DB.ytp.push({type:'playlist',id:'yp:'+id,title:p.title||'Playlist',sub:p.songs.length+' songs',thumb:p.thumb||p.songs[0]?.thumb||''});ok++}catch{bad++}}
+ save();$('#ymti').value='';ytRender();
+ toast(ok?'Saved '+ok+' playlist'+(ok>1?'s':'')+(bad?' ('+bad+' failed)':''):bad?'Couldn’t load it. The playlist must be public or unlisted.':'Already saved');
+ if(ok){DB.src='yt';save();if(onHL())route();else location.hash='#/home'}}
 
 /* ---- actions ---- */
 let tt;function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('on'),2200)}
@@ -367,9 +360,8 @@ function act(a,b={dataset:{}}){const d=b.dataset;
  else if(a=='retry')route();
  else if(a=='src'){DB.src=d.s;save();if(location.hash.replace(/^#\/?/,'')=='home'||!location.hash)route();else location.hash='#/home'}
  else if(a=='connect'){$('#mod').classList.add('on');$('#mti').value='';spRender()}else if(a=='mod')$('#mod').classList.remove('on');else if(a=='spsave')spSave();
- else if(a=='ytlogin'){$('#ymod').classList.add('on');ytRender()}else if(a=='ymod'){ytPoll++;$('#ymod').classList.remove('on')}
- else if(a=='ytstart')ytStart();else if(a=='ytcookie')ytCookie();
- else if(a=='ytout'){ytPoll++;DB.yt=null;DB.src='sp';save();ytLabel();ytRender();toast('Signed out of YT Music');if(onHL())route()}
+ else if(a=='ytconnect'){$('#ymod').classList.add('on');$('#ymti').value='';ytRender()}else if(a=='ymod')$('#ymod').classList.remove('on');
+ else if(a=='ytsave')ytSave();else if(a=='ytrm'){DB.ytp=DB.ytp.filter(x=>x.id!='yp:'+d.id);save();ytRender();if(onHL())route()}
  else if(a=='sprm'){DB.sp=DB.sp.filter(x=>x!=d.id);save();spRender();if(onHL())route()}
  else if(a=='savepl'){if(DD?.songs.length){DB.pls[DD.title]=DD.songs.slice();save();side();toast('Saved to your library')}}
  else if(a=='playall'&&L[d.k]?.length)play(L[d.k],0);
@@ -381,7 +373,7 @@ const inSearch=()=>location.hash.startsWith('#/search');
 function open(x,k,i){if(x.type=='song'||x.type=='video')!inSearch()&&L[k]?.[i]?.id==x.id?play(L[k],+i):play([x],0);else if(x.type=='liked')location.hash='#/liked';else if(x.type=='mypl')location.hash='#/my/'+q(x.title);else location.hash=`#/${x.type}/${q(x.id)}`}
 
 document.addEventListener('click',e=>{
- if(e.target.classList.contains('mod')){ytPoll++;e.target.classList.remove('on');return}
+ if(e.target.classList.contains('mod')){e.target.classList.remove('on');return}
  if(!e.target.closest('#menu')&&!e.target.closest('[data-a=add]'))$('#menu').style.display='none';if(!e.target.closest('.sb'))sg.style.display='none';
  const g=e.target.closest('[data-go]');if(g){location.hash='#/'+g.dataset.go;if(g.dataset.go=='search'&&innerWidth>800)inp.focus();return}
  const my=e.target.closest('[data-my]');if(my){location.hash='#/my/'+q(my.dataset.my);return}
@@ -391,7 +383,7 @@ document.addEventListener('click',e=>{
  const r=e.target.closest('.row');if(r){const k=r.dataset.k,i=+r.dataset.i;if(k=='q'){qi+=1+i;load()}else if(k=='np')act('pp');else if(k=='s')play([L.s[i]],0);else play(L[k],i);return}
  const c=e.target.closest('.card');if(c&&M[c.dataset.id])open(M[c.dataset.id],c.dataset.k,c.dataset.i)});
 document.addEventListener('keydown',e=>{
- if(e.key=='Escape'){$('#fs').classList.remove('on');lyr.classList.remove('on');ytPoll++;$$('.mod').forEach(m=>m.classList.remove('on'))}
+ if(e.key=='Escape'){$('#fs').classList.remove('on');lyr.classList.remove('on');$$('.mod').forEach(m=>m.classList.remove('on'))}
  if(e.key=='Enter'&&e.target.classList.contains('card')){e.target.click();return}
  if(/INPUT|TEXTAREA/.test(e.target.tagName))return;
  if(e.code=='Space'){e.preventDefault();act('pp')}
@@ -401,5 +393,5 @@ inp.oninput=()=>{clearTimeout(tm);const v=inp.value.trim(),my=++sgT;if(!v){sg.st
  tm=setTimeout(async()=>{try{const a=await api('/suggest?q='+q(v),0,0);if(my!=sgT)return;sg.innerHTML=a.slice(0,8).map(s=>`<div>${esc(s)}</div>`).join('');sg.style.display=a.length?'block':'none'}catch{}},200)};
 sg.onclick=e=>{const d=e.target.closest('div');if(d)go(d.textContent)};
 
-side();ui();ytLabel();route();
+side();ui();route();
 </script></body></html>
