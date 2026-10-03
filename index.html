@@ -211,6 +211,8 @@ const cbtn=`<button class="btn o" data-a="connect">+ Connect Spotify</button>`;
 const ybtn=`<button class="btn o" data-a="ytconnect">+ Connect YT Music playlist</button>`;
 const SECS=a=>(a||[]).map(s=>shelf(s.title,s.items)).join('');
 const ALL=['songs','albums','artists','playlists'];
+/* load the remaining home parts a few at a time (window of 3) and append them in order */
+const lazy=async(base,n,my)=>{const ps={},get=i=>ps[i]??=api(base+i).catch(()=>null);for(let i=1;i<n;i++){for(let j=i;j<i+3&&j<n;j++)get(j);const r=await get(i);if(my!=RT)return;if(r)$('#more')?.insertAdjacentHTML('beforebegin',SECS(r.sections))}};
 
 /* ---- views ---- */
 const views={
@@ -219,11 +221,11 @@ async home(){const my=RT,src=DB.src=='yt'?'yt':'sp';
  if(src=='yt'){
   const d=await api('/ymfeed?part=0');
   if(!put(my,hd+`<div style="margin:12px 0 0">${ybtn}</div>`+shelf('Your YT Music playlists',DB.ytp)+shelf('Recently played',DB.rec)+SECS(d.sections)+'<div id="more" class="skl"><i></i></div>'))return;
-  for(let i=1;i<(d.parts||1)&&my==RT;i++){try{const n=await api('/ymfeed?part='+i);if(my!=RT)return;$('#more')?.insertAdjacentHTML('beforebegin',SECS(n.sections))}catch{}}
+  await lazy('/ymfeed?part=',d.parts||1,my);
   if(my==RT)$('#more')?.remove();return}
  const[d,mine]=await Promise.all([api('/home?part=0'),mySp()]);
  if(!put(my,hd+`<div style="margin:12px 0 0">${cbtn}</div>`+shelf('Your Spotify playlists',mine)+shelf('Recently played',DB.rec)+SECS(d.sections)+'<div id="more" class="skl"><i></i></div>'))return;
- for(let i=1;i<(d.parts||1)&&my==RT;i++){try{const n=await api('/home?part='+i);if(my!=RT)return;$('#more')?.insertAdjacentHTML('beforebegin',SECS(n.sections))}catch{}}
+ await lazy('/home?part=',d.parts||1,my);
  if(my==RT)$('#more')?.remove()},
 async search(t){const my=RT;
  if(!t){put(my,`<h1>Browse</h1><h2 style="margin:18px 0 12px">Start with a mood</h2><div class="chips">${MOODS.map(m=>`<div class="chip" data-q="${m}">${m}</div>`).join('')}</div>`);return}
