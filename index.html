@@ -1187,5 +1187,12 @@ const sw=()=>{document.querySelectorAll('[data-a=add] path').forEach(p=>{if(p.ge
 let sr=0;new MutationObserver(()=>{cancelAnimationFrame(sr);sr=requestAnimationFrame(sw)}).observe(document.body,{childList:true,subtree:true});sw();
 })();
 </script>
+
+   <!-- ===== MUSIFY UPDATE v6.2 =====
+PASTE right before the final </body>, after v6.1. Spotify tab = green, YT Music tab = red (same gradient style). -->
+<style>
+.seg button[data-a=src].on[data-s=sp]{background:linear-gradient(135deg,#d2ffe2,#3fdc86 70%,#9bea5c);box-shadow:0 4px 14px #2fd47a66;color:#05210f}
+.seg button[data-a=src].on[data-s=yt]{background:linear-gradient(135deg,#ffdcdc,#ff5a6a 70%,#ff8f5c);box-shadow:0 4px 14px #ff4a5c66;color:#2a0508}
+</style>
    
 </body></html>
