@@ -1350,5 +1350,108 @@ try{const l=JSON.parse(localStorage.getItem('musify_last')||'null');
   setTimeout(()=>{if(REST&&Q.length<2)more()},2500)}}catch{}
 })();
 </script>
+
+   <!-- ===== MUSIFY UPDATE v7 =====
+BEFORE PASTING: in your index.html delete (1) BOTH old "v6.1" blocks (they are replaced by this one) and
+(2) the duplicate v5 blocks: keep ONLY the last one. Duplicates run the same code 2-3x and cause lag.
+Then paste this block right before the final </body> (after v6 and v6.2).
+ - Mini player keeps your last song (and position) when the site opens
+ - Original look kept: blurred bars and animated background are back (no performance tweaks)
+ - Imported YT/Spotify playlists: add songs, remove songs, Reshuffle, Delete
+ - "Made for you" under Recently played (mix of what you listen to + related songs)
+ - Includes the Pop lyrics style, instant auto-skip and icon swap from v6.1 -->
+<style>
+/* ---- Pop lyrics (replaces Neon) ---- */
+@keyframes lpop{0%{opacity:0;transform:translateY(38px) scale(.7)}60%{opacity:1;transform:translateY(-4px) scale(1.08)}100%{transform:scale(1.04)}}
+html #lyr[data-ly=neon]{--h1:#fff;--h2:#ff9be8;--lo:#ffffffa8;--gw:transparent}
+html #lyr[data-ly=neon] #lyt.sy{text-align:center}
+html #lyr[data-ly=neon] #lyt.sy p{padding:12px 20px;margin:0 auto 6px;opacity:.2;transform:scale(.82);transform-origin:center;transition:transform .6s var(--ease),opacity .5s var(--ease)}
+html #lyr[data-ly=neon] #lyt.sy p[data-d="1"]{opacity:.42;transform:scale(.89)}
+html #lyr[data-ly=neon] #lyt.sy p[data-d="2"]{opacity:.28}
+html #lyr[data-ly=neon] #lyt.sy p[data-d="-1"]{opacity:.22;transform:scale(.8)}
+html #lyr[data-ly=neon] #lyt.sy p[data-d="0"]{opacity:1;transform:scale(1.04);text-shadow:none;animation:lpop .7s var(--spring) backwards}
+html #lyr[data-ly=neon] #lyt.sy p[data-d="0"]::before{inset:0;border-radius:30px;background:linear-gradient(135deg,#7be8ff26,#ff6ad524 60%,#ffffff12);border:1px solid #ffffff38;box-shadow:inset 0 1px 0 #ffffff66,0 20px 44px -20px #000;animation:lpin .5s var(--ease) backwards}
+html #lyr[data-ly=neon] #lyt.sy .lt{-webkit-text-stroke:0}
+html #lyr[data-ly=neon] #lyt.sy p:not([data-d="0"]) .lt{background:linear-gradient(90deg,var(--h1),var(--h2) var(--p,0%),var(--lo) calc(var(--p,0%) + 4%));-webkit-background-clip:text;background-clip:text}
+</style>
+<script>
+(()=>{
+let REST=false,RS=0;
+$$('#smod [data-a=lys][data-s=neon]').forEach(b=>b.textContent='Pop');
+
+/* ---- listening history + last played ---- */
+let lt=-1,cnt='';
+const hit=s=>{const H=DB.hist=DB.hist||{},e=H[s.id]||(H[s.id]={s:{id:s.id,title:s.title,sub:s.sub,thumb:s.thumb,dur:s.dur,type:'song'},n:0});e.n++;e.t=Date.now();
+ const k=Object.keys(H);if(k.length>150)k.sort((a,b)=>H[a].t-H[b].t).slice(0,30).forEach(x=>delete H[x]);save()};
+A.forEach(a=>a.addEventListener('timeupdate',function(){if(this!==au)return;const s=cur();if(!s)return;const t=au.currentTime|0;
+ if(t>15&&cnt!==s.id){cnt=s.id;hit(s)}
+ if(t%5==0&&t!=lt){lt=t;try{localStorage.setItem('musify_last',JSON.stringify({s,t}))}catch{}}}));
+
+/* ---- auto-skip (no limit) ---- */
+let tk=0,skid='';const T0=toast;
+const bad=()=>{const s=cur();if(!s||skid===s.id+':'+qi)return;skid=s.id+':'+qi;clearInterval(tk);T0('Skipping to next song…');xfId++;au.pause();next(true)};
+toast=function(t){if(/can.?t be played|couldn.?t play|can.?t play|not available|unavailable/i.test(String(t)))return bad();return T0(t)};
+A.forEach(a=>{a.onerror=function(){if(this===au)bad()};a.addEventListener('playing',function(){if(this===au)clearInterval(tk)})});
+const _l=load;load=function(fx){REST=false;cnt='';_l(fx);try{localStorage.setItem('musify_last',JSON.stringify({s:cur(),t:0}))}catch{}
+ clearInterval(tk);const id=cur()?.id,t0=Date.now();const p=au.play();if(p&&p.catch)p.catch(e=>{if(e.name!='NotAllowedError'&&e.name!='AbortError'&&cur()?.id==id)bad()});
+ tk=setInterval(()=>{if(cur()?.id!=id)return clearInterval(tk);if(au.error||(au.networkState==3&&Date.now()-t0>1000))return bad();
+  if(au.currentTime>.3||au.readyState>=3)return clearInterval(tk);if(Date.now()-t0>8000&&au.readyState<2&&!au.paused)bad()},250)};
+
+/* ---- imported playlists: add / remove / reshuffle / delete ---- */
+ovr=function(d,id){const o=DB.ov[id];if(!o)return d;d={...d};if(o.title)d.title=o.title;
+ if(d.songs){let s=d.songs.slice();if(o.add?.length){const have=new Set(s.map(x=>x.id));o.add.forEach(x=>{if(x&&!have.has(x.id))s.push(x)})}
+  if(o.rm?.length)s=s.filter(x=>!o.rm.includes(x.id));
+  if(o.ord){const ix=new Map(o.ord.map((v,i)=>[v,i]));s=s.map((x,i)=>[x,ix.has(x.id)?ix.get(x.id):1e6+i]).sort((a,b)=>a[1]-b[1]).map(a=>a[0])}
+  d.songs=s}return d};
+menu=function(b,id){const m=$('#menu'),r=b.getBoundingClientRect();
+ const imp=[...DB.ytp.map(x=>[x.id,x.title]),...DB.sp.map(x=>['sp:'+x,DB.ov['sp:'+x]?.title||SPN[x]||'Spotify playlist'])];
+ m.innerHTML='<div class="mh">Add to playlist</div>'+Object.keys(DB.pls).map(n=>`<div data-p="${esc(n)}">${esc(n)}</div>`).join('')+imp.map(([i,t])=>`<div data-ip="${esc(i)}">${esc(t)} <small style="color:var(--m)">imported</small></div>`).join('')+'<div data-p="">＋ New playlist…</div>';
+ m.style.cssText=`display:block;left:${Math.max(8,Math.min(r.left,innerWidth-240))}px;top:${Math.max(8,Math.min(r.bottom,innerHeight-300))}px`;
+ m.onclick=ev=>{const d=ev.target.closest('[data-p],[data-ip]');if(!d)return;m.style.display='none';
+  if(d.dataset.ip!=null){const o=DB.ov[d.dataset.ip]=DB.ov[d.dataset.ip]||{};o.add=[...(o.add||[]).filter(x=>x.id!=id),M[id]];if(o.rm)o.rm=o.rm.filter(x=>x!=id);save();return toast('Added to '+d.textContent.replace(' imported',''))}
+  let n=d.dataset.p;if(!n){n=(prompt('Playlist name')||'').trim();if(!n)return;DB.pls[n]=DB.pls[n]||[]}
+  if(!DB.pls[n].some(x=>x.id==id))DB.pls[n].push(M[id]);save();side();toast('Added to '+n)}};
+const shf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const _a=act;act=function(a,b){const d=(b&&b.dataset)||{};
+ if(a=='pp'&&REST){REST=false;load();au.addEventListener('loadedmetadata',()=>{if(RS>2&&RS<au.duration-3)au.currentTime=RS},{once:true});return}
+ if(a=='rmsong'&&IMP){const o=DB.ov[IMP];if(o?.add)o.add=o.add.filter(x=>x.id!=d.id)}
+ if(a=='reshuf'){if(IMP&&DD){const o=DB.ov[IMP]=DB.ov[IMP]||{};o.ord=shf(DD.songs).map(x=>x.id);save();toast('Playlist reshuffled');return route()}
+  if(CPL&&DB.pls[CPL]){DB.pls[CPL]=shf(DB.pls[CPL]);save();toast('Playlist reshuffled');return route()}return}
+ if(a=='impdel'){if(IMP&&confirm('Delete this playlist from Musify?')){const id=IMP;DB.sp=DB.sp.filter(x=>'sp:'+x!=id);DB.ytp=DB.ytp.filter(x=>x.id!=id);delete DB.ov[id];save();toast('Playlist deleted');location.hash='#/home'}return}
+ return _a(a,b)};
+
+/* ---- Made for you ---- */
+const sc2=x=>x.n*Math.exp(-(Date.now()-x.t)/6048e5);
+async function mk(){const h=Object.values(DB.hist||{}).sort((a,b)=>sc2(b)-sc2(a));if(h.length<2)return[];
+ const rel=await Promise.all(h.slice(0,5).map(x=>api(`/upcoming?id=${q(x.s.id)}&t=${q(x.s.title)}&a=${q(x.s.sub)}`).then(r=>Array.isArray(r)?r:(r.songs||r.items||[])).catch(()=>[])));
+ const own=h.slice(0,10).map(x=>x.s),out=[],seen=new Set(),push=x=>{if(x&&x.id&&!seen.has(x.id)){seen.add(x.id);out.push(x)}};
+ for(let i=0;i<12;i++){rel.forEach(r=>push(r[i]));if(i%2==0)push(own[i/2|0])}
+ return out.slice(0,30)}
+let mb=0;
+async function mfy(){const h=V.querySelector('h1');if(!h||h.textContent!='Musify'||V.querySelector('#mfy')||mb)return;
+ const an=[...V.querySelectorAll('.shw')].find(s=>s.querySelector('h2')?.textContent=='Recently played');if(!an)return;
+ mb=1;try{let c=DB.mfy;const tot=Object.values(DB.hist||{}).reduce((a,x)=>a+x.n,0);
+  if(!c||Date.now()-c.t>216e5||tot-c.c>=6){const it=await mk();if(it.length){c=DB.mfy={t:Date.now(),c:tot,items:it};save()}}
+  if(c?.items?.length&&an.isConnected&&!V.querySelector('#mfy'))an.insertAdjacentHTML('afterend',`<div id="mfy">${shelf('Made for you',reg(c.items))}</div>`)}catch{}
+ mb=0}
+
+/* ---- hero buttons (Reshuffle / Delete), icon swap, Made for you: one light observer ---- */
+function sw(){document.querySelectorAll('[data-a=add] path').forEach(p=>{if(p.getAttribute('d')!=P.pn)p.setAttribute('d',P.pn)});
+ document.querySelectorAll('[data-a=pnext] path').forEach(p=>{if(p.getAttribute('d')!=P.plus)p.setAttribute('d',P.plus)})}
+function hb(){const h=V.querySelector('.hero');if(!h||h.querySelector('[data-a=reshuf]'))return;
+ const imp=IMP&&h.querySelector('[data-a=savepl]'),my=h.querySelector('[data-a=delpl]');if(!imp&&!my)return;
+ const last=h.querySelector('[data-a=pnext]')||h.querySelector('[data-a=shuf]');if(!last)return;
+ last.insertAdjacentHTML('afterend','<button class="btn o" data-a="reshuf">Reshuffle</button>'+(imp?'<button class="btn o" data-a="impdel">Delete</button>':''))}
+let rf=0;const tick=()=>{cancelAnimationFrame(rf);rf=requestAnimationFrame(()=>{hb();sw();mfy()})};
+const mo=new MutationObserver(tick);mo.observe(V,{childList:true,subtree:true});[$('#np'),$('#fsn'),$('.fpn'),$('#menu')].forEach(e=>e&&mo.observe(e,{childList:true}));
+tick();
+
+/* ---- restore last played song into the mini player (paused, resumes on Play) ---- */
+try{const l=JSON.parse(localStorage.getItem('musify_last')||'null');
+ if(l&&l.s&&l.s.id&&!cur()){M[l.s.id]=l.s;Q=[l.s];Q0=[l.s];qi=0;REST=true;RS=l.t||0;ui();meta(l.s);document.title=l.s.title+' • Musify';
+  try{navigator.mediaSession.setActionHandler('play',()=>act('pp'))}catch{}
+  setTimeout(()=>{if(REST&&Q.length<2)more()},2500)}}catch{}
+})();
+</script>
    
 </body></html>
