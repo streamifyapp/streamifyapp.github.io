@@ -156,7 +156,7 @@
 #chatView .conversation-header .ib{width:36px;height:36px}
 #chatView .ch-meta{flex:1;min-width:0}
 #chatView .ch-meta strong{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#chatView .ch-meta small{font-size:11.5px;display:block;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}#chatView .ch-who{min-width:0;flex:1;overflow:hidden}#chatView .ch-meta small .np{display:flex;width:100%;overflow:hidden}#chatView .friend-meta small .np{display:flex;width:100%;overflow:hidden}
+#chatView .ch-meta small{font-size:11.5px;display:block;max-width:100%;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#chatView .ch-who{min-width:0;flex:1}#chatView .ch-meta small:has(.np){white-space:normal}#chatView .ch-meta .np,#chatView .friend-meta .np{display:flex;align-items:flex-start;width:100%;min-width:0}#chatView .ch-meta .np .eq{margin-top:3px}#chatView .ch-meta .np-t{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-clamp:3;white-space:normal;overflow:hidden;overflow-wrap:anywhere;text-overflow:ellipsis}#chatView .friend-meta .np-t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 
 /* ===== v4 ===== */
