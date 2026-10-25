@@ -51,6 +51,7 @@ const c=document.createElement("style");c.textContent=ic+`
 .lt-join:disabled{opacity:.55;cursor:default}
 .lt-cs{opacity:.75;font-size:11px;display:inline-flex;align-items:center;gap:4px;flex:0 0 auto}
 .lt-card.ended .lt-ci{opacity:.65}
+#ltBtn.lt-on{color:var(--c2);background:rgba(255,255,255,.12)}
 `;document.head.append(c)}
 
 /* "listening to Title – Artist" or "" */
