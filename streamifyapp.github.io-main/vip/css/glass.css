@@ -1,0 +1,178 @@
+/* Velora — Black Liquid Glass (chat & DM). Loaded last. */
+#chatView{--b0:#050507;--b1:rgba(255,255,255,.05);--b2:rgba(255,255,255,.08);--b3:rgba(255,255,255,.12);--ln:rgba(255,255,255,.13);--tx:#f6f6f8;--mu:rgba(240,240,248,.55);--glow:rgba(255,255,255,.1);
+--glass:linear-gradient(135deg,rgba(255,255,255,.15),rgba(255,255,255,.04) 42%,rgba(255,255,255,.02) 62%,rgba(255,255,255,.1));
+--rim:inset 0 0 0 1px rgba(255,255,255,.12),inset 0 1.5px 0 rgba(255,255,255,.42),inset 0 -1px 0 rgba(255,255,255,.1),inset 0 0 22px rgba(255,255,255,.035);
+--blur:blur(22px) saturate(180%);--drop:0 10px 30px rgba(0,0,0,.55);--safe:max(14px,env(safe-area-inset-bottom));--top:max(10px,env(safe-area-inset-top))}
+#chatView .chat-shell{background:radial-gradient(620px 420px at 15% -5%,rgba(255,255,255,.09),transparent 70%),radial-gradient(520px 420px at 100% 100%,rgba(255,255,255,.06),transparent 70%),#030304;font-family:Inter,system-ui,sans-serif}
+#chatView .chat-shell::before,#chatView .chat-shell::after{display:none}
+/* glass surfaces: blur only on a few big elements (performance) */
+#chatView .gnav,#chatView .conversation-header,#chatView .chat-search,#chatView .draft,#chatView .sheet-card,#chatView .pf-card,#chatView .stk-panel,#chatView .reply-bar,#chatView .rec-bar,#chatView .pin-bar,#chatView .msg-search,#chatView .to-bottom{background:var(--glass),rgba(18,18,22,.45);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);box-shadow:var(--rim),var(--drop);border:0}
+#chatView .ib,#chatView .friend-row.sel,#chatView .chat-tabs button,#chatView .pf-btn,#chatView .send,#chatView .badge,#chatView .reacts,#chatView .message,#chatView .syschip{background:var(--glass);box-shadow:var(--rim);border:0}
+/* ---------- chat list: new layout ---------- */
+#chatView .chat-sidebar{position:relative;margin:14px 0 14px 14px;border-radius:34px;overflow:hidden;background:linear-gradient(160deg,rgba(255,255,255,.08),rgba(255,255,255,.02));box-shadow:var(--rim),var(--drop);border:0}
+#chatView .side-top{padding:max(22px,env(safe-area-inset-top)) 20px 4px}
+#chatView .side-title{margin-bottom:10px;align-items:center}
+#chatView .side-title h2{font-family:"Playfair Display",serif;font-size:32px;font-weight:500;letter-spacing:-.01em;color:#fff}
+#chatView .soon{font-size:12px;color:var(--mu)}
+#chatView .side-btns{flex-direction:row-reverse}
+#chatView .ib{width:42px;height:42px;color:#fff;transition:transform .2s}
+#chatView .ib:active{transform:scale(.9)}
+#chatView .me-btn{padding:0;overflow:hidden}
+#chatView .chat-tabs{background:none;box-shadow:none;border:0;padding:0;margin:6px 0 2px;gap:8px;justify-content:flex-start}
+#chatView .chat-tabs button{flex:none;padding:8px 16px;border-radius:99px;background:none;box-shadow:none;color:var(--mu);font-size:13px}
+#chatView .chat-tabs .active{background:var(--glass);box-shadow:var(--rim);color:#fff}
+#chatView .chat-tabs b{background:#fff;color:#000}
+#chatView .chat-search{position:absolute;z-index:25;left:14px;right:14px;bottom:calc(var(--safe) + 78px);border-radius:99px;padding:0 18px}
+#chatView .friend-list{padding:4px 10px 170px}
+#chatView .friend-row{background:none;box-shadow:none;border:0;border-radius:26px;margin:0 0 2px;padding:11px 12px;transition:background .2s}
+#chatView .friend-row:hover{background:rgba(255,255,255,.06);transform:none}
+#chatView .friend-row.sel{background:var(--glass),rgba(255,255,255,.04)}
+#chatView .friend-row.sel::before{display:none}
+#chatView .friend-row .avatar{width:54px;height:54px}
+#chatView .avatar{overflow:visible;box-shadow:0 0 0 1.5px rgba(255,255,255,.28),0 6px 16px rgba(0,0,0,.5)}
+#chatView .avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+#chatView .avatar .on{border-color:#0b0b0e}
+#chatView .badge{background:#fff;color:#000;font-weight:700;box-shadow:0 2px 10px rgba(255,255,255,.25)}
+#chatView .chat-settings{display:none}
+/* ---------- bottom navigation (liquid glass) ---------- */
+#chatView .gnav{position:absolute;z-index:30;left:50%;bottom:var(--safe);transform:translateX(-50%);display:grid;grid-template-columns:repeat(3,1fr);width:min(330px,calc(100% - 40px));padding:6px;border-radius:99px;background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,.03)),rgba(14,14,18,.38);backdrop-filter:blur(26px) saturate(200%);-webkit-backdrop-filter:blur(26px) saturate(200%);transition:transform .4s cubic-bezier(.3,1.2,.4,1),opacity .25s}
+#chatView .gnav::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(115deg,rgba(255,255,255,.22),transparent 35%,transparent 65%,rgba(255,255,255,.1));pointer-events:none;mix-blend-mode:overlay}
+#chatView .gnav .gpill{position:absolute;top:6px;bottom:6px;left:6px;width:calc((100% - 12px)/3);border-radius:99px;background:linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,.1));box-shadow:inset 0 0 0 1px rgba(255,255,255,.22),inset 0 1.5px 0 rgba(255,255,255,.6),0 6px 18px rgba(0,0,0,.45);transform:translate3d(calc(var(--ix,0)*100%),0,0);transition:transform .4s cubic-bezier(.3,1.25,.4,1);will-change:transform}
+#chatView .gnav button{position:relative;z-index:1;display:grid;justify-items:center;gap:2px;padding:9px 0 7px;border:0;background:none;color:rgba(255,255,255,.5);font-size:11px;font-weight:600;transition:color .25s,transform .2s}
+#chatView .gnav button svg{width:22px;height:22px}
+#chatView .gnav button.active{color:#fff}
+#chatView .gnav button:active{transform:scale(.9)}
+/* ---------- reels / profile panels ---------- */
+#chatView .gpanel{position:absolute;inset:0;z-index:20;display:grid;place-items:center;padding:24px 24px 120px;background:radial-gradient(520px 420px at 50% 30%,rgba(255,255,255,.1),transparent 70%),#030304;animation:gIn .35s ease-out}
+#chatView .gpanel[hidden]{display:none}
+@keyframes gIn{from{opacity:0;transform:translateY(10px)}}
+.soon-wrap{text-align:center;display:grid;justify-items:center;gap:10px}
+.soon-wrap h2{font-family:"Playfair Display",serif;font-size:44px;font-weight:500;margin:14px 0 0}
+.soon-wrap p{max-width:280px;color:var(--mu);margin:0;line-height:1.5;font-size:14px}
+.soon-wrap .cs{font-size:14px;font-weight:700;letter-spacing:.45em;text-transform:uppercase;background:linear-gradient(90deg,#666,#fff,#666,#fff,#666);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:csShine 3.5s linear infinite;padding:8px 0}
+@keyframes csShine{to{background-position:-300% 0}}
+.rlorb{position:relative;width:190px;height:190px;display:grid;place-items:center}
+.rlorb>i{position:absolute;inset:0;border-radius:50%;border:1px solid rgba(255,255,255,.3);animation:ring 3.6s ease-out infinite}
+.rlorb>i:nth-child(2){animation-delay:1.2s}.rlorb>i:nth-child(3){animation-delay:2.4s}
+@keyframes ring{from{transform:scale(.45);opacity:1}to{transform:scale(1.25);opacity:0}}
+.rlphone{position:relative;width:78px;height:122px;border-radius:26px;display:grid;place-items:center;background:linear-gradient(145deg,rgba(255,255,255,.22),rgba(255,255,255,.04));box-shadow:inset 0 0 0 1px rgba(255,255,255,.18),inset 0 1.5px 0 rgba(255,255,255,.55),0 24px 50px rgba(0,0,0,.6);animation:float 4s ease-in-out infinite}
+.rlphone::before{content:"";position:absolute;top:8px;width:26px;height:5px;border-radius:9px;background:rgba(255,255,255,.3)}
+.rlplay{width:0;height:0;border-left:20px solid #fff;border-top:12px solid transparent;border-bottom:12px solid transparent;margin-left:6px;filter:drop-shadow(0 0 10px rgba(255,255,255,.7));animation:pulse 2s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-12px) rotate(2deg)}}@keyframes pulse{50%{transform:scale(1.2);opacity:.8}}
+.rldots{display:flex;gap:8px;margin-top:6px}.rldots i{width:8px;height:8px;border-radius:50%;background:#fff;opacity:.3;animation:dot 1.4s infinite}.rldots i:nth-child(2){animation-delay:.2s}.rldots i:nth-child(3){animation-delay:.4s}
+@keyframes dot{40%{opacity:1;transform:translateY(-6px)}}
+#chatView .pf-card{display:grid;justify-items:center;gap:6px;width:min(360px,100%);padding:34px 24px 24px;border-radius:38px}
+#chatView .pf-card .avatar{width:104px;height:104px;font-size:42px;margin-bottom:8px}
+#chatView .pf-card h2{margin:6px 0 0;font-family:"Playfair Display",serif;font-size:28px;font-weight:500}
+#chatView .pf-card span{color:var(--mu);font-weight:600}#chatView .pf-card small{color:var(--mu);margin-bottom:14px}
+#chatView .pf-btn{width:100%;color:#fff;padding:14px;border-radius:99px;font-weight:600;font-size:15px}
+#chatView .pf-btn.pri{background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,.75));color:#000;box-shadow:inset 0 1.5px 0 #fff,0 8px 22px rgba(0,0,0,.5)}
+/* ---------- conversation: new layout ---------- */
+#chatView .chat-main{background:none}
+#chatView .conversation-header{position:absolute;z-index:6;top:0;left:0;right:0;border-radius:0 0 30px 30px;padding:var(--top) 14px 10px;gap:10px}
+#chatView .conversation-header .ib{width:40px;height:40px}
+#chatView .ch-meta strong{font-size:16px}
+#chatView .conversation-body{padding:calc(var(--top) + 76px) 14px 92px;gap:5px}
+#chatView .w-aurora .conversation-body{background:radial-gradient(60% 35% at 80% 0,rgba(255,255,255,.06),transparent),radial-gradient(50% 35% at 0 100%,rgba(255,255,255,.05),transparent),#040405}
+/* bubbles: liquid glass, no per-bubble blur */
+#chatView .message{padding:9px 14px 6px;border-radius:24px 24px 24px 8px;background:linear-gradient(145deg,rgba(255,255,255,.17),rgba(255,255,255,.05) 55%,rgba(255,255,255,.1));color:#fff;box-shadow:var(--rim),0 6px 18px rgba(0,0,0,.35);animation:none}
+#chatView .message.mine{border-radius:24px 24px 8px 24px;background:linear-gradient(145deg,color-mix(in srgb,var(--c) 58%,transparent),color-mix(in srgb,var(--c) 22%,transparent) 55%,color-mix(in srgb,var(--c) 40%,transparent));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--c) 55%,rgba(255,255,255,.3)),inset 0 1.5px 0 rgba(255,255,255,.5),inset 0 -1px 0 rgba(255,255,255,.12),0 8px 22px rgba(0,0,0,.4)}
+#chatView .b-sharp .message{border-radius:10px 10px 10px 3px}#chatView .b-sharp .message.mine{border-radius:10px 10px 3px 10px}
+#chatView .b-soft .message{border-radius:30px 30px 30px 10px}#chatView .b-soft .message.mine{border-radius:30px 30px 10px 30px}
+#chatView .message.fresh{animation:gIn .25s ease-out}
+#chatView .message.sticker,#chatView .message.sys{background:none!important;box-shadow:none!important}
+#chatView .syschip{display:inline-block;padding:6px 16px;border-radius:99px;background:rgba(255,255,255,.07)}
+#chatView .reacts{display:inline-flex;gap:4px;margin:6px 0 -14px;padding:2px 8px;border-radius:99px;background:rgba(10,10,14,.85);font-size:14px}
+#chatView .reacts span{font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}
+#chatView .quote{background:rgba(0,0,0,.25);border-radius:14px}
+/* compose: separate floating glass pieces */
+#chatView .chat-compose{position:absolute;z-index:6;left:12px;right:12px;bottom:var(--safe);background:none;border:0;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;padding:0;gap:8px;align-items:flex-end}
+#chatView .chat-compose .ib{width:46px;height:46px}
+#chatView .chat-compose .draft{flex:1;border-radius:26px;padding:12px 18px;min-height:46px;color:#fff}
+#chatView .send{width:46px;height:46px;border-radius:50%;color:#fff;background:linear-gradient(145deg,color-mix(in srgb,var(--c) 60%,transparent),rgba(255,255,255,.08));box-shadow:inset 0 0 0 1px rgba(255,255,255,.2),inset 0 1.5px 0 rgba(255,255,255,.5),0 6px 18px rgba(0,0,0,.45)}
+#chatView .send::after{display:none}
+#chatView .reply-bar,#chatView .rec-bar{position:absolute;left:12px;right:12px;bottom:calc(var(--safe) + 58px);z-index:5;border-radius:22px;margin:0}
+#chatView .pin-bar,#chatView .msg-search{position:absolute;z-index:5;left:14px;right:14px;top:calc(var(--top) + 66px);border-radius:22px;margin:0}
+#chatView .to-bottom{bottom:84px}
+#chatView .stk-panel{position:absolute;left:12px;right:12px;bottom:calc(var(--safe) + 58px);border-radius:28px;z-index:7}
+/* sheets & reactions */
+#chatView .sheet{background:rgba(0,0,0,.55)}
+#chatView .sheet-card{border-radius:32px;background:var(--glass),rgba(16,16,20,.6)}
+#chatView .sheet-card>button{background:rgba(255,255,255,.07);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);border:0;border-radius:20px}
+#chatView .react-row{background:var(--glass);box-shadow:var(--rim);gap:2px;overflow-x:auto;scrollbar-width:none}
+#chatView .react-row button{font-size:28px;width:46px;height:46px;flex:none;font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;transition:transform .2s}
+#chatView .react-row button:active{transform:scale(1.35) translateY(-4px)}
+/* layout */
+@media(min-width:761px){#chatView .chat-shell{grid-template-columns:400px 1fr}#chatView .gnav{left:207px;width:340px}#chatView .gpanel{padding-bottom:40px}#chatView .conversation-header{border-radius:0 0 30px 30px}#chatView .conversation-body{padding-left:max(18px,5%);padding-right:max(18px,5%)}#chatView .chat-compose{left:18px;right:18px}}
+@media(min-width:1400px){#chatView .chat-shell{grid-template-columns:440px 1fr}#chatView .gnav{left:227px}}
+@media(max-width:760px){#chatView .chat-sidebar{margin:0;border-radius:0;background:none;box-shadow:none}
+#chatView .chat-main{background:radial-gradient(500px 400px at 10% 0,rgba(255,255,255,.07),transparent 70%),#030304}
+#chatView .chat-shell.conversation-open .gnav{transform:translate(-50%,170%);opacity:0;pointer-events:none}
+#chatView .chat-shell.conversation-open .chat-search{display:none}}
+@media(prefers-reduced-motion:reduce){#chatView *{animation:none!important;transition:none!important}}
+#chatView .chat-tabs button::after,#chatView .chat-tabs button::before{display:none!important}
+/* ===== v3 ===== */
+/* nav: flex + JS-measured pill (always aligned) */
+#chatView .gnav{display:flex;width:min(340px,calc(100% - 40px))}
+#chatView .gnav button{flex:1;min-width:0}
+#chatView .gnav .gpill{position:absolute;top:6px;bottom:6px;left:0;width:0;border-radius:99px;background:linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,.1));box-shadow:inset 0 0 0 1px rgba(255,255,255,.22),inset 0 1.5px 0 rgba(255,255,255,.6),0 6px 18px rgba(0,0,0,.45);transition:transform .4s cubic-bezier(.3,1.25,.4,1),width .3s;will-change:transform;pointer-events:none}
+#chatView .nv-av{display:grid;place-items:center;width:24px;height:24px;margin:-1px 0;border-radius:50%;overflow:hidden;font-style:normal;font-size:12px;font-weight:700;color:#fff;background:#444;box-shadow:0 0 0 1.5px rgba(255,255,255,.35)}
+#chatView .nv-av img{width:100%;height:100%;object-fit:cover}
+#chatView .gnav button.active .nv-av{box-shadow:0 0 0 2px #fff}
+/* profile page */
+#chatView #profilePanel{place-items:start center;overflow-y:auto;padding:max(28px,env(safe-area-inset-top)) 16px 130px}
+#chatView .pf-page{width:min(440px,100%);display:grid;gap:18px}
+#chatView .pf-hero{display:grid;justify-items:center;gap:4px;padding:26px 20px;border-radius:34px;background:var(--glass),rgba(18,18,22,.45);box-shadow:var(--rim),var(--drop);text-align:center}
+#chatView .pf-hero .avatar{width:92px;height:92px;font-size:38px;margin-bottom:8px}
+#chatView .pf-hero h2{margin:4px 0 0;font-family:"Playfair Display",serif;font-size:26px;font-weight:500}
+#chatView .pf-hero span{color:var(--mu);font-weight:600}#chatView .pf-hero small{color:var(--mu)}
+#chatView .pf-menu{display:grid;gap:8px}
+#chatView .pf-menu button{display:flex;align-items:center;gap:14px;width:100%;padding:12px 16px 12px 12px;border:0;border-radius:24px;color:#fff;text-align:left;background:var(--glass),rgba(18,18,22,.4);box-shadow:var(--rim);transition:transform .2s}
+#chatView .pf-menu button:active{transform:scale(.98)}
+#chatView .pf-menu b{display:grid;place-items:center;width:42px;height:42px;border-radius:14px;flex:none;background:rgba(255,255,255,.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
+#chatView .pf-menu b svg{width:21px;height:21px}
+#chatView .pf-menu div{flex:1;min-width:0;display:grid}
+#chatView .pf-menu strong{font-size:15px}#chatView .pf-menu small{color:var(--mu);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#chatView .pf-menu u{text-decoration:none;color:var(--mu);font-size:22px}
+/* message search results */
+#chatView mark{background:rgba(255,255,255,.85);color:#000;border-radius:4px;padding:0 2px}
+#chatView .friend-meta small.hit{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+/* compact messages */
+#chatView .conversation-body{gap:3px;font-size:calc(var(--fs,15px) - 1px)}
+#chatView .message{padding:6px 11px 4px;border-radius:18px 18px 18px 6px;line-height:1.3;max-width:min(78%,440px)}
+#chatView .message.mine{border-radius:18px 18px 6px 18px}
+#chatView .b-sharp .message{border-radius:8px 8px 8px 2px}#chatView .b-sharp .message.mine{border-radius:8px 8px 2px 8px}
+#chatView .b-soft .message{border-radius:22px 22px 22px 8px}#chatView .b-soft .message.mine{border-radius:22px 22px 8px 22px}
+#chatView .message time{font-size:9.5px;margin-top:0;gap:3px}
+#chatView .message .quote{padding:4px 8px;margin-bottom:3px;font-size:12px}
+#chatView .mimg{max-height:240px;border-radius:12px;margin-bottom:2px}
+#chatView .reacts{margin:4px 0 -12px;padding:1px 6px;font-size:12px}
+#chatView .chat-compose .ib,#chatView .send{width:42px;height:42px}
+#chatView .chat-compose .draft{min-height:42px;padding:10px 16px}
+#chatView .conversation-body{padding-bottom:84px}
+@media(min-width:761px){#chatView .message{max-width:min(60%,480px)}}
+/* header: full last-seen visible */
+#chatView .conversation-header{gap:8px;padding-left:10px;padding-right:10px}
+#chatView .conversation-header .ib{width:36px;height:36px}
+#chatView .ch-meta{flex:1;min-width:0}
+#chatView .ch-meta strong{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#chatView .ch-meta small{font-size:11.5px;white-space:normal;overflow:visible;text-overflow:clip;line-height:1.25}
+
+
+/* ===== v4 ===== */
+/* infinite history */
+#chatView .conversation-body{overflow-anchor:none}
+#chatView .sk-wrap{display:grid;gap:8px;padding:6px 0;width:100%;flex:none}
+#chatView .sk,#chatView .sk-c{display:block;height:34px;border-radius:18px 18px 18px 6px;background:linear-gradient(100deg,rgba(255,255,255,.06) 30%,rgba(255,255,255,.17) 50%,rgba(255,255,255,.06) 70%) 0 0/250% 100%;animation:skSh 1.2s linear infinite}
+#chatView .sk.r{justify-self:end;border-radius:18px 18px 6px 18px}
+@keyframes skSh{to{background-position:-250% 0}}
+#chatView .sk-row{display:flex;align-items:center;gap:12px;padding:11px 12px}
+#chatView .sk-row>div{flex:1;display:grid;gap:8px}
+#chatView .sk-row .sk{height:12px;border-radius:8px;width:70%}#chatView .sk-row .sk.s{width:45%}
+#chatView .sk-c{width:54px;height:54px;border-radius:50%;flex:none}
+#chatView .chat-start{align-self:center;margin:8px 0 4px;padding:5px 14px;border-radius:99px;font-size:11px;color:var(--mu);background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
+
+#chatView .ol-load{position:absolute;z-index:4;left:14px;right:14px;top:calc(var(--top) + 76px);display:grid;gap:8px;pointer-events:none;opacity:0;transform:translateY(-8px);transition:opacity .2s,transform .2s}
+#chatView .ol-load.on{opacity:1;transform:none}
+#chatView .ol-load .sk{width:48%;height:30px}#chatView .ol-load .sk:nth-child(2){width:36%}#chatView .ol-load .sk:nth-child(3){width:58%}
+#chatView .conversation-body{scroll-behavior:auto!important}
