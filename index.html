@@ -1335,7 +1335,7 @@ async function mfy(){const h=V.querySelector('h1');if(!h||h.textContent!='Musify
  const an=[...V.querySelectorAll('.shw')].find(s=>s.querySelector('h2')?.textContent=='Recently played');if(!an)return;
  mb=1;try{let c=DB.mfy;const tot=Object.values(DB.hist||{}).reduce((a,x)=>a+x.n,0);
   if(!c||Date.now()-c.t>216e5||tot-c.c>=6){const it=await mk();if(it.length){c=DB.mfy={t:Date.now(),c:tot,items:it};save()}}
-  if(c?.items?.length&&an.isConnected&&!V.querySelector('#mfy'))an.insertAdjacentHTML('afterend',`<div id="mfy">${shelf('Made for you',reg(c.items))}</div>`)}catch{}
+  if(c?.items?.length&&an.isConnected&&!V.querySelector('#mfy'))an.insertAdjacentHTML('beforebegin',`<div id="mfy">${shelf('Made for you',reg(c.items))}</div>`)}catch{}
  mb=0}
 
 /* ---- hero buttons (Reshuffle / Delete), icon swap, Made for you: one light observer ---- */
@@ -1438,7 +1438,7 @@ async function mfy(){const h=V.querySelector('h1');if(!h||h.textContent!='Musify
  const an=[...V.querySelectorAll('.shw')].find(s=>s.querySelector('h2')?.textContent=='Recently played');if(!an)return;
  mb=1;try{let c=DB.mfy;const tot=Object.values(DB.hist||{}).reduce((a,x)=>a+x.n,0);
   if(!c||Date.now()-c.t>216e5||tot-c.c>=6){const it=await mk();if(it.length){c=DB.mfy={t:Date.now(),c:tot,items:it};save()}}
-  if(c?.items?.length&&an.isConnected&&!V.querySelector('#mfy'))an.insertAdjacentHTML('afterend',`<div id="mfy">${shelf('Made for you',reg(c.items))}</div>`)}catch{}
+  if(c?.items?.length&&an.isConnected&&!V.querySelector('#mfy'))an.insertAdjacentHTML('beforebegin',`<div id="mfy">${shelf('Made for you',reg(c.items))}</div>`)}catch{}
  mb=0}
 
 /* ---- hero buttons (Reshuffle / Delete), icon swap, Made for you: one light observer ---- */
