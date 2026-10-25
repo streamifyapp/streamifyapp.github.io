@@ -256,7 +256,8 @@ aside.sd>*{animation:cin .7s var(--ease) backwards}aside.sd>:nth-child(3){animat
 /* ---- Premium entry (opens vip/ overlay) ---- */
 .hrow{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .vipbtn{display:inline-flex;align-items:center;gap:7px;flex:none;border:0;cursor:pointer;padding:9px 15px;border-radius:30px;font:800 12.5px Manrope,sans-serif;color:var(--ink);background:linear-gradient(135deg,#e6deff,#9d89ff 70%,#d28aff);box-shadow:inset 0 1px 0 #fff9,0 4px 14px #8b78ff55;transition:transform .25s}
-.vipbtn svg{width:15px;height:15px}.vipbtn:active{transform:scale(.94)}
+.vipbtn svg{width:15px;height:15px}
+.instrow{width:100%;justify-content:center;margin:12px 0 0}.instrow small{opacity:.7;font-weight:600;font-size:11px}.vipbtn:active{transform:scale(.94)}
 #vipf{position:fixed;inset:0;width:100%;height:100%;height:100dvh;border:0;z-index:2000;background:#0a0916;color-scheme:dark}
 </style></head><body>
 <div id="amb"></div>
@@ -350,7 +351,7 @@ const lazy=async(base,n,my)=>{const ps={},get=i=>ps[i]??=api(base+i).catch(()=>n
 /* ---- views ---- */
 const views={
 async home(){const my=RT,src=DB.src=='yt'?'yt':'sp';
- const hd=`<div class="hrow"><h1>Musify</h1><button class="vipbtn" data-vip="1" aria-label="Join Premium"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 10H5L3 8zm2.2 12h13.6v1.8H5.2z"/></svg>Join Premium</button></div><div class="seg"><button data-a="src" data-s="sp" class="${src=='sp'?'on':''}">Spotify</button><button data-a="src" data-s="yt" class="${src=='yt'?'on':''}">YT Music</button></div>`;
+ const hd=`<div class="hrow"><h1>Musify</h1><button class="vipbtn" data-vip="1" aria-label="Join Premium"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 10H5L3 8zm2.2 12h13.6v1.8H5.2z"/></svg>Join Premium</button></div>${(navigator.standalone||matchMedia('(display-mode:standalone)').matches)?'':`<button class="btn o ins instrow" data-a="a2hs">${ic('plus')}Install App <small>iPhone &amp; Android</small></button>`}<div class="seg"><button data-a="src" data-s="sp" class="${src=='sp'?'on':''}">Spotify</button><button data-a="src" data-s="yt" class="${src=='yt'?'on':''}">YT Music</button></div>`;
  if(src=='yt'){
   const d=await api('/ymfeed?part=0');
   if(!put(my,hd+`<div style="margin:12px 0 0">${ybtn}</div>`+shelf('Your YT Music playlists',DB.ytp)+shelf('Recently played',DB.rec,1)+SECS(d.sections)+'<div id="more" class="skl"><i></i></div>'))return;
