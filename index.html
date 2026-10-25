@@ -1485,7 +1485,7 @@ var MP=window.MP={
  rate:function(){return au.playbackRate},
  pos:function(){return au.currentTime||0},
  dur:function(){return isFinite(au.duration)?au.duration:0},
- play:function(){if(!hs()){if(cur())load()}else au.play().catch(function(){})},
+ play:function(){if(!hs()){if(cur())load();return Promise.resolve()}return au.play().catch(function(){})},
  pause:function(){au.pause()},
  seek:function(t){t=Math.max(0,t);if(au.readyState<1)au.addEventListener('loadedmetadata',function(){au.currentTime=t},{once:true});else au.currentTime=t},
  /* load a song (from a friend), optionally seek and optionally leave paused. Resolves when metadata is ready. */
@@ -1493,7 +1493,7 @@ var MP=window.MP={
   var s=sg(song);if(!s||!s.id)return res();M[s.id]=M[s.id]||s;
   var same=cur()&&String(cur().id)===s.id&&hs();
   if(!same)play([M[s.id]],0);
-  var fin=function(){var p=typeof pos==='function'?pos():pos;if(p>0.3)MP.seek(p);if(go===false)au.pause();else if(au.paused)au.play().catch(function(){});res()};
+  var fin=function(){var p=typeof pos==='function'?pos():pos;if(p>0.3)MP.seek(p);if(go===false)au.pause();else if(au.paused)au.play().catch(function(){toast&&toast('Tap play to sync')});res()};
   if(au.readyState>=1)fin();else{var t=setTimeout(res,10000);au.addEventListener('loadedmetadata',function(){clearTimeout(t);fin()},{once:true})}})},
  on:on,
  loadLt:function(){return ltP||(ltP=import('./vip/js/listen.js').then(function(m){return m.init(MP)}).catch(function(e){ltP=null;throw e}))}
