@@ -178,7 +178,7 @@
 .side-top{padding:20px 18px 6px}
 .side-title{align-items:flex-start}
 .side-name h2{font-size:30px;font-weight:800;letter-spacing:-.04em}
-.soon{display:flex;align-items:center;gap:7px;font-size:12px}.soon::before{content:"";width:7px;height:7px;border-radius:50%;background:#9a9a9a;box-shadow:0 0 10px #9a9a9a;animation:onPulse 2s infinite}
+.soon{display:flex;align-items:center;gap:7px;font-size:12px}.soon::before{content:"";width:7px;height:7px;border-radius:50%;background:#8f8aa8;box-shadow:0 0 8px #8f8aa8;animation:onPulse 2s infinite}
 .chat-tabs{background:none;border:0;border-bottom:1px solid var(--ln);border-radius:0;padding:0;margin:14px 0 0;gap:0}
 .chat-tabs button{border-radius:0;padding:12px 4px;font-weight:700;letter-spacing:.02em;position:relative;color:var(--mu)}
 .chat-tabs button::after{content:"";position:absolute;left:22%;right:22%;bottom:-1px;height:3px;border-radius:3px;background:linear-gradient(90deg,var(--c),var(--c2));box-shadow:0 0 14px var(--c);transform:scaleX(0);transition:transform .45s var(--sp)}
