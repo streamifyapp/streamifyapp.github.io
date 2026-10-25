@@ -1468,4 +1468,40 @@ function close(){if(f){f.remove();f=null}}
 document.addEventListener('click',function(e){if(e.target.closest('[data-vip]')){e.preventDefault();e.stopPropagation();open()}},true);
 addEventListener('message',function(e){if(e.origin===location.origin&&e.data&&e.data.vip==='close')close()})})();
 </script>
+<script>
+/* MP bridge: small, read/control API over the player for chat features (listening status, listen together). */
+(function(){
+var ls={};function on(e,f){(ls[e]=ls[e]||new Set()).add(f);return function(){ls[e].delete(f)}}
+function emit(e,d){var s=ls[e];if(!s)return;s.forEach(function(f){try{f(d)}catch(x){s.delete(f)}})}
+function sg(s){return s?{id:String(s.id),title:s.title||'',sub:s.sub||'',thumb:s.thumb||'',type:'song'}:null}
+var hs=function(){return !!au.getAttribute('src')};
+var ltP=null;
+var MP=window.MP={
+ song:function(){return sg(cur())},
+ hasSrc:hs,
+ playing:function(){return hs()&&!au.paused&&!au.ended},
+ paused:function(){return au.paused},
+ waiting:function(){return au.readyState<3},
+ rate:function(){return au.playbackRate},
+ pos:function(){return au.currentTime||0},
+ dur:function(){return isFinite(au.duration)?au.duration:0},
+ play:function(){if(!hs()){if(cur())load()}else au.play().catch(function(){})},
+ pause:function(){au.pause()},
+ seek:function(t){t=Math.max(0,t);if(au.readyState<1)au.addEventListener('loadedmetadata',function(){au.currentTime=t},{once:true});else au.currentTime=t},
+ /* load a song (from a friend), optionally seek and optionally leave paused. Resolves when metadata is ready. */
+ load:function(song,pos,go){return new Promise(function(res){
+  var s=sg(song);if(!s||!s.id)return res();M[s.id]=M[s.id]||s;
+  var same=cur()&&String(cur().id)===s.id&&hs();
+  if(!same)play([M[s.id]],0);
+  var fin=function(){var p=typeof pos==='function'?pos():pos;if(p>0.3)MP.seek(p);if(go===false)au.pause();else if(au.paused)au.play().catch(function(){});res()};
+  if(au.readyState>=1)fin();else{var t=setTimeout(res,10000);au.addEventListener('loadedmetadata',function(){clearTimeout(t);fin()},{once:true})}})},
+ on:on,
+ loadLt:function(){return ltP||(ltP=import('./vip/js/listen.js').then(function(m){return m.init(MP)}).catch(function(e){ltP=null;throw e}))}
+};
+A.forEach(function(a){
+ [['play','play'],['pause','pause'],['ended','ended'],['seeked','seek'],['loadstart','song']].forEach(function(p){
+  a.addEventListener(p[0],function(){if(this===au)emit(p[1])})})});
+try{if(localStorage.getItem('vc-np-user')==='1')setTimeout(function(){MP.loadLt().catch(function(){})},3500)}catch(e){}
+})();
+</script>
 </body></html>
