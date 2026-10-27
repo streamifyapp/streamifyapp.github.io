@@ -3,27 +3,27 @@ import { auth, db, fb } from "./firebase.js";
 const API = "https://musify-api.musify.workers.dev", PK = "vc-shp", LK = "vc-shl", SK = "vc-shs", $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const ld = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) || d } catch { return d } }, sv = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)) } catch { } };
-const SEEDS = ["bollywood", "cricket", "comedy", "music", "gaming", "cooking", "travel", "tech", "dance", "football", "science", "cars", "fitness", "anime", "movie scenes", "life hacks", "street food", "art", "animals", "motivation", "devotional", "memes", "fashion", "news"], GEN = SEEDS;
-const IN = ["bollywood songs", "hindi comedy", "desi memes", "ipl cricket", "indian street food", "punjabi song", "south indian movie scenes", "indian travel vlog", "desi dance", "bhojpuri", "mumbai life", "delhi", "indian cooking", "desi jugaad", "indian wedding", "motivation hindi", "bhajan", "tech india", "indian college life", "bgmi india", "arijit singh", "stand up comedy hindi", "marathi", "tamil", "telugu", "kannada", "malayalam", "bengali", "gujarati"];
+const SEEDS = ["reels", "bollywood", "comedy", "music", "gaming", "dance", "cars", "fitness", "anime", "memes", "fashion", "travel", "football", "cricket", "edits", "couple", "college", "pranks", "foodie", "tech"], GEN = SEEDS;
+const IN = ["trending reels", "viral reels india", "instagram reels trending", "trending reels song", "trending audio reels", "bollywood reels trending", "punjabi reels", "haryanvi reels", "dance reels trending", "funny reels india", "couple goals reels", "aesthetic reels", "gym motivation reels", "edit reels trending", "attitude reels", "college life reels", "gen z memes reels", "fashion reels india", "car reels", "travel reels india", "anime edit reels", "viral transition reels"];
 const LANGS = ["hindi", "english", "marathi", "tamil", "telugu", "punjabi", "bengali", "gujarati", "kannada", "malayalam", "bhojpuri"], LG = "vc-shg";
 const INRX = /india|desi|hindi|bollywood|ipl|mumbai|delhi|punjabi|tamil|telugu|marathi|bhojpuri|kannada|malayalam|bengali|gujarati|bharat|kohli|dhoni|rohit|shahrukh|salman|kolkata|bangalore|chennai|hyderabad/i;
 const indian = x => { const s = (x.title || "") + " " + (x.ch || ""); return /[\u0900-\u0D7F]/.test(s) || INRX.test(s) };
 const HL = { hindi: "hi", marathi: "mr", tamil: "ta", telugu: "te", punjabi: "pa", bengali: "bn", gujarati: "gu", kannada: "kn", malayalam: "ml" };
 const rnd = a => a[Math.random() * a.length | 0];
 const STOP = new Set("this that with from have your what when they them will just like video shorts short about into more best new how the and for are you not but can all out".split(" "));
-let host, feed, items = [], seen = new Set(ld(SK, [])), cur = -1, busy = false, muted = false, ifr = null, t0 = 0, io, P = ld(PK, {}), L = ld(LK, {}), friends = null, syncT, skipRun = 0;
+let drag = false, host, feed, items = [], seen = new Set(ld(SK, [])), cur = -1, busy = false, muted = false, ifr = null, t0 = 0, io, P = ld(PK, {}), L = ld(LK, {}), friends = null, syncT, skipRun = 0;
 (() => { if (document.getElementById("sh-css")) return; const s = document.createElement("style"); s.id = "sh-css"; s.textContent = `
 #chatView #shortsPanel.rl:not([hidden]){display:block;padding:0;background:#000;overflow:hidden}
-.sh-feed{position:absolute;inset:0;overflow-y:auto;scroll-snap-type:y mandatory;scrollbar-width:none;overscroll-behavior:contain}.sh-feed::-webkit-scrollbar{display:none}
+.sh-feed{position:absolute;inset:0;overflow:hidden;touch-action:none;overscroll-behavior:contain}.sh-feed::-webkit-scrollbar{display:none}
 .sh-it{position:relative;height:100%;scroll-snap-align:start;background:#000 center/cover no-repeat;overflow:hidden}
 .sh-it iframe{position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none;background:#000}
 .sh-tap{position:absolute;inset:0;z-index:1}
 .sh-sh{position:absolute;inset:0;pointer-events:none;background:linear-gradient(transparent 60%,rgba(0,0,0,.75));z-index:1}
-.sh-in{position:absolute;z-index:2;left:14px;right:76px;bottom:96px;color:#fff;font-size:14px;line-height:1.4;font-weight:600;text-shadow:0 1px 6px rgba(0,0,0,.7);pointer-events:none;max-height:4.2em;overflow:hidden}
+.sh-in{position:absolute;z-index:2;left:12px;right:62px;bottom:84px;color:#fff;font-size:12.5px;line-height:1.35;font-weight:600;text-shadow:0 1px 6px rgba(0,0,0,.7);pointer-events:none;max-height:2.7em;overflow:hidden}
 .sh-in small{display:block;opacity:.8;font-weight:500;margin-top:4px}
-.sh-side{position:absolute;z-index:2;right:10px;bottom:104px;display:grid;gap:18px;justify-items:center}
-.sh-side button{display:grid;justify-items:center;gap:3px;background:none;border:0;color:#fff;font:600 11px inherit;cursor:pointer;text-shadow:0 1px 5px rgba(0,0,0,.7)}
-.sh-side svg{width:30px;height:30px;filter:drop-shadow(0 1px 4px rgba(0,0,0,.6))}.sh-side .on svg{fill:#ff2d55;stroke:#ff2d55}
+.sh-side{position:absolute;z-index:2;right:8px;bottom:86px;display:grid;gap:15px;justify-items:center}
+.sh-side button{display:grid;justify-items:center;background:none;border:0;padding:2px;color:#fff;cursor:pointer}
+.sh-side svg{width:24px;height:24px;filter:drop-shadow(0 1px 4px rgba(0,0,0,.6))}.sh-side .on svg{fill:#ff2d55;stroke:#ff2d55}
 .sh-top{position:absolute;z-index:3;top:calc(env(safe-area-inset-top,0px) + 12px);left:0;right:0;text-align:center;color:#fff;font:700 16px inherit;pointer-events:none;text-shadow:0 1px 6px rgba(0,0,0,.7)}
 .sh-note{position:absolute;inset:0;display:grid;place-content:center;gap:12px;text-align:center;color:#ddd;padding:30px;font-size:14px;z-index:2}
 .sh-bad{position:absolute;inset:0;display:grid;place-items:center;color:#ccc;font-size:13px;background:rgba(0,0,0,.6);z-index:1;pointer-events:none}
@@ -50,7 +50,6 @@ let host, feed, items = [], seen = new Set(ld(SK, [])), cur = -1, busy = false, 
 .sh-int{position:absolute;inset:0;z-index:6;background:#0b0b10;display:grid;align-content:start;justify-items:center;gap:14px;padding:calc(env(safe-area-inset-top,0px) + 40px) 22px 40px;color:#fff;text-align:center;overflow-y:auto}.sh-int h3{margin:0;font-size:22px}.sh-int p{margin:0;color:#aaa;font-size:13px}.sh-l{font-size:12px;color:#8a8aa0;text-transform:uppercase;letter-spacing:.08em;margin-top:6px}
 .sh-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:400px}.sh-chips button{border:1px solid rgba(255,255,255,.2);background:none;color:#fff;padding:8px 14px;border-radius:99px;font:600 13px inherit;cursor:pointer;text-transform:capitalize}.sh-chips button.on{background:#ff1744;border-color:#ff1744}
 .sh-row{display:flex;gap:10px;margin-top:8px}.sh-btn.go{background:#ff1744;padding:12px 30px}
-.sh-tune{position:absolute;z-index:4;top:calc(env(safe-area-inset-top,0px) + 8px);right:10px;width:34px;height:34px;border-radius:50%;border:0;background:rgba(0,0,0,.45);color:#fff;display:grid;place-items:center;cursor:pointer}.sh-tune svg{width:18px;height:18px}
 .sh-toast{position:absolute;z-index:9;left:50%;top:calc(env(safe-area-inset-top,0px) + 56px);transform:translateX(-50%);background:rgba(30,30,38,.95);color:#fff;padding:10px 18px;border-radius:99px;font:600 13px inherit;box-shadow:0 8px 24px rgba(0,0,0,.5);animation:shF .2s;white-space:nowrap}
 .sh-heart{position:absolute;z-index:3;left:50%;top:50%;width:96px;height:96px;margin:-48px 0 0 -48px;color:#ff2d55;pointer-events:none;animation:shH .8s ease-out forwards}.sh-heart svg{width:100%;height:100%;fill:#ff2d55;stroke:#ff2d55}
 @keyframes shU{from{transform:translateY(100%)}}@keyframes shF{from{opacity:0}}@keyframes shP{50%{opacity:.5}}@keyframes shH{0%{transform:scale(.3);opacity:0}25%{transform:scale(1.15);opacity:1}100%{transform:scale(1.4) translateY(-30px);opacity:0}}
@@ -68,14 +67,14 @@ function decay() { const d = Math.floor(Date.now() / 864e5), last = ld("vc-shd",
 const wpick = pairs => { const w = pairs.map(x => Math.sqrt(Math.max(x[1], .1))), tot = w.reduce((a, b) => a + b, 0); let r = Math.random() * tot; for (let i = 0; i < pairs.length; i++) if ((r -= w[i]) <= 0) return pairs[i][0]; return pairs[0][0] };
 function queries() {
   const pos = Object.entries(P).filter(x => x[1] > 0).sort((a, b) => b[1] - a[1]).slice(0, 14), lg = ld(LG, ["hindi", "english"]), nm = k => k.replace(/^@/, ""), hr = new Date().getHours(), q = [];
-  const tod = hr >= 5 && hr < 9 ? ["bhajan", "motivation hindi", "morning routine india"] : hr >= 22 || hr < 4 ? ["arijit singh", "late night songs hindi", "stand up comedy hindi"] : hr >= 18 ? ["ipl cricket", "bollywood", "indian street food"] : ["indian food", "tech india", "funny hindi"], lang = () => rnd(lg), inq = () => Math.random() < .55 ? rnd(IN) : rnd(GEN) + " " + lang();
+  const tod = hr >= 5 && hr < 9 ? ["gym reels", "morning vibe reels", "trending reels"] : hr >= 22 || hr < 4 ? ["night drive reels", "sad edit reels", "trending reels song"] : hr >= 18 ? ["dance reels trending", "bollywood reels", "funny reels india"] : ["viral reels india", "college reels", "instagram reels trending"], lang = () => rnd(lg), inq = () => Math.random() < .55 ? rnd(IN) : rnd(GEN) + " " + lang();
   if (skipRun >= 3) { skipRun = 0; q.push(rnd(IN), rnd(GEN) + " india", rnd(GEN), rnd(tod)) }
-  else if (pos.length >= 3) { q.push(inq(), nm(wpick(pos)) + (Math.random() < .5 ? " " + lang() : ""), nm(wpick(pos)) + " " + nm(wpick(pos)), Math.random() < .5 ? rnd(tod) : rnd(GEN) + " india"); if (Math.random() < .4) q.push("trending shorts " + lang()) }
-  else q.push(rnd(IN), rnd(IN), rnd(GEN) + " " + lang(), "trending shorts " + lang(), rnd(tod));
+  else if (pos.length >= 3) { q.push(inq(), nm(wpick(pos)) + (Math.random() < .5 ? " " + lang() : ""), nm(wpick(pos)) + " " + nm(wpick(pos)), Math.random() < .5 ? rnd(tod) : rnd(GEN) + " india"); if (Math.random() < .4) q.push("trending reels " + lang()) }
+  else q.push(rnd(IN), rnd(IN), rnd(GEN) + " " + lang(), "trending reels " + lang(), rnd(tod));
   return [...new Set(q.map(s => s.trim()))].slice(0, 5);
 }
 const bad = x => { let s = 0; for (const k of terms(x.title)) s += Math.min(P[k] || 0, 0); const c = chKey(x); if (c) s += Math.min(P[c] || 0, 0); return s <= -4 };
-const sc = x => { let s = 0; for (const k of terms(x.title)) s += P[k] || 0; s += P[chKey(x)] || 0; return Math.max(-8, Math.min(s, 10)) + (indian(x) ? 2.5 : 0) };
+const sc = x => { let s = 0; for (const k of terms(x.title)) s += P[k] || 0; s += P[chKey(x)] || 0; return Math.max(-8, Math.min(s, 10)) + (indian(x) ? 2.5 : 0) + (/reel|viral|trend|insta|edit/i.test((x.title || "") + " " + (x.ch || "")) ? 3 : 0) };
 function mix(fresh) {
   const pool = fresh.map(x => ({ x, s: sc(x) * .4 + Math.random() * 5 })).sort((a, b) => b.s - a.s), out = [];
   while (pool.length) { const rc = out.slice(-3).map(chKey), rt = out.slice(-2).map(o => terms(o.title)[0]); let i = pool.findIndex(p => { const c = chKey(p.x), k = terms(p.x.title)[0]; return (!c || !rc.includes(c)) && (!k || !rt.includes(k)) }); if (i < 0) i = 0; out.push(pool.splice(i, 1)[0].x) }
@@ -97,25 +96,37 @@ function add(list, front) {
   $(".sh-note", host)?.remove();
   for (const x of list) {
     const i = items.push(x) - 1, el = document.createElement("div"); el.className = "sh-it"; el.dataset.i = i; el.dataset.id = x.id; el.style.backgroundImage = `url(https://i.ytimg.com/vi/${x.id}/hqdefault.jpg)`;
-    el.innerHTML = `<div class="sh-tap"></div><div class="sh-sh"></div><div class="sh-in">${esc(x.title)}${x.ch ? `<small>${esc(x.ch)}</small>` : ""}</div><div class="sh-side"><button data-a="like" class="${L[x.id] ? "on" : ""}">${svg(ic.like)}<span>Like</span></button><button data-a="cm">${svg(ic.cm)}<span>Comments</span></button><button data-a="sh">${svg(ic.sh)}<span>Send</span></button><button data-a="ni">${svg(ic.ni)}<span>Less</span></button><button data-a="mu">${svg(muted ? ic.x : ic.mu)}<span>${muted ? "Muted" : "Sound"}</span></button></div>`;
+    el.innerHTML = `<div class="sh-tap"></div><div class="sh-sh"></div><div class="sh-in">${esc(x.title)}${x.ch ? `<small>${esc(x.ch)}</small>` : ""}</div><div class="sh-side"><button data-a="like" class="${L[x.id] ? "on" : ""}">${svg(ic.like)}</button><button data-a="cm">${svg(ic.cm)}</button><button data-a="sh">${svg(ic.sh)}</button><button data-a="ni">${svg(ic.ni)}</button><button data-a="mu">${svg(muted ? ic.x : ic.mu)}</button></div>`;
     front ? feed.insertBefore(el, feed.firstChild) : feed.appendChild(el); io.observe(el);
   }
 }
-function leave() { if (cur < 0) return; const d = (Date.now() - t0) / 1000, it = items[cur]; if (d >= 4) { skipRun = 0; learn(it, d >= 12 ? 2 : 1) } else if (d < 1.5 && d > .2) { learn(it, -.7); skipRun++ } if (ifr) { ifr.remove(); ifr = null } }
-function play(i) {
-  leave(); cur = i; t0 = Date.now(); const it = items[i], el = feed.querySelector(`[data-i="${i}"]`); if (!it || !el) return;
-  const f = document.createElement("iframe"), id = it.id;
-  f.allow = "autoplay; encrypted-media"; f.referrerPolicy = "strict-origin-when-cross-origin";
-  f.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=${muted ? 1 : 0}&controls=0&playsinline=1&loop=1&playlist=${id}&rel=0&modestbranding=1&fs=0&disablekb=1&iv_load_policy=3&enablejsapi=1&origin=${encodeURIComponent(location.origin)}`;
+const ord = () => [...feed.children].filter(x => x.classList?.contains("sh-it")), H = () => feed.clientHeight || innerHeight;
+const cmdF = (f, fn, a) => { try { f?.contentWindow?.postMessage(JSON.stringify({ event: "command", func: fn, args: a || [] }), "*") } catch { } };
+function leave() { if (cur < 0) return; const d = (Date.now() - t0) / 1000, it = items[cur]; if (d >= 4) { skipRun = 0; learn(it, d >= 12 ? 2 : 1) } else if (d < 1.5 && d > .2) { learn(it, -.7); skipRun++ } if (ifr) { cmdF(ifr, "pauseVideo"); ifr = null } }
+function mkf(el, act) {
+  const id = el.dataset.id, f = document.createElement("iframe"); f.allow = "autoplay; encrypted-media"; f.referrerPolicy = "strict-origin-when-cross-origin"; f.dataset.id = id; f._pre = !act;
+  f.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=${act && !muted ? 0 : 1}&controls=0&playsinline=1&loop=1&playlist=${id}&rel=0&modestbranding=1&fs=0&disablekb=1&iv_load_policy=3&enablejsapi=1&origin=${encodeURIComponent(location.origin)}`;
   f.onload = () => f.contentWindow?.postMessage(JSON.stringify({ event: "listening", id: 1, channel: "widget" }), "*");
-  el.insertBefore(f, el.firstChild); ifr = f; f.dataset.id = id;
-  if (feed.querySelectorAll(".sh-it").length - [...feed.children].indexOf(el) <= 3) more();
+  el.insertBefore(f, el.firstChild); return f;
 }
-const cmd = (f, a) => ifr?.contentWindow?.postMessage(JSON.stringify({ event: "command", func: f, args: a || [] }), "*");
-const skip = () => { const n = ifr?.parentNode?.nextElementSibling || feed.querySelector(`[data-i="${cur}"]`)?.nextElementSibling; n && n.scrollIntoView({ behavior: "smooth" }) };
+function actv(f) { f._pre = false; ifr = f; cmdF(f, "seekTo", [0, true]); cmdF(f, muted ? "mute" : "unMute"); cmdF(f, "playVideo") }
+function play(i) {
+  leave(); const L = ord(), el = feed.querySelector(`[data-i="${i}"]`), it = items[i]; if (!it || !el) return; cur = i; t0 = Date.now(); const pos = L.indexOf(el);
+  let f = el.querySelector("iframe"); if (f) actv(f); else { f = mkf(el, true); ifr = f }
+  L.forEach((e, k) => { if (k < pos - 1 || k > pos + 2) e.querySelector("iframe")?.remove() });
+  for (const e of L.slice(pos + 1, pos + 3)) if (!e.querySelector("iframe") && !e.querySelector(".sh-bad")) mkf(e, false);
+  if (L.length - pos <= 6) more();
+}
+const cmd = (f, a) => cmdF(ifr, f, a);
+let anim = 0;
+function settle(n) { const el = ord()[n]; if (el) { const i = +el.dataset.i; if (i !== cur || !ifr) play(i) } }
+function goTo(n, dur = 170) { const L = ord(); n = Math.max(0, Math.min(n, L.length - 1)); const to = n * H(), from = feed.scrollTop, t = performance.now(); cancelAnimationFrame(anim); if (!dur || from === to) { feed.scrollTop = to; settle(n); return } const st = now => { const k = Math.min(1, (now - t) / dur); feed.scrollTop = from + (to - from) * (1 - Math.pow(1 - k, 3)); if (k < 1) anim = requestAnimationFrame(st); else settle(n) }; anim = requestAnimationFrame(st) }
+const skip = () => goTo(Math.round(feed.scrollTop / H()) + 1);
 addEventListener("message", e => {
-  if (!ifr || e.source !== ifr.contentWindow) return; let d; try { d = JSON.parse(e.data) } catch { return }
-  if (d.event === "onError") { const b = document.createElement("div"); b.className = "sh-bad"; b.textContent = "Video unavailable, swipe up"; ifr.parentNode.appendChild(b); setTimeout(skip, 300) }
+  if (!feed) return; const f = [...feed.querySelectorAll("iframe")].find(x => x.contentWindow === e.source); if (!f) return; let d; try { d = JSON.parse(e.data) } catch { return }
+  if (d.event === "onError") { const b = document.createElement("div"); b.className = "sh-bad"; b.textContent = "Video unavailable"; f.parentNode.appendChild(b); f.remove(); if (f === ifr) { ifr = null; setTimeout(skip, 250) } return }
+  const rdy = d.event === "onReady" || d.event === "initialDelivery";
+  if (f === ifr) { if (rdy && f._pre) actv(f) } else if (rdy || d.info?.playerState === 1) cmdF(f, "pauseVideo");
 });
 async function loadFriends() {
   if (friends) return friends; const u = auth.currentUser; if (!u) return [];
@@ -140,7 +151,7 @@ async function share(it) {
   };
 }
 async function comments(it) {
-  learn(it, 1); const s = openSheet(`<div class="sh-grab"></div><div class="sh-sh-h"><span>Comments</span><button class="sh-x" aria-label="Close">✕</button></div><div class="sh-cl"><div style="color:#888">Loading…</div></div><div class="sh-ft">Posting needs a YouTube account: <a target="_blank" rel="noopener" href="https://www.youtube.com/shorts/${it.id}">comment on YouTube</a></div>`); const list = $(".sh-cl", s); let ct = "", first = true;
+  learn(it, 1); const s = openSheet(`<div class="sh-grab"></div><div class="sh-sh-h"><button class="sh-x" aria-label="Close">✕</button></div><div class="sh-cl"><div style="color:#888">Loading…</div></div><div class="sh-ft">Posting needs a YouTube account: <a target="_blank" rel="noopener" href="https://www.youtube.com/shorts/${it.id}">comment on YouTube</a></div>`); const list = $(".sh-cl", s); let ct = "", first = true;
   const load = async () => {
     try {
       const j = await fetch(`${API}/shortcomments?id=${it.id}${ct ? "&ct=" + encodeURIComponent(ct) : ""}`).then(r => r.json()); if (first) list.innerHTML = ""; first = false; $(".sh-btn", list)?.remove();
@@ -156,31 +167,28 @@ export function openShort(it, fromDM) {
   if (ex) { ex.scrollIntoView(); if (+ex.dataset.i !== cur || !ifr) play(+ex.dataset.i) } else { add([it], true); feed.scrollTop = 0 }
   learn(it, 3);
 }
-function onboard() {
-  if ($(".sh-int", host)) return; const lg = new Set(ld(LG, ["hindi", "english"])), d = document.createElement("div"); d.className = "sh-int";
-  d.innerHTML = `<h3>Tune your Shorts</h3><p>Pick languages & interests. The feed keeps learning as you watch.</p><b class="sh-l">Languages</b><div class="sh-chips">${LANGS.map(x => `<button data-l="${x}" class="${lg.has(x) ? "on" : ""}">${x}</button>`).join("")}</div><b class="sh-l">Interests</b><div class="sh-chips">${SEEDS.map(x => `<button data-k="${esc(x)}">${esc(x)}</button>`).join("")}</div><div class="sh-row"><button class="sh-btn" data-s="1">Skip</button><button class="sh-btn go">Start watching</button></div>`;
-  host.appendChild(d); d.onclick = e => {
-    const c = e.target.closest("[data-k],[data-l]"); if (c) { c.classList.toggle("on"); return }
-    const b = e.target.closest(".sh-btn"); if (!b) return;
-    if (!b.dataset.s) { const g = [...d.querySelectorAll("[data-l].on")].map(x => x.dataset.l); sv(LG, g.length ? g : ["hindi", "english"]); d.querySelectorAll("[data-k].on").forEach(x => P[x.dataset.k] = (P[x.dataset.k] || 0) + 4); save() }
-    sv("vc-shi", 1); d.remove(); if (!items.length) more(); else if (!b.dataset.s) toast("Feed tuned ✓")
-  };
-}
 function refresh() {
-  leave(); cur = -1; items = []; skipRun = 0; busy = false; io?.disconnect(); feed.innerHTML = ""; feed.scrollTop = 0; closeSheet(); $(".sh-note", host)?.remove(); more(); toast("Feed refreshed");
+  leave(); feed.querySelectorAll("iframe").forEach(x => x.remove()); cur = -1; items = []; skipRun = 0; busy = false; io?.disconnect(); feed.innerHTML = ""; feed.scrollTop = 0; closeSheet(); $(".sh-note", host)?.remove(); more(); toast("Feed refreshed");
 }
-export function stopShorts() { closeSheet(); leave(); cur = -1; if (host) host.dataset.dm = ""; if (feed) io?.disconnect() }
+export function stopShorts() { closeSheet(); leave(); feed?.querySelectorAll("iframe").forEach(x => x.remove()); cur = -1; if (host) host.dataset.dm = ""; if (feed) io?.disconnect() }
 export function mountShorts(el) {
   host = el; host.classList.add("rl");
   if (host.dataset.sh === "1") { feed.querySelectorAll(".sh-it").forEach(x => io.observe(x)); return }
-  host.dataset.sh = "1"; document.addEventListener("click", e => { if (e.target.closest('[data-gn="shorts"]') && host.isConnected && !host.hidden) refresh() }, true); host.innerHTML = `<div class="sh-top">Shorts</div><button class="sh-back">‹ Chat</button><button class="sh-tune" aria-label="Tune feed">${svg(ic.tn)}</button><div class="sh-feed"></div>`; feed = $(".sh-feed", host);
-  $(".sh-back", host).onclick = () => document.querySelector('[data-gn="chats"]')?.click(); $(".sh-tune", host).onclick = onboard;
-  io = new IntersectionObserver(es => { for (const e of es) if (e.isIntersecting && e.intersectionRatio >= .7) { const i = +e.target.dataset.i; if (i !== cur || !ifr) play(i) } }, { root: feed, threshold: [.7] });
+  host.dataset.sh = "1"; document.addEventListener("click", e => { if (e.target.closest('[data-gn="shorts"]') && host.isConnected && !host.hidden) refresh() }, true); host.innerHTML = `<div class="sh-top">Shorts</div><button class="sh-back">‹ Chat</button><div class="sh-feed"></div>`; feed = $(".sh-feed", host);
+  $(".sh-back", host).onclick = () => document.querySelector('[data-gn="chats"]')?.click();
+  io = new IntersectionObserver(es => { if (drag) return; for (const e of es) if (e.isIntersecting && e.intersectionRatio >= .7) { const i = +e.target.dataset.i; if (i !== cur || !ifr) play(i) } }, { root: feed, threshold: [.7] });
+
+  let ty = 0, ly = 0, tt = 0, v = 0, top0 = 0, wt = 0;
+  feed.addEventListener("touchstart", e => { if (e.touches.length > 1) return; cancelAnimationFrame(anim); ty = ly = e.touches[0].clientY; tt = performance.now(); top0 = feed.scrollTop; drag = true; v = 0 }, { passive: true });
+  feed.addEventListener("touchmove", e => { if (!drag) return; const y = e.touches[0].clientY, n = performance.now(), dt = n - tt; if (dt > 0) v = .7 * v + .3 * ((ly - y) / dt); ly = y; tt = n; feed.scrollTop = top0 + (ty - y) }, { passive: true });
+  const end = () => { if (!drag) return; drag = false; const d = ty - ly, h = H(), base = Math.round(top0 / h); if (Math.abs(d) < 6) { feed.scrollTop = top0; return } let n = base; if (d > h * .1 || v > .3) n = base + 1; else if (d < -h * .1 || v < -.3) n = base - 1; goTo(n, 160) };
+  feed.addEventListener("touchend", end, { passive: true }); feed.addEventListener("touchcancel", end, { passive: true });
+  feed.addEventListener("wheel", e => { e.preventDefault(); if (Date.now() - wt < 380 || Math.abs(e.deltaY) < 8) return; wt = Date.now(); goTo(Math.round(feed.scrollTop / H()) + (e.deltaY > 0 ? 1 : -1), 170) }, { passive: false });
+  document.addEventListener("keydown", e => { if (!host.isConnected || host.hidden || !["ArrowDown", "ArrowUp"].includes(e.key) || e.target.closest?.("input,[contenteditable]")) return; goTo(Math.round(feed.scrollTop / H()) + (e.key === "ArrowDown" ? 1 : -1)) });
   feed.addEventListener("click", e => {
     const el = e.target.closest(".sh-it"); if (!el) return; const it = items[+el.dataset.i], b = e.target.closest("[data-a]");
-    if (b) { const a = b.dataset.a; if (a === "like") { L[it.id] ? delete L[it.id] : (L[it.id] = 1, learn(it, 3)); sv(LK, L); b.classList.toggle("on", !!L[it.id]) } else if (a === "cm") comments(it); else if (a === "sh") share(it); else if (a === "ni") { learn(it, -4); toast("Showing less like this"); skip() } else if (a === "mu") { muted = !muted; cmd(muted ? "mute" : "unMute"); feed.querySelectorAll('[data-a="mu"]').forEach(x => x.innerHTML = svg(muted ? ic.x : ic.mu) + `<span>${muted ? "Muted" : "Sound"}</span>`) } }
+    if (b) { const a = b.dataset.a; if (a === "like") { L[it.id] ? delete L[it.id] : (L[it.id] = 1, learn(it, 3)); sv(LK, L); b.classList.toggle("on", !!L[it.id]) } else if (a === "cm") comments(it); else if (a === "sh") share(it); else if (a === "ni") { learn(it, -4); toast("Showing less like this"); skip() } else if (a === "mu") { muted = !muted; cmd(muted ? "mute" : "unMute"); feed.querySelectorAll('[data-a="mu"]').forEach(x => x.innerHTML = svg(muted ? ic.x : ic.mu)) } }
     else if (e.target.classList.contains("sh-tap") && ifr) { const n = Date.now(); if (n - (el._t || 0) < 300) { clearTimeout(el._pt); el._t = 0; if (!L[it.id]) { L[it.id] = 1; learn(it, 3); sv(LK, L); el.querySelector('[data-a="like"]')?.classList.add("on") } heart(el) } else { el._t = n; el._pt = setTimeout(() => { el.dataset.p = el.dataset.p === "1" ? "" : "1"; cmd(el.dataset.p ? "pauseVideo" : "playVideo") }, 280) } }
   });
-  decay(); pull().then(() => { if (!ld("vc-shi", 0) && Object.keys(P).length < 2) onboard(); });
-  if (ld("vc-shi", 0) || Object.keys(P).length >= 2) more(); else if (!items.length) setTimeout(() => { if (!items.length && !$(".sh-int", host)) more() }, 1500);
+  decay(); pull(); more();
 }

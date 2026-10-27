@@ -76,7 +76,7 @@ export function mountBar(chatMain,f,esc,chatId,name){
   css();RI=undefined;
   const list=chatMain.querySelector("#messageList");if(!list)return()=>{};
   const bar=document.createElement("div");bar.className="lt-bar";bar.id="ltBar";bar.hidden=true;
-  bar.innerHTML='<img class="lt-th" alt=""><div class="lt-m"><b><span class="eq"><i></i><i></i><i></i></span><span class="lt-t"></span></b><small></small><i class="lt-pr"><u></u></i></div><button type="button" class="lt-pp" aria-label="Play or pause"><i class="ico" data-i="pause"></i></button><button type="button" class="lt-rj"><i class="ico" data-i="sync"></i>Rejoin</button><button type="button" class="lt-lv"><i class="ico" data-i="leave"></i>Leave</button>';
+  bar.innerHTML='<img class="lt-th" alt=""><div class="lt-m"><b><span class="eq"><i></i><i></i><i></i></span><span class="lt-t"></span></b><small></small><i class="lt-pr"><u></u></i></div><button type="button" class="lt-pp" aria-label="Play or pause"><i class="ico" data-i="pause"></i></button><button type="button" class="lt-lv"><i class="ico" data-i="leave"></i>Leave</button>';
   list.before(bar);
   const mp=P(),$b=s=>bar.querySelector(s);
   let st=null,iv=0,off=()=>{},offPk=()=>{};
@@ -93,7 +93,7 @@ export function mountBar(chatMain,f,esc,chatId,name){
       const b=c.querySelector("[data-lt=join]"),s=c.querySelector("[data-lt=st]");
       const k=joined?"in":ri===undefined?"?":ri?"live":"end";
       if(c.dataset.s===k)return;c.dataset.s=k;c.classList.toggle("ended",k==="end");
-      if(b){b.disabled=k==="in"||k==="end";b.innerHTML=k==="in"?'<i class="ico" data-i="check"></i>Joined':k==="end"?"Ended":'<i class="ico" data-i="play"></i>'+(ri&&ri.joined?"Rejoin":"Join")}
+      if(b){b.disabled=k==="in"||k==="end";b.innerHTML=k==="in"?'<i class="ico" data-i="check"></i>Joined':k==="end"?"Ended":'<i class="ico" data-i="play"></i>Join'}
       if(s)s.textContent=k==="in"?"You are in this session":k==="live"?"Session active":k==="end"?"Session ended":"Invite sent";
     });
   };
@@ -102,20 +102,19 @@ export function mountBar(chatMain,f,esc,chatId,name){
     const joined=inRoom(),ri=RI,mode=joined?"in":ri?"rj":"";
     bar.hidden=!mode;bar.dataset.mode=mode;paint();if(!mode)return;
     const song=joined?st.song:ri.song;
-    $b(".lt-t").textContent=joined?(st.other?`Listening together with ${st.name}`:`Waiting for ${st.name} to rejoin`):(ri.other?`${name||"Your friend"} is listening together`:"Session paused, tap to continue");
+    $b(".lt-t").textContent=joined?(st.other?`Listening together with ${st.name}`:`Waiting for ${st.name} to rejoin`):(ri.other?`${name||"Your friend"} is listening together`:"Reconnecting…");
     $b("small").textContent=song?`${song.title}${song.sub?" – "+song.sub:""}`:"";
     const im=$b(".lt-th"),u=song?.thumb||"";if(/^https?:/.test(u)){if(im.src!==u)im.src=u;im.style.visibility=""}else im.style.visibility="hidden";
     tick();if(joined)iv=setInterval(tick,500);
   };
   $b(".lt-pp").onclick=()=>P()?.lt?.toggle();
   $b(".lt-lv").onclick=()=>P()?.lt?.leave();
-  $b(".lt-rj").onclick=async()=>{const lt=await LT();if(!lt)return;const r=await lt.join(chatId,f.uid,name||"Friend");if(r.err)try{window.parent.toast(r.err)}catch{}};
   $b(".lt-pr").onclick=e=>{const r=e.currentTarget.getBoundingClientRect(),d=mp?.dur()||0;if(d)mp.seek((e.clientX-r.left)/r.width*d)};
   const mo=new MutationObserver(()=>paint());mo.observe(list,{childList:true,subtree:true});
   LT().then(lt=>{
     if(!lt||!bar.isConnected)return;
     st=lt.state();off=lt.on(s=>{st=s;render()});
-    offPk=lt.peek(chatId,x=>{RI=x;render()});render();
+    offPk=lt.peek(chatId,x=>{RI=x;render();if(x&&!x.joined&&!inRoom())lt.auto?.(chatId,f.uid,name||f.displayName||"Friend")});render();
   });
   return()=>{clearInterval(iv);mo.disconnect();try{off()}catch{}try{offPk()}catch{}RI=undefined;bar.remove()};
 }

@@ -16,7 +16,7 @@ async function openPremium(){
   boot();
   try{
     if(localStorage.getItem(NK)==="1"||Number(localStorage.getItem(UK)||0)>Date.now()){await goPrivate();return;}
-    localStorage.removeItem(UK);
+    localStorage.removeItem(UK);setTimeout(()=>import("./chat.js").catch(()=>{}),200);
     renderPremium({onClose:backToStore,onUnlock:m=>{if(m===-1)localStorage.setItem(NK,"1");else if(m>0)localStorage.setItem(UK,String(Date.now()+m*60000));else localStorage.removeItem(UK);goPrivate();}});
     const pv=$("#premiumView");pv.style.pointerEvents="none";pv.hidden=false;navPush();setTimeout(()=>{pv.style.pointerEvents=""},700);
   }catch(err){console.error(err);toast("Please try again.");setTimeout(backToStore,900);}

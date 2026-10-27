@@ -31,7 +31,7 @@ function npClear(){if(!npOn||!me)return;npOn=false;npId=null;fb.remove(npRef()).
 /* ---------- listen together ---------- */
 const state=()=>R?{id:R.id,friend:R.friend,name:R.name,host:R.hostUid===me,other:R.other,song:R.st?.song||null,playing:!!R.st?.playing,offer:false}:offer?{...offer,offer:true,other:false,song:null,playing:false}:null;
 function emit(){subs.forEach(f=>{try{f(state())}catch{subs.delete(f)}});pill()}
-function seekTo(t){if(!R)return;R.ignSeek=Date.now()+2500;R.cool=Date.now()+5000;MPr.seek(t)}
+function seekTo(t){if(!R)return;R.ignSeek=Date.now()+2500;R.cool=Date.now()+3000;MPr.seek(t)}
 
 function apply(st){
   const r=R,s=st&&st.song;if(!r||!s)return Promise.resolve();
@@ -73,14 +73,16 @@ function local(kind){
   r.lt=setTimeout(()=>reconcile(kind),w);
 }
 /* Safety net every 4s: repairs missed events, silent pauses, buffering drift. */
+function resync(r){fb.get(rr(r.id)).then(s=>{if(R!==r||r.leaving)return;const v=s.val();if(!v)return;r.heard=Date.now();r.st=v;r.other=!!(v.joined&&v.joined[r.friend]);if(!(v.joined&&v.joined[me])&&!r.away)assert(r);const sg=v.seq+":"+v.by;if(v.by!==me&&sg!==r.sig){r.sig=sg;apply(v)}emit()}).catch(()=>{})}
 function net(){
   const r=R;if(!r||r.leaving||r.away||!r.st||!r.st.song)return;
-  const t=Date.now();if(t<r.hold||t<r.cool||t-r.last<2500)return;
+  const t=Date.now();if(t-(r.heard||0)>15000){r.heard=t;resync(r)}
+  if(t<r.hold||t<r.cool||t-r.last<1500)return;
   const st=r.st,c=MPr.song(),mine=st.by===me;
   if(!c||c.id!==st.song.id||!MPr.hasSrc()||MPr.playing()!==!!st.playing){mine?reconcile("net"):apply(st);return}
   if(!st.playing||MPr.paused()||MPr.waiting()||MPr.rate()!==1)return;
   const e=expPos(st);
-  if(Math.abs(MPr.pos()*1000-e)>1500)mine?write(false):seekTo(e/1000);
+  if(Math.abs(MPr.pos()*1000-e)>900)mine?write(false):seekTo(e/1000);
 }
 function assert(r){const ref=jr(r.id);fb.set(ref,true).catch(()=>{});fb.onDisconnect(ref).remove().catch(()=>{})}
 function partnerGone(r){
@@ -89,7 +91,7 @@ function partnerGone(r){
     if(R!==r||r.other||r.leaving)return;
     if(MPr.playing())MPr.pause();
     r.hold=0;write(false);toast(`${r.name} left the session`);emit();
-  },3500);
+  },15000);
 }
 function drop(r,msg){
   if(R!==r)return;R=null;
@@ -101,7 +103,7 @@ function attach(id,friend,name,st,adopt){
   const r=R={id,friend,name,st,sig:st?st.seq+":"+st.by:"",hostUid:st?.host||null,hold:adopt?0:Date.now()+2500,ignSeek:0,cool:0,un:[],lt:0,chk:0,gone:0,other:false,hadOther:false,seen:false,adopt,away:false,leaving:false,endedAt:0,last:0};
   sv({u:me,id,friend,name,t:Date.now()});
   r.un.push(fb.onValue(rr(id),s=>{
-    if(R!==r)return;const v=s.val();
+    if(R!==r)return;const v=s.val();r.heard=Date.now();
     if(!v){if(r.seen&&MPr.playing())MPr.pause();drop(r,r.seen?`${name} ended the session`:"This session has ended");sv(null);return}
     const first=!r.seen,was=r.other;
     r.seen=true;r.st=v;r.hostUid=v.host;r.other=!!(v.joined&&v.joined[friend]);
@@ -118,7 +120,7 @@ function attach(id,friend,name,st,adopt){
     else if(r.other){clearTimeout(r.gone);if(!was&&r.hadOther)toast(`${name} joined`);r.hadOther=true}
     emit();
   },()=>drop(r,"Session unavailable")));
-  r.chk=setInterval(net,4000);
+  r.chk=setInterval(net,2000);r.heard=Date.now();
   emit();
 }
 async function leave(){
@@ -168,21 +170,22 @@ function peek(id,cb){
   });
   return()=>{dead=true;un()};
 }
-async function checkOffer(){
-  const sd=ld();if(!sd||!me||sd.u!==me||R)return;
+/* Auto-resume: if this device was in a session that is still live, silently rejoin (no buttons). */
+async function auto(id,friend,name){
+  if(!me||R)return;const sd=ld();if(!sd||sd.u!==me||sd.id!==id)return;
   try{
-    const v=(await fb.get(rr(sd.id))).val();
-    if(!v||!v.song||!v.members||!v.members[me]||!fresh(v)){sv(null);return}
-    if(R)return;
-    offer={id:sd.id,friend:sd.friend,name:sd.name};emit();
+    const v=(await fb.get(rr(id))).val();
+    if(!v||!v.song||!v.members||!v.members[me]||!fresh(v)||now()-(v.updatedAt||0)>15*60e3){sv(null);return}
+    if(R)return;attach(id,friend||sd.friend,name||sd.name,v,true);
   }catch{}
 }
+const checkOffer=()=>{const sd=ld();if(sd&&me&&sd.u===me)auto(sd.id,sd.friend,sd.name)};
 
 /* ---------- pill on the player page (visible only while chat is closed) ---------- */
 let pe=null;
 const IC={hp:'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15v-3a8 8 0 0116 0v3"/><path d="M4 15a2 2 0 012-2h1v6H6a2 2 0 01-2-2zM20 15a2 2 0 00-2-2h-1v6h1a2 2 0 002-2z"/></svg>',x:'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>'};
 function pill(){
-  if(!R&&!offer){pe?.remove();pe=null;return}
+  if(!R){pe?.remove();pe=null;return}
   if(!pe){
     if(!document.getElementById("ltCss")){const c=document.createElement("style");c.id="ltCss";c.textContent="#ltPill{position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 8px);z-index:1500;display:flex;align-items:center;gap:9px;max-width:94vw;padding:6px 7px 6px 12px;border-radius:99px;background:rgba(20,18,36,.92);border:1px solid rgba(255,255,255,.14);color:#fff;font:600 12.5px system-ui,sans-serif;box-shadow:0 8px 28px rgba(0,0,0,.45);backdrop-filter:blur(12px);animation:ltIn .28s ease both}@keyframes ltIn{from{opacity:0;transform:translate(-50%,-8px)}}#ltPill svg{flex:none;opacity:.9}#ltPill span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#ltPill button{border:0;border-radius:99px;padding:6px 12px;background:rgba(255,255,255,.14);color:#fff;font:600 12px system-ui,sans-serif;cursor:pointer;display:inline-flex;align-items:center;gap:5px;flex:none}#ltPill button.p{background:#fff;color:#1a1530}#ltPill button.i{padding:6px 8px}";document.head.append(c)}
     pe=document.createElement("div");pe.id="ltPill";document.body.append(pe);
@@ -190,19 +193,17 @@ function pill(){
   const k=R?(R.other?"t":"w"):"o";
   if(pe.dataset.k!==k){
     pe.dataset.k=k;
-    pe.innerHTML=IC.hp+"<span></span>"+(R?'<button type="button" class="l">Leave</button>':'<button type="button" class="p j">Rejoin</button><button type="button" class="i l" aria-label="Dismiss">'+IC.x+'</button>');
-    const l=pe.querySelector(".l"),j=pe.querySelector(".j");
-    if(l)l.onclick=()=>leave();
-    if(j)j.onclick=async()=>{const o=offer;if(!o)return;const r=await join(o.id,o.friend,o.name);if(r.err){toast(r.err);offer=null;sv(null);emit()}};
+    pe.innerHTML=IC.hp+"<span></span>"+'<button type="button" class="l">Leave</button>';
+    pe.querySelector(".l").onclick=()=>leave();
   }
-  pe.querySelector("span").textContent=R?(R.other?`Listening together with ${R.name}`:`Waiting for ${R.name} to join`):`Continue listening with ${offer.name}`;
+  pe.querySelector("span").textContent=R.other?`Listening together with ${R.name}`:`Waiting for ${R.name} to join`;
 }
 
 export function init(MP){
   if(done)return done;
   MPr=MP;
   fb.onValue(fb.ref(db,".info/serverTimeOffset"),s=>{off=s.val()||0});
-  fb.onValue(fb.ref(db,".info/connected"),s=>{if(s.val()){npOn=false;npId=null;npSync();if(R&&!R.away&&R.seen)assert(R)}});
+  fb.onValue(fb.ref(db,".info/connected"),s=>{if(s.val()){npOn=false;npId=null;npSync();if(R&&!R.away&&R.seen){assert(R);resync(R)}}});
   fb.onAuthStateChanged(auth,u=>{
     const was=me;me=u?u.uid:null;authRes();
     if(was&&!me){npOn=false;npId=null;offer=null;if(R)drop(R)}
@@ -214,8 +215,10 @@ export function init(MP){
   /* leaving the page = leaving the room, so the other person's player stops instead of pretending */
   addEventListener("pagehide",()=>{const r=R;if(r&&!r.leaving&&me){r.away=true;try{fb.remove(jr(r.id))}catch{}}});
   addEventListener("pageshow",()=>{const r=R;if(r&&r.away){r.away=false;assert(r)}});
-  addEventListener("online",()=>{if(R&&!R.away)assert(R)});
-  const lt={state,start,join,leave,toggle,peek,npRefresh:npSync,on:f=>{subs.add(f);return()=>subs.delete(f)}};
+  addEventListener("online",()=>{if(R&&!R.away){assert(R);resync(R)}});
+  document.addEventListener("visibilitychange",()=>{const r=R;if(r&&document.visibilityState==="visible"&&!r.leaving){r.away=false;assert(r);resync(r);r.hold=0;r.cool=0}});
+  setInterval(()=>{const r=R;if(r&&!r.away&&!r.leaving&&r.seen&&me){assert(r)}},20000);
+  const lt={state,start,join,leave,toggle,peek,auto,npRefresh:npSync,on:f=>{subs.add(f);return()=>subs.delete(f)}};
   MP.lt=lt;
   done=Promise.resolve(lt);
   return done;
