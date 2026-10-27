@@ -104,12 +104,21 @@ const ord = () => [...feed.children].filter(x => x.classList?.contains("sh-it"))
 const cmdF = (f, fn, a) => { try { f?.contentWindow?.postMessage(JSON.stringify({ event: "command", func: fn, args: a || [] }), "*") } catch { } };
 function leave() { if (cur < 0) return; const d = (Date.now() - t0) / 1000, it = items[cur]; if (d >= 4) { skipRun = 0; learn(it, d >= 12 ? 2 : 1) } else if (d < 1.5 && d > .2) { learn(it, -.7); skipRun++ } if (ifr) { cmdF(ifr, "pauseVideo"); ifr = null } }
 function mkf(el, act) {
-  const id = el.dataset.id, f = document.createElement("iframe"); f.allow = "autoplay; encrypted-media"; f.referrerPolicy = "strict-origin-when-cross-origin"; f.dataset.id = id; f._pre = !act;
+  const id = el.dataset.id, f = document.createElement("iframe"); f.allow = "autoplay; encrypted-media"; f.referrerPolicy = "strict-origin-when-cross-origin"; f.dataset.id = id; f._pre = !act; f._wp = !act;
   f.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=${act && !muted ? 0 : 1}&controls=0&playsinline=1&loop=1&playlist=${id}&rel=0&modestbranding=1&fs=0&disablekb=1&iv_load_policy=3&enablejsapi=1&origin=${encodeURIComponent(location.origin)}`;
   f.onload = () => f.contentWindow?.postMessage(JSON.stringify({ event: "listening", id: 1, channel: "widget" }), "*");
   el.insertBefore(f, el.firstChild); return f;
 }
-function actv(f) { f._pre = false; ifr = f; cmdF(f, "seekTo", [0, true]); cmdF(f, muted ? "mute" : "unMute"); cmdF(f, "playVideo") }
+function actv(f) {
+  f._pre = false; f._ok = false; ifr = f; const t1 = Date.now();
+  const go = n => {
+    if (ifr !== f || f._ok || !f.isConnected) return;
+    if (n === 0) cmdF(f, "seekTo", [0, true]); cmdF(f, muted ? "mute" : "unMute"); cmdF(f, "playVideo");
+    if (Date.now() - t1 > 5000 && f._wp && f._heard && !f._rb) { const el = f.parentNode, nf = (f.remove(), mkf(el, true)); nf._rb = 1; nf._wp = false; ifr = nf; return }
+    setTimeout(() => go(n + 1), n < 4 ? 300 : 700)
+  };
+  go(0)
+}
 function play(i) {
   leave(); const L = ord(), el = feed.querySelector(`[data-i="${i}"]`), it = items[i]; if (!it || !el) return; cur = i; t0 = Date.now(); const pos = L.indexOf(el);
   let f = el.querySelector("iframe"); if (f) actv(f); else { f = mkf(el, true); ifr = f }
@@ -125,8 +134,8 @@ const skip = () => goTo(Math.round(feed.scrollTop / H()) + 1);
 addEventListener("message", e => {
   if (!feed) return; const f = [...feed.querySelectorAll("iframe")].find(x => x.contentWindow === e.source); if (!f) return; let d; try { d = JSON.parse(e.data) } catch { return }
   if (d.event === "onError") { const b = document.createElement("div"); b.className = "sh-bad"; b.textContent = "Video unavailable"; f.parentNode.appendChild(b); f.remove(); if (f === ifr) { ifr = null; setTimeout(skip, 250) } return }
-  const rdy = d.event === "onReady" || d.event === "initialDelivery";
-  if (f === ifr) { if (rdy && f._pre) actv(f) } else if (rdy || d.info?.playerState === 1) cmdF(f, "pauseVideo");
+  f._heard = 1; const rdy = d.event === "onReady" || d.event === "initialDelivery";
+  if (f === ifr) { if (d.info?.playerState === 1) f._ok = true; else if (rdy && !f._ok) { cmdF(f, muted ? "mute" : "unMute"); cmdF(f, "playVideo") } } else if (rdy || d.info?.playerState === 1) cmdF(f, "pauseVideo");
 });
 async function loadFriends() {
   if (friends) return friends; const u = auth.currentUser; if (!u) return [];

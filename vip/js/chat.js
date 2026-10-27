@@ -21,12 +21,7 @@ const prev=m=>m?.deleted?"Message deleted":m?.type==="short"?"🎬 Short":m?.typ
 const EMO=/^(?:\p{Extended_Pictographic}[\u{1F3FB}-\u{1F3FF}️‍]*|[\u{1F1E6}-\u{1F1FF}]{2}|[\s️‍])+$/u;
 const emoG=t=>{t=String(t||"").trim();try{return[...new Intl.Segmenter(undefined,{granularity:"grapheme"}).segment(t)].map(x=>x.segment).filter(x=>x.trim())}catch{return Array.from(t).filter(x=>x.trim()&&!/[️‍]/.test(x))}};
 const emoOnly=m=>!!m&&m.type==="text"&&!m.deleted&&!m.lt&&typeof m.text==="string"&&m.text.length>0&&m.text.length<=48&&EMO.test(m.text.trim())&&emoG(m.text).length<=8;
-const FXM=[[/[❤💕💖💗💘💞😍🥰😘😻💓💝🫶💋]/u,"rise"],[/[🎉🥳🎊🎈✨🎁🍾🪩]/u,"fall"],[/[😭😢💧☔🥺]/u,"rain"],[/[🔥💯⚡💥🚀]/u,"fire"]];
-function fxPlay(txt){
-  if(cfg.motion===false)return;const sh=$("#chatShell");if(!sh)return;const g=emoG(txt);if(!g.length)return;const main=g[0],mode=(FXM.find(x=>x[0].test(main))||[0,"burst"])[1],R=Math.random,n=Math.min(34,20+g.length*3);
-  const o=document.createElement("div");o.className="fx";o.dataset.m=mode;let h='<div class="fx-glow"></div><div class="fx-ring"></div><div class="fx-ring r2"></div><div class="fx-big">'+main+"</div>";
-  for(let i=0;i<n;i++){const a=R()*6.283,d=28+R()*38,sz=(mode==="rain"?18+R()*16:22+R()*38)|0;h+=`<i style="--x:${(R()*96).toFixed(1)}%;--s:${sz}px;--d:${(R()*(mode==="burst"?.25:1.1)).toFixed(2)}s;--t:${(mode==="fire"?1.3+R()*.9:1.8+R()*1.4).toFixed(2)}s;--r:${((R()-.5)*(mode==="fall"?720:140))|0}deg;--dx:${((R()-.5)*(mode==="rain"?6:mode==="fire"?14:26)).toFixed(1)}vw;--bx:${(Math.cos(a)*d).toFixed(1)}vmin;--by:${(Math.sin(a)*d).toFixed(1)}vmin">${g[i%g.length]}</i>`}
-  o.innerHTML=h;sh.append(o);try{navigator.vibrate?.(cfg.haptic!==false?[14,40,22]:0)}catch{}setTimeout(()=>o.remove(),4200)}
+function fxPlay(txt){if(cfg.motion===false)return;import("./emojifx.js").then(m=>m.play(txt,{haptic:cfg.haptic!==false})).catch(er=>console.error("emoji fx",er))}
 const link=t=>esc(t).replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
 const say=m=>window.velora?.toast?window.velora.toast(m):0,buzz=()=>cfg.haptic!==false&&navigator.vibrate?.(12),clean=o=>{Object.keys(o).forEach(k=>o[k]===undefined&&delete o[k]);return o};
 /* ---------- sound / background alerts ---------- */
