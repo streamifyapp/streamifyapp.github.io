@@ -16,7 +16,7 @@ let drag = false, host, feed, items = [], seen = new Set(ld(SK, [])), cur = -1, 
 #chatView #shortsPanel.rl:not([hidden]){display:block;padding:0;background:#000;overflow:hidden}
 .sh-feed{position:absolute;inset:0;overflow:hidden;touch-action:none;overscroll-behavior:contain}.sh-feed::-webkit-scrollbar{display:none}
 .sh-it{position:relative;height:100%;scroll-snap-align:start;background:#000 center/cover no-repeat;overflow:hidden}
-.sh-feed{z-index:1}.sh-pl{position:absolute;inset:0;z-index:0;opacity:0;transition:opacity .3s;pointer-events:none;background:#000}.sh-pl.on{opacity:1}.sh-pl iframe{position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none}.sh-it.pl{background:none!important}
+.sh-feed{z-index:1}.sh-pl{position:absolute;inset:0;z-index:0;opacity:0;transition:opacity .15s;pointer-events:none;background:#000}.sh-pl.on{opacity:1}.sh-pl iframe{position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none}.sh-it.pl{background:none!important}
 .sh-tap{position:absolute;inset:0;z-index:1}
 .sh-sh{position:absolute;inset:0;pointer-events:none;background:linear-gradient(transparent 60%,rgba(0,0,0,.75));z-index:1}
 .sh-in{position:absolute;z-index:2;left:12px;right:62px;bottom:84px;color:#fff;font-size:12.5px;line-height:1.35;font-weight:600;text-shadow:0 1px 6px rgba(0,0,0,.7);pointer-events:none;max-height:2.7em;overflow:hidden}
@@ -136,7 +136,7 @@ function fail(tok) { if (tok !== pt) return; const el = curEl(); if (!el) return
 function onSt(e) {
   const it = items[cur]; if (!it || !ifr) return; let vid; try { vid = e.target.getVideoData().video_id } catch { } if (vid && vid !== it.id) return;
   const s = e.data;
-  if (s === 1) { playing = true; clearTimeout(wd); const tk = pt; clearTimeout(rv); rv = setTimeout(() => { if (tk === pt && !drag) showPl() }, 1100); if (curEl()?.dataset.p === "1") cmd("pauseVideo") }
+  if (s === 1) { playing = true; clearTimeout(wd); const tk = pt; clearTimeout(rv); if (!drag) showPl(); if (curEl()?.dataset.p === "1") cmd("pauseVideo") }
   else if (s === -1 || s === 5) hidePl();
   else if (s === 0) { cmd("seekTo", [0, true]); cmd("playVideo") }
   else if (s === 3 && playing) { playing = false; arm(pt, 1) }
