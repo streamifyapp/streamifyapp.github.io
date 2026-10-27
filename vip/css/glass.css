@@ -42,7 +42,7 @@
 #chatView .gnav button svg{width:22px;height:22px}
 #chatView .gnav button.active{color:#fff}
 #chatView .gnav button:active{transform:scale(.9)}
-/* ---------- reels / profile panels ---------- */
+/* ---------- shorts / profile panels ---------- */
 #chatView .gpanel{position:absolute;inset:0;z-index:20;display:grid;place-items:center;padding:24px 24px 120px;background:radial-gradient(520px 420px at 50% 30%,rgba(255,255,255,.1),transparent 70%),#030304;animation:gIn .35s ease-out}
 #chatView .gpanel[hidden]{display:none}
 @keyframes gIn{from{opacity:0;transform:translateY(10px)}}
