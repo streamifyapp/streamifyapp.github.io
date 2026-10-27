@@ -274,7 +274,7 @@ aside.sd>*{animation:cin .7s var(--ease) backwards}aside.sd>:nth-child(3){animat
 <div id="fsn"></div>
 <div class="sk"><span class="tc">0:00</span><input type="range" class="seekr" value="0" min="0" max="1000" aria-label="Seek"><span class="td">0:00</span></div>
 <div class="cb"><button class="ib shb" data-a="shuffle" data-ic="shuffle" title="Shuffle"></button><button class="ib" data-a="prev" data-ic="prev" title="Previous"></button><button class="ib pp ppb" data-a="pp" title="Play / pause"></button><button class="ib" data-a="next" data-ic="next" title="Next"></button><button class="ib rpb" data-a="repeat" data-ic="repeat" title="Repeat"></button></div>
-<div class="cb"><button class="ib" data-a="dbg" title="Stream source (debug)" style="font:600 15px/1 sans-serif">ⓘ</button><button class="ib" data-a="lyrics" data-ic="lyr" title="Lyrics"></button><button class="ib" data-a="tune" data-ic="tune" title="Playback settings"></button></div></div>
+<div class="cb"><button class="ib" data-a="dbg" title="Stream source (debug)" style="font:600 15px/1 sans-serif">ⓘ</button><button class="ib" data-a="fyt" title="Force YouTube (debug)" style="font:700 11px/1 sans-serif">YT</button><button class="ib" data-a="lyrics" data-ic="lyr" title="Lyrics"></button><button class="ib" data-a="tune" data-ic="tune" title="Playback settings"></button></div></div>
 <div id="lyr" aria-label="Lyrics"><div class="lhd"><button class="ib" data-a="lyrics" data-ic="down" aria-label="Close lyrics"></button><div id="lmt"></div><button class="ib" data-a="tune" data-ic="tune" aria-label="Settings"></button></div><div id="lsc"><div id="lyt"></div></div></div>
 <div id="mod" class="mod"><div class="mb"><h2>Connect Spotify</h2><p style="margin-top:6px">Paste one or more <b>public</b> Spotify playlist links. They are saved on this device and shown on your Home page.</p><textarea id="mti" placeholder="https://open.spotify.com/playlist/..."></textarea><div style="display:flex;gap:10px"><button class="btn" data-a="spsave">Save</button><button class="btn o" data-a="mod">Close</button></div><div id="msp"></div></div></div>
 <div id="ymod" class="mod"><div class="mb"><h2>Connect YT Music playlist</h2><p style="margin-top:6px">Paste one or more <b>public</b> YT Music or YouTube playlist links. They are saved on this device and shown on your Home page.</p><textarea id="ymti" placeholder="https://music.youtube.com/playlist?list=..."></textarea><div style="display:flex;gap:10px"><button class="btn" data-a="ytsave">Save</button><button class="btn o" data-a="ymod">Close</button></div><div id="ymsp"></div></div></div>
@@ -300,7 +300,7 @@ aside.sd>*{animation:cin .7s var(--ease) backwards}aside.sd>:nth-child(3){animat
 <button class="ib" data-a="next" data-ic="next" title="Next"></button>
 <button class="ib x rpb" data-a="repeat" data-ic="repeat" title="Repeat"></button></div>
 <div class="sk"><span class="tc">0:00</span><input type="range" class="seekr" value="0" min="0" max="1000" aria-label="Seek"><span class="td">0:00</span></div></div>
-<div class="rt"><button class="ib" data-a="dbg" title="Stream source (debug)" style="font:600 15px/1 sans-serif">ⓘ</button><button class="ib" data-a="tune" data-ic="tune" title="Playback settings"></button><button class="ib" data-a="lyrics" data-ic="lyr" title="Lyrics"></button><button class="ib" data-a="queue" data-ic="list" title="Queue"></button>
+<div class="rt"><button class="ib" data-a="dbg" title="Stream source (debug)" style="font:600 15px/1 sans-serif">ⓘ</button><button class="ib" data-a="fyt" title="Force YouTube (debug)" style="font:700 11px/1 sans-serif">YT</button><button class="ib" data-a="tune" data-ic="tune" title="Playback settings"></button><button class="ib" data-a="lyrics" data-ic="lyr" title="Lyrics"></button><button class="ib" data-a="queue" data-ic="list" title="Queue"></button>
 <input type="range" id="vol" min="0" max="100" value="80" style="flex:none;width:90px" aria-label="Volume"></div>
 </footer>
 <nav id="mnav"><i class="pill"></i><div class="nv" data-go="home" data-ic="home">Home</div><div class="nv" data-go="search" data-ic="search">Search</div><div class="nv" data-go="library" data-ic="lib">Library</div><div class="nv" data-go="queue" data-ic="list">Queue</div></nav>
@@ -422,7 +422,7 @@ function sm(){const s=DB.set;$('#xf').value=s.xf;$('#spd').value=s.sp;$('#xfv').
  $$('#smod [data-s]').forEach(b=>b.classList.toggle('on',b.dataset.s==s.ly));$$('#smod [data-m]').forEach(b=>b.classList.toggle('on',+b.dataset.m==slM));
  [['xf',0,12],['spd',.5,2]].forEach(([i,a,b])=>{const e=$('#'+i);e.style.setProperty('--v',(e.value-a)/(b-a)*100+'%')});lyr.dataset.ly=s.ly}
 function load(fx=0){const s=cur();if(!s)return;xfT=null;const o=fx&&au.src&&!au.paused?au:null;if(o)au=A[A.indexOf(o)^1];else{xfId++;A.forEach(a=>a.pause())}
- au.src=`${API}/stream?v=4&id=${q(s.id)}&t=${q(s.title)}&a=${q(s.sub)}&d=${s.dur||''}`;au.playbackRate=DB.set.sp;au.volume=o?0:vol.value/100;au.play().catch(()=>{});if(o)fade(o,au,fx);
+ au.src=`${API}/stream?v=4&id=${q(s.id)}&t=${q(s.title)}&a=${q(s.sub)}&d=${s.dur||''}${FYT?'&f=yt':''}`;au.playbackRate=DB.set.sp;au.volume=o?0:vol.value/100;au.play().catch(()=>{});if(o)fade(o,au,fx);
  DB.rec=[s,...DB.rec.filter(x=>x.id!=s.id)].slice(0,20);save();ui();meta(s);document.title=s.title+' • Musify';
  if(Q.length-qi<4)more();if(lyr.classList.contains('on'))lyrics();if(location.hash=='#/queue')route()}
 /* Auto-queue = YouTube Music "radio" of the playing song (related songs), shared promise so next() can await it */
@@ -501,9 +501,12 @@ async function ytSave(){const ids=ytIds($('#ymti').value);if(!ids.length)return 
  if(ok){DB.src='yt';save();if(onHL())route();else location.hash='#/home'}}
 
 /* ---- actions ---- */
-async function dbgSrc(){const s=cur();if(!s)return toast('No song playing');const e=$('#toast');e.textContent='Checking source…';e.classList.add('on');
- let m;try{const r=await(await fetch(`${API}/stream?probe=1&id=${q(s.id)}&t=${q(s.title)}&a=${q(s.sub)}`)).json();m=r.source?'Source: '+r.source+(r.detail?' ('+r.detail+')':''):'Error: '+(r.error||'unknown')}catch(x){m='Probe failed: '+x.message}
- e.textContent=m+' | '+(au.paused?'paused':'playing')+' | err:'+(au.error?au.error.code:'none');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('on'),7000)}
+let FYT=false;async function dbgSrc(){const s=cur();if(!s)return toast('No song playing');const e=$('#toast');e.textContent='Checking source…';e.classList.add('on');
+ let m;const ac=new AbortController(),to=setTimeout(()=>ac.abort(),12000);
+ try{const r=await fetch(au.currentSrc||au.src,{headers:{range:'bytes=0-1'},redirect:'manual',signal:ac.signal});
+  const x=r.headers.get('x-source');m=r.type=='opaqueredirect'||r.status==302?'Source: JioSaavn':x?'Source: '+(/^youtube/.test(x)?'YouTube Music ('+x.replace('youtube-','')+')':x):'Source: unknown (HTTP '+r.status+')';try{r.body&&r.body.cancel()}catch{}}
+ catch(x){m=x.name=='AbortError'?'Timed out (12s)':'Probe failed: '+x.message}
+ clearTimeout(to);e.textContent=m+' | '+(au.paused?'paused':'playing')+' | err:'+(au.error?au.error.code:'none');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('on'),7000)}
 let tt;function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('on'),2200)}
 function menu(b,id){const m=$('#menu'),r=b.getBoundingClientRect();
  m.innerHTML='<div class="mh">Add to playlist</div>'+Object.keys(DB.pls).map(n=>`<div data-p="${esc(n)}">${esc(n)}</div>`).join('')+'<div data-p="">＋ New playlist…</div>';
@@ -525,6 +528,7 @@ function act(a,b={dataset:{}}){const d=b.dataset;
  else if(a=='queue'){$('#fs').classList.remove('on');location.hash=='#/queue'?route():location.hash='#/queue'}
  else if(a=='qclear'){Q=Q.slice(0,qi+1);Q0=Q.slice();route()}
  else if(a=='dbg'){dbgSrc()}
+ else if(a=='fyt'){FYT=!FYT;$$('[data-a=fyt]').forEach(b=>b.style.opacity=FYT?1:.5);toast(FYT?'Force YouTube: ON (replaying song)':'Force YouTube: OFF');if(cur())load()}
  else if(a=='tune'){ov('smod',true);sm()}else if(a=='smod')ov('smod',false);else if(a=='lys'){DB.set.ly=d.s;save();sm()}else if(a=='sleep')slp(+d.m);
  else if(a=='rmrec'){DB.rec=DB.rec.filter(x=>x.id!=d.id);save();const c=b.closest('.card');c.classList.add('gone');setTimeout(()=>{const sc=c.closest('.shw');c.remove();if(sc&&!sc.querySelector('.card'))sc.remove()},420)}
  else if(a=='rmsong'){const r=b.closest('.row'),k=r.dataset.k;if(IMP){const o=DB.ov[IMP]=DB.ov[IMP]||{};o.rm=[...(o.rm||[]),d.id];if(DD)DD.songs=DD.songs.filter(x=>x.id!=d.id)}else if(CPL&&DB.pls[CPL])DB.pls[CPL]=DB.pls[CPL].filter(x=>x.id!=d.id);
