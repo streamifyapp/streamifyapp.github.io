@@ -11,7 +11,7 @@ const indian = x => { const s = (x.title || "") + " " + (x.ch || ""); return /[\
 const HL = { hindi: "hi", marathi: "mr", tamil: "ta", telugu: "te", punjabi: "pa", bengali: "bn", gujarati: "gu", kannada: "kn", malayalam: "ml" };
 const rnd = a => a[Math.random() * a.length | 0];
 const STOP = new Set("this that with from have your what when they them will just like video shorts short about into more best new how the and for are you not but can all out".split(" "));
-let host, feed, items = [], seen = new Set(ld(SK, [])), cur = -1, busy = false, muted = true, ifr = null, t0 = 0, io, P = ld(PK, {}), L = ld(LK, {}), friends = null, syncT, skipRun = 0;
+let host, feed, items = [], seen = new Set(ld(SK, [])), cur = -1, busy = false, muted = false, ifr = null, t0 = 0, io, P = ld(PK, {}), L = ld(LK, {}), friends = null, syncT, skipRun = 0;
 (() => { if (document.getElementById("sh-css")) return; const s = document.createElement("style"); s.id = "sh-css"; s.textContent = `
 #chatView #shortsPanel.rl:not([hidden]){display:block;padding:0;background:#000;overflow:hidden}
 .sh-feed{position:absolute;inset:0;overflow-y:auto;scroll-snap-type:y mandatory;scrollbar-width:none;overscroll-behavior:contain}.sh-feed::-webkit-scrollbar{display:none}
