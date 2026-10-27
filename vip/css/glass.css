@@ -176,3 +176,10 @@
 #chatView .ol-load.on{opacity:1;transform:none}
 #chatView .ol-load .sk{width:48%;height:30px}#chatView .ol-load .sk:nth-child(2){width:36%}#chatView .ol-load .sk:nth-child(3){width:58%}
 #chatView .conversation-body{scroll-behavior:auto!important}
+
+#chatView .gnav button[data-gn=shorts]{color:#ff1744}#chatView .gnav button[data-gn=shorts] svg{filter:drop-shadow(0 0 4px #ff1744) drop-shadow(0 0 10px rgba(255,23,68,.7))}#chatView .gnav button[data-gn=shorts] span{text-shadow:0 0 8px rgba(255,23,68,.8)}#chatView .gnav button[data-gn=shorts].active{color:#ff2a4d}
+#chatView .mshort{position:relative;width:min(200px,56vw);aspect-ratio:9/16;border-radius:16px;background:#111 center/cover;overflow:hidden;cursor:pointer;margin:2px 0}
+#chatView .mshort::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 55%,rgba(0,0,0,.8))}
+#chatView .mshort .mplay{position:absolute;z-index:1;left:50%;top:50%;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;background:rgba(0,0,0,.55);box-shadow:0 0 0 2px #fff,0 0 18px rgba(255,23,68,.7)}
+#chatView .mshort .mplay::before{content:"";position:absolute;left:21px;top:16px;border-left:18px solid #fff;border-top:11px solid transparent;border-bottom:11px solid transparent}
+#chatView .mshort span{position:absolute;z-index:1;left:10px;right:10px;bottom:8px;font-size:12px;font-weight:600;line-height:1.3;color:#fff;max-height:3.9em;overflow:hidden}
