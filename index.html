@@ -521,6 +521,9 @@ async function dbgSrc(){const s=cur();if(!s)return toast('No song playing');
  try{const r=await fetch(`${API}/stream?debug=1${FYT?'&f=yt':''}&id=${q(s.id)}&t=${q(s.title)}&a=${q(s.sub)}`,{signal:ac2.signal});const tx=await r.text();try{r2=JSON.stringify(JSON.parse(tx),null,1)}catch{r2='HTTP '+r.status+'\n'+tx.slice(0,600)}}
  catch(e){r2=(e.name=='AbortError'?'TIMEOUT 40s':'FAILED: '+e.message)}
  clearTimeout(to2);S[2]='== SERVER TRACE (all sources) == ('+(Date.now()-t2)+' ms)\n'+r2;
+ S.push('== YT CHUNK TEST ==\nrunning…');show();const t3=Date.now(),ac3=new AbortController(),to3=setTimeout(()=>ac3.abort(),45000);let r3;
+ try{const r=await fetch(`${API}/ytstream?debug=1&id=${q(s.id)}`,{signal:ac3.signal});const tx=await r.text();try{r3=JSON.stringify(JSON.parse(tx),null,1)}catch{r3='HTTP '+r.status+'\n'+tx.slice(0,600)}}catch(e){r3=(e.name=='AbortError'?'TIMEOUT 45s':'FAILED: '+e.message)}
+ clearTimeout(to3);S[3]='== YT CHUNK TEST == ('+(Date.now()-t3)+' ms)\n'+r3;
  S.push('== AUDIO EVENT LOG ==\n'+(DL.join('\n')||'(none)'));show()}
 let tt;function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('on'),2200)}
 function menu(b,id){const m=$('#menu'),r=b.getBoundingClientRect();
