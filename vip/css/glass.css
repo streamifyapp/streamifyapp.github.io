@@ -208,3 +208,20 @@
 @keyframes fxFall{0%{transform:translate(0,0) scale(.7) rotate(0);opacity:0}10%{opacity:1}100%{transform:translate(var(--dx),118vh) scale(1) rotate(var(--r));opacity:.9}}
 @keyframes fxBurst{0%{transform:translate(-50%,-50%) scale(0);opacity:0}14%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}100%{transform:translate(calc(-50% + var(--bx)),calc(-50% + var(--by))) scale(.55) rotate(var(--r));opacity:0}}
 @media(prefers-reduced-motion:reduce){.fx{display:none}}
+
+/* sweet messages: love / good night / take care */
+#chatView .message.sw{position:relative;overflow:visible;padding:26px 16px 8px;border:1px solid transparent;background:linear-gradient(var(--sb),var(--sb)) padding-box,linear-gradient(135deg,var(--s1),var(--s2),var(--s1)) border-box;background-size:100% 100%,260% 260%;animation:swFlow 7s ease-in-out infinite,swIn .7s cubic-bezier(.2,1.4,.4,1) both;box-shadow:0 8px 26px var(--sg),inset 0 0 22px var(--sg);font-family:"Playfair Display",Georgia,serif;font-weight:500;font-size:1.04em;letter-spacing:.2px;color:#fff;max-width:min(82%,520px)}
+#chatView .message.sw-love{--sb:rgba(70,14,44,.82);--s1:#ff7eb6;--s2:#ffb3d9;--sg:rgba(255,105,170,.28)}
+#chatView .message.sw-night{--sb:rgba(14,16,52,.88);--s1:#8f8bff;--s2:#6fd0ff;--sg:rgba(130,130,255,.28)}
+#chatView .message.sw-care{--sb:rgba(16,50,44,.84);--s1:#7ff0c2;--s2:#ffe29a;--sg:rgba(120,240,190,.24)}
+#chatView .message.sw::before{position:absolute;left:14px;top:6px;font:600 10px/1 Inter,sans-serif;letter-spacing:1.6px;text-transform:uppercase;opacity:.85;background:linear-gradient(90deg,var(--s1),var(--s2));-webkit-background-clip:text;background-clip:text;color:transparent}
+#chatView .message.sw-love::before{content:"♥ with love"}#chatView .message.sw-night::before{content:"☾ sweet dreams"}#chatView .message.sw-care::before{content:"✿ take care"}
+#chatView .message.sw::after{position:absolute;right:10px;top:-11px;font-size:17px;line-height:1;filter:drop-shadow(0 2px 6px var(--sg));animation:swFloat 3.6s ease-in-out infinite;pointer-events:none}
+#chatView .message.sw-love::after{content:"💗"}#chatView .message.sw-night::after{content:"🌙"}#chatView .message.sw-care::after{content:"🌸"}
+#chatView .message.sw .txt{background:linear-gradient(100deg,#fff,color-mix(in srgb,var(--s2) 70%,#fff),#fff);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:swShine 5s linear infinite}
+#chatView .message.sw time{opacity:.7}
+@keyframes swFlow{0%,100%{background-position:0 0,0% 50%}50%{background-position:0 0,100% 50%}}
+@keyframes swIn{0%{opacity:0;transform:translateY(14px) scale(.92)}100%{opacity:1;transform:none}}
+@keyframes swFloat{0%,100%{transform:translateY(0) rotate(-8deg) scale(1)}50%{transform:translateY(-5px) rotate(8deg) scale(1.15)}}
+@keyframes swShine{to{background-position:-220% 0}}
+@media(prefers-reduced-motion:reduce){#chatView .message.sw,#chatView .message.sw::after,#chatView .message.sw .txt{animation:none}}
