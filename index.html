@@ -326,7 +326,7 @@ const cur=()=>Q[qi],liked=id=>DB.liked.some(x=>x.id==id);
 const reg=a=>(a||[]).map(x=>(M[x.id]=x));
 const YA=()=>DB.yt?btoa(JSON.stringify(DB.yt)):'';
 /* api: one automatic retry (covers cold starts / flaky first request); auth header only sent to YT account routes */
-const api=async(p,auth,n=1)=>{const ck=!auth&&CCK.test(p)?p:0;if(ck){const c=CC[ck];if(c&&Date.now()-c.t<CT)return c.d}try{const r=await fetch(API+p,auth&&DB.yt?{headers:{'x-yt-auth':YA()}}:undefined);if(!r.ok){let m='';try{m=(await r.json()).error}catch{}throw Error(m||'HTTP '+r.status)}const j=await r.json();if(ck)ccs(ck,j);return j}catch(e){if(n>0){await sleep(500);return api(p,auth,n-1)}throw e}};
+const api=async(p,auth,n=1)=>{const ck=!auth&&CCK.test(p)?p:0;if(ck){const c=CC[ck];if(c&&c.d&&Date.now()-c.t<216e5){if(Date.now()-c.t>=CT&&!c.rf){c.rf=1;fetch(API+p).then(r=>r.ok?r.json():null).then(j=>{if(j)ccs(ck,j)}).catch(()=>{}).finally(()=>{c.rf=0})}return c.d}}try{const r=await fetch(API+p,auth&&DB.yt?{headers:{'x-yt-auth':YA()}}:undefined);if(!r.ok){let m='';try{m=(await r.json()).error}catch{}throw Error(m||'HTTP '+r.status)}const j=await r.json();if(ck)ccs(ck,j);return j}catch(e){if(n>0){await sleep(500);return api(p,auth,n-1)}throw e}};
 const put=(my,h)=>my==RT?(V.innerHTML=h,rs(),true):false;
 
 /* ---- templates ---- */
@@ -353,6 +353,7 @@ const views={
 async home(){const my=RT,src=DB.src=='yt'?'yt':'sp';
  const hd=`<div class="hrow"><h1>Musify</h1><button class="vipbtn" data-vip="1" aria-label="Join Premium"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 10H5L3 8zm2.2 12h13.6v1.8H5.2z"/></svg>Join Premium</button></div>${(navigator.standalone||matchMedia('(display-mode:standalone)').matches)?'':`<button class="btn o ins instrow" data-a="a2hs">${ic('plus')}Install App <small>iPhone &amp; Android</small></button>`}<div class="seg"><button data-a="src" data-s="sp" class="${src=='sp'?'on':''}">Spotify</button><button data-a="src" data-s="yt" class="${src=='yt'?'on':''}">YT Music</button></div>`;
  if(src=='yt'){
+  put(my,hd+`<div style="margin:12px 0 0">${ybtn}</div>`+shelf('Your YT Music playlists',DB.ytp)+shelf('Recently played',DB.rec,1)+'<div id="more" class="skl"><i></i></div>');
   const d=await api('/ymfeed?part=0');
   if(!put(my,hd+`<div style="margin:12px 0 0">${ybtn}</div>`+shelf('Your YT Music playlists',DB.ytp)+shelf('Recently played',DB.rec,1)+SECS(d.sections)+'<div id="more" class="skl"><i></i></div>'))return;
   await lazy('/ymfeed?part=',d.parts||1,my);
@@ -400,7 +401,7 @@ function ov(id,on){const e=$('#'+id);if(!e||on==e.classList.contains('on'))retur
 addEventListener('popstate',()=>{const id=OV.pop();if(id)$('#'+id).classList.remove('on')});
 addEventListener('hashchange',()=>OV.splice(0).forEach(id=>$('#'+id).classList.remove('on')));
 /* page-data cache (memory + localStorage): back/forward re-renders instantly, no refetch */
-const CK='musify_cache',CT=18e5,CCK=/^\/(home|ymfeed|search|album|artist|playlist)/;let CC={},ccT=0;try{CC=JSON.parse(localStorage.getItem(CK)||'{}')}catch{}
+const CK='musify_cache',CT=18e5,CCK=/^\/(home|ymfeed|search|album|artist|playlist)/;let CC={},ccT=0;try{CC=JSON.parse(localStorage.getItem(CK)||'{}')}catch{}setTimeout(()=>{api('/ymfeed?part=0').catch(()=>{})},1800);
 function ccs(k,d){CC[k]={t:Date.now(),d};clearTimeout(ccT);ccT=setTimeout(()=>{const ks=Object.keys(CC).sort((a,b)=>CC[b].t-CC[a].t);ks.slice(40).forEach(x=>delete CC[x]);
  for(let i=0;i<4;i++){try{localStorage.setItem(CK,JSON.stringify(CC));return}catch{Object.keys(CC).sort((a,b)=>CC[a].t-CC[b].t).slice(0,Math.ceil(ks.length/2)).forEach(x=>delete CC[x])}}},1500)}
 const rs=()=>{if(TS)$('main').scrollTop=TS};
