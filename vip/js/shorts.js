@@ -84,7 +84,7 @@ async function more() {
   if (busy) return; busy = true;
   try {
     for (let tries = 0; tries < 3; tries++) {
-      const rs = await Promise.allSettled(queries().map(q => fetch(`${API}/shorts?q=${encodeURIComponent(q)}&gl=IN&hl=${HL[rnd(ld(LG, ["hindi", "english"]))] || "en"}`).then(r => r.ok ? r.json() : Promise.reject(r.status)))), lists = rs.filter(r => r.status === "fulfilled").map(r => r.value.items || []), fresh = [];
+      const rs = await Promise.allSettled(queries().map(q => fetch(`${API}/shorts?q=${encodeURIComponent(q)}&gl=IN&hl=${HL[rnd(ld(LG, ["hindi", "english"]))] || "en"}`, { signal: AbortSignal.timeout(8000) }).then(r => r.ok ? r.json() : Promise.reject(r.status)))), lists = rs.filter(r => r.status === "fulfilled").map(r => r.value.items || []), fresh = [];
       for (let i = 0; lists.some(l => i < l.length); i++) for (const l of lists) { const x = l[i]; if (x && !seen.has(x.id) && !bad(x)) { seen.add(x.id); fresh.push(x) } }
       if (fresh.length) { sv(SK, [...seen].slice(-1500)); add(mix(fresh)); return }
     }
@@ -109,21 +109,22 @@ function mkf(el, act) {
   f.onload = () => f.contentWindow?.postMessage(JSON.stringify({ event: "listening", id: 1, channel: "widget" }), "*");
   el.insertBefore(f, el.firstChild); return f;
 }
-function actv(f) {
+function actv(f, tries = 0, keep) {
   f._pre = false; f._ok = false; ifr = f; const t1 = Date.now();
   const go = n => {
     if (ifr !== f || f._ok || !f.isConnected) return;
-    if (n === 0) cmdF(f, "seekTo", [0, true]); cmdF(f, muted ? "mute" : "unMute"); cmdF(f, "playVideo");
-    if (Date.now() - t1 > 5000 && f._wp && f._heard && !f._rb) { const el = f.parentNode, nf = (f.remove(), mkf(el, true)); nf._rb = 1; nf._wp = false; ifr = nf; return }
+    if (Date.now() - t1 > 4500) { if (tries < 3) { const el = f.parentNode; f.remove(); actv(mkf(el, true), tries + 1) } return }
+    if (n === 0 && !keep) cmdF(f, "seekTo", [0, true]); cmdF(f, muted ? "mute" : "unMute"); cmdF(f, "playVideo");
     setTimeout(() => go(n + 1), n < 4 ? 300 : 700)
   };
   go(0)
 }
+document.addEventListener("visibilitychange", () => { if (document.hidden || !feed || !host?.isConnected || host.hidden) return; setTimeout(() => { busy = false; const f = ifr; if (f?.isConnected) { cmdF(f, "playVideo"); f.contentWindow?.postMessage(JSON.stringify({ event: "listening", id: 1, channel: "widget" }), "*"); actv(f, 0, true) } else if (cur >= 0) play(cur); if (feed.children.length - Math.round(feed.scrollTop / H()) <= 6) more() }, 250) });
 function play(i) {
   leave(); const L = ord(), el = feed.querySelector(`[data-i="${i}"]`), it = items[i]; if (!it || !el) return; cur = i; t0 = Date.now(); const pos = L.indexOf(el);
-  let f = el.querySelector("iframe"); if (f) actv(f); else { f = mkf(el, true); ifr = f }
-  L.forEach((e, k) => { if (k < pos - 1 || k > pos + 2) e.querySelector("iframe")?.remove() });
-  for (const e of L.slice(pos + 1, pos + 3)) if (!e.querySelector("iframe") && !e.querySelector(".sh-bad")) mkf(e, false);
+  let f = el.querySelector("iframe"); if (f) actv(f); else { f = mkf(el, true); actv(f, 0, true) }
+  L.forEach((e, k) => { if (k < pos - 1 || k > pos + 1) e.querySelector("iframe")?.remove() });
+  for (const e of L.slice(pos + 1, pos + 2)) if (!e.querySelector("iframe") && !e.querySelector(".sh-bad")) mkf(e, false);
   if (L.length - pos <= 6) more();
 }
 const cmd = (f, a) => cmdF(ifr, f, a);

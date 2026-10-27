@@ -20,7 +20,7 @@ const tint = (bg, T = 2800, p = 1) => { const e = bx(`inset:0;background:${bg}`)
 const vig = (c, T = 2800, p = .8) => tint(`radial-gradient(circle at 50% 45%,transparent 38%,${c} 100%)`, T, p);
 const rays = (c, T = 2800, spin = 140, w = 6, per = 18, d = 0) => { const e = bx(`left:${CX()}px;top:${CY()}px;width:170vmax;height:170vmax;background:repeating-conic-gradient(from 0deg,${c} 0 ${w}deg,transparent ${w}deg ${per}deg);-webkit-mask-image:radial-gradient(circle,#000 0,transparent 55%);mask-image:radial-gradient(circle,#000 0,transparent 55%)`); an(e, [{ opacity: 0, transform: "translate(-50%,-50%) rotate(0) scale(.4)" }, { opacity: .9, offset: .25 }, { opacity: 0, transform: `translate(-50%,-50%) rotate(${spin}deg) scale(1)` }], { duration: T, delay: d, easing: "linear" }) };
 const glow = (c, T = 2800, s = 1) => { const e = bx(`left:${CX()}px;top:${CY()}px;width:${W() * 1.3 * s}px;height:${W() * 1.3 * s}px;border-radius:50%;background:radial-gradient(circle,${c},transparent 65%)`); an(e, [{ opacity: 0, transform: "translate(-50%,-50%) scale(.3)" }, { opacity: 1, offset: .3, transform: "translate(-50%,-50%) scale(1)" }, { opacity: 0, transform: "translate(-50%,-50%) scale(1.15)" }], { duration: T, easing: "ease-out" }) };
-const shake = (a = 6, T = 500) => { const s = document.getElementById("chatShell"); if (!s) return; const n = 14; s.animate(Array.from({ length: n + 1 }, (_, i) => ({ offset: i / n, transform: i === n ? "none" : `translate(${R(-a, a) * (1 - i / n)}px,${R(-a, a) * (1 - i / n)}px)` })), { duration: T }) };
+const shake = (a = 6, T = 500) => { return;  const s = document.getElementById("chatShell"); if (!s) return; const n = 14; s.animate(Array.from({ length: n + 1 }, (_, i) => ({ offset: i / n, transform: i === n ? "none" : `translate(${R(-a, a) * (1 - i / n)}px,${R(-a, a) * (1 - i / n)}px)` })), { duration: T }) };
 const twinkle = (n, cols = ["#fff"], ch = "✦", s0 = 10, s1 = 30, T = 2600) => { for (let i = 0; i < n; i++) { const e = mk(ch, R(s0, s1), `left:${R(0, W())}px;top:${R(0, H())}px;color:${PK(cols)};text-shadow:0 0 12px currentColor`), d = R(0, T * .6); an(e, [{ opacity: 0, transform: "scale(0) rotate(0)" }, { opacity: 1, transform: "scale(1.2) rotate(90deg)", offset: .5 }, { opacity: 0, transform: "scale(0) rotate(180deg)" }], { duration: R(700, 1300), delay: d, easing: "ease-in-out" }) } };
 const dots = (n, cols, x0, y0, sp, g, T, sz = [3, 8]) => { for (let i = 0; i < n; i++) { const a = R(0, TAU), v = R(sp * .3, sp), s = R(...sz), e = bx(`width:${s}px;height:${s}px;border-radius:50%;background:${PK(cols)};box-shadow:0 0 ${s * 2}px ${PK(cols)}`); ball(e, x0, y0, Math.cos(a) * v, Math.sin(a) * v, g, R(T * .6, T), { f: .5 }) } };
 const burst = (gs, n, x0, y0, sp, g, T, sz = [20, 44], o = {}) => { for (let i = 0; i < n; i++) { const a = R(0, TAU), v = R(sp * .35, sp), e = mk(PK(gs), R(...sz)); ball(e, x0, y0, Math.cos(a) * v, Math.sin(a) * v, g, R(T * .65, T), { r: R(-360, 360), f: .55, ...o }) } };
@@ -79,8 +79,13 @@ export function play(txt, opt = {}) {
   if (!document.getElementById("fxv-css")) { const s = document.createElement("style"); s.id = "fxv-css"; s.textContent = CSS; document.head.append(s) }
   document.querySelectorAll(".fxv").forEach(x => x.remove()); clearTimeout(tid); L = document.createElement("div"); L.className = "fxv"; document.body.append(L);
   const main = g[0], hit = MAP.find(m => m[0].test(main)), k = hit ? hit[1] : GEN[[...main].reduce((a, c) => a + c.codePointAt(0), 0) % GEN.length], lay = L;
+  const rep = Date.now() - (play._t || 0) < 9000; play._t = Date.now();
   try { SCENES[k](g.length > 1 ? [...new Set(g)] : g) } catch (e) { console.error("fx", e) }
+  /* calm mode: drop loud full-screen layers, cap particles, soften + speed fade so repeats never annoy */
+  const kids = [...lay.children]; let n = 0; const cap = rep ? 5 : 14;
+  for (const c of kids) { if (c.tagName === "B" && getComputedStyle(c).inset === "0px") { c.remove(); continue } if (c.tagName === "I" && ++n > cap) c.remove() }
+  lay.style.opacity = rep ? ".55" : ".8"; lay.animate([{ opacity: 1 }, { opacity: 1, offset: .7 }, { opacity: 0 }], { duration: rep ? 2200 : 3000, fill: "forwards" });
   if (opt.haptic !== false) try { navigator.vibrate?.(VIB[k] || [14, 40, 22]) } catch { }
-  tid = setTimeout(() => { lay.remove(); if (L === lay) L = null }, 4600);
+  tid = setTimeout(() => { lay.remove(); if (L === lay) L = null }, rep ? 2300 : 3100);
   return k
 }
