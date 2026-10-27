@@ -4,7 +4,7 @@ const API = "https://musify-api.musify.workers.dev", PK = "vc-shp", LK = "vc-shl
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const ld = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) || d } catch { return d } }, sv = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)) } catch { } };
 const SEEDS = ["reels", "bollywood", "comedy", "music", "gaming", "dance", "cars", "fitness", "anime", "memes", "fashion", "travel", "football", "cricket", "edits", "couple", "college", "pranks", "foodie", "tech", "funny memes", "relatable", "roast", "trends", "challenge", "satisfying", "pov", "aesthetic", "glow up", "dance trend"], GEN = SEEDS;
-const CATS = [["trending reels", "viral reels india", "instagram reels trending", "trending audio reels", "trending reels song", "insta trending audio", "tiktok viral reels", "viral reels today"], ["dance reels trending", "viral dance trend", "trending dance challenge", "couple dance reels", "bollywood dance reels", "punjabi dance reels"], ["aesthetic reels", "cafe aesthetic reels", "day in my life reels", "grwm reels", "aesthetic vlog reels", "soft girl aesthetic reels", "that girl morning routine reels"], ["outfit transition reels", "fashion reels india", "streetwear outfit reels", "glow up transformation reels", "viral transition reels", "hairstyle reels", "makeup transition reels"], ["couple goals reels", "romantic reels", "love story edit reels", "cute couple reels", "friendship reels", "long distance couple reels"], ["attitude reels", "sigma edit reels", "edit reels trending", "car edit reels", "bike stunt reels", "football skills reels", "gym motivation reels", "cricket reels"], ["sad edit reels", "slowed reverb reels", "lofi reels", "late night vibes reels", "night drive reels", "punjabi reels", "haryanvi reels", "bollywood reels trending"], ["funny reels india", "pov reels", "relatable reels", "college life reels", "trending memes reels", "comedy skit reels", "roast reels"], ["travel reels india", "street food reels", "food reels aesthetic", "cute dog reels", "cat reels", "satisfying reels", "anime edit reels", "life hacks reels"]], IN = CATS.flat();
+const CATS = [["trending reels","viral reels","instagram reels trending","trending audio reels","gen z reels","tiktok viral reels","viral reels today","main character energy reels"],["dance reels trending","viral dance trend","trending dance challenge","couple dance reels","college dance reels","bollywood dance reels"],["aesthetic reels","cafe aesthetic reels","day in my life reels","grwm reels","get ready with me reels","that girl morning routine reels","pinterest aesthetic reels","aesthetic photo dump reels"],["outfit transition reels","fashion reels india","streetwear outfit reels","ootd reels","boys fit check reels","glow up transformation reels","viral transition reels","makeup transition reels","hairstyle reels"],["couple goals reels","romantic reels","love story edit reels","cute couple reels","soft launch couple reels","talking stage reels","situationship reels","friendship reels"],["attitude reels","sigma edit reels","edit reels trending","car edit reels","bike edit reels","football skills reels","gym reels","gym motivation reels aesthetic"],["sad edit reels","night drive reels","late night vibes reels","aesthetic sad reels","bollywood edit reels"],["funny reels india","pov reels","relatable reels","college life reels","hostel life reels","campus vibes reels","girls vs boys reels","comedy skit reels"],["travel reels india","mumbai vlog reels","delhi college vibes reels","cafe hopping reels","street food reels aesthetic","cute dog reels","satisfying reels","anime edit reels"]], IN = CATS.flat();
 const LANGS = ["hindi", "english", "marathi", "tamil", "telugu", "punjabi", "bengali", "gujarati", "kannada", "malayalam", "bhojpuri"], LG = "vc-shg";
 const INRX = /india|desi|hindi|bollywood|ipl|mumbai|delhi|punjabi|tamil|telugu|marathi|bhojpuri|kannada|malayalam|bengali|gujarati|bharat|kohli|dhoni|rohit|shahrukh|salman|kolkata|bangalore|chennai|hyderabad/i;
 const indian = x => { const s = (x.title || "") + " " + (x.ch || ""); return /[\u0900-\u0D7F]/.test(s) || INRX.test(s) };
@@ -16,7 +16,7 @@ let drag = false, host, feed, items = [], seen = new Set(ld(SK, [])), cur = -1, 
 #chatView #shortsPanel.rl:not([hidden]){display:block;padding:0;background:#000;overflow:hidden}
 .sh-feed{position:absolute;inset:0;overflow:hidden;touch-action:none;overscroll-behavior:contain}.sh-feed::-webkit-scrollbar{display:none}
 .sh-it{position:relative;height:100%;scroll-snap-align:start;background:#000 center/cover no-repeat;overflow:hidden}
-.sh-feed{z-index:1}.sh-pl{position:absolute;inset:0;z-index:0;opacity:0;transition:opacity .12s;pointer-events:none;background:#000}.sh-pl.on{opacity:1}.sh-pl iframe{position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none}.sh-it.pl{background:none!important}
+.sh-feed{z-index:1}.sh-pl{position:absolute;inset:0;z-index:0;opacity:0;transition:opacity .3s;pointer-events:none;background:#000}.sh-pl.on{opacity:1}.sh-pl iframe{position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none}.sh-it.pl{background:none!important}
 .sh-tap{position:absolute;inset:0;z-index:1}
 .sh-sh{position:absolute;inset:0;pointer-events:none;background:linear-gradient(transparent 60%,rgba(0,0,0,.75));z-index:1}
 .sh-in{position:absolute;z-index:2;left:12px;right:62px;bottom:84px;color:#fff;font-size:12.5px;line-height:1.35;font-weight:600;text-shadow:0 1px 6px rgba(0,0,0,.7);pointer-events:none;max-height:2.7em;overflow:hidden}
@@ -73,8 +73,9 @@ function queries() {
   else q.push(rnd(IN), rnd(IN), rnd(GEN) + " " + lang(), "trending reels " + lang(), rnd(tod));
   return [...new Set(q.map(s => s.trim()))].slice(0, 5);
 }
-const bad = x => { let s = 0; for (const k of terms(x.title)) s += Math.min(P[k] || 0, 0); const c = chKey(x); if (c) s += Math.min(P[c] || 0, 0); return s <= -4 };
-const sc = x => { let s = 0; for (const k of terms(x.title)) s += P[k] || 0; s += P[chKey(x)] || 0; return Math.max(-8, Math.min(s, 10)) + (indian(x) ? 1.5 : 0) + (/reel|viral|trend|insta|edit|aesthetic|pov|transition|grwm|vlog|dance|challenge|funny/i.test((x.title || "") + " " + (x.ch || "")) ? 3 : 0) };
+const BADRX = /village|gaon|gaav|\bgram\b|desi vlog|bgm|background music|bhajan|devotional|kirtan|bhakti|status video|whatsapp status|news|podcast|full movie|\blive\b|tutorial|kisan|farmer|farming|shayari|speech|sermon|prayer|quran|bible|rashifal|astrology|recipe|cooking|ringtone|haryanvi|bhojpuri|khesari|pawan singh|jugaad|motivational speaker|sandeep maheshwari|vlogs? of my village|rural|tractor|bhai ji|baba|katha/i;
+const bad = x => { if (BADRX.test((x.title || "") + " " + (x.ch || ""))) return true; let s = 0; for (const k of terms(x.title)) s += Math.min(P[k] || 0, 0); const c = chKey(x); if (c) s += Math.min(P[c] || 0, 0); return s <= -4 };
+const sc = x => { let s = 0; for (const k of terms(x.title)) s += P[k] || 0; s += P[chKey(x)] || 0; return Math.max(-8, Math.min(s, 10)) + (indian(x) ? .8 : 0) + (/reel|viral|trend|insta|edit|aesthetic|pov|transition|grwm|vlog|dance|challenge|funny/i.test((x.title || "") + " " + (x.ch || "")) ? 3 : 0) };
 function mix(fresh) {
   const pool = fresh.map(x => ({ x, s: sc(x) * .4 + Math.random() * 5 })).sort((a, b) => b.s - a.s), out = [];
   while (pool.length) { const rc = out.slice(-3).map(chKey), rt = out.slice(-2).map(o => terms(o.title)[0]); let i = pool.findIndex(p => { const c = chKey(p.x), k = terms(p.x.title)[0]; return (!c || !rc.includes(c)) && (!k || !rt.includes(k)) }); if (i < 0) i = 0; out.push(pool.splice(i, 1)[0].x) }
@@ -102,7 +103,7 @@ function add(list, front) {
 }
 const ord = () => [...feed.children].filter(x => x.classList?.contains("sh-it")), H = () => feed.clientHeight || innerHeight;
 function leave() { if (cur < 0) return; const d = (Date.now() - t0) / 1000, it = items[cur]; if (d >= 4) { skipRun = 0; learn(it, d >= 12 ? 2 : 1) } else if (d < 1.5 && d > .2) { learn(it, -.7); skipRun++ } if (ifr) { try { pl?.pauseVideo() } catch { } ifr = false } }
-let pl = null, pr = null, plBox, pt = 0, playing = false, wd = 0, autoMuted = false, ytP = null;
+let rv = 0, pl = null, pr = null, plBox, pt = 0, playing = false, wd = 0, autoMuted = false, ytP = null;
 const yt = () => ytP ||= new Promise((res, rej) => {
   if (window.YT?.Player) return res();
   const p = window.onYouTubeIframeAPIReady; window.onYouTubeIframeAPIReady = () => { p?.(); res() };
@@ -116,7 +117,7 @@ const mkPl = () => pr ||= yt().then(() => new Promise((res, rej) => {
 })).catch(e => { pr = null; throw e });
 const cmd = (f, a) => { try { pl?.[f]?.(...(a || [])) } catch { } };
 const curEl = () => feed?.querySelector(`[data-i="${cur}"]`);
-function hidePl() { plBox?.classList.remove("on"); feed?.querySelectorAll(".sh-it.pl").forEach(x => x.classList.remove("pl")) }
+function hidePl() { clearTimeout(rv); plBox?.classList.remove("on"); feed?.querySelectorAll(".sh-it.pl").forEach(x => x.classList.remove("pl")) }
 function showPl() { if (!playing || cur < 0) return; feed.querySelectorAll(".sh-it.pl").forEach(x => x.classList.remove("pl")); curEl()?.classList.add("pl"); plBox.classList.add("on") }
 function arm(tok, n) { clearTimeout(wd); wd = setTimeout(() => { if (tok !== pt || playing) return; n < 4 ? start(tok, n + 1) : fail(tok) }, n === 3 ? 6500 : 3500) }
 function start(tok, n) {
@@ -128,7 +129,7 @@ function fail(tok) { if (tok !== pt) return; const el = curEl(); if (!el) return
 function onSt(e) {
   const it = items[cur]; if (!it || !ifr) return; let vid; try { vid = e.target.getVideoData().video_id } catch { } if (vid && vid !== it.id) return;
   const s = e.data;
-  if (s === 1) { playing = true; clearTimeout(wd); if (!drag) showPl(); if (curEl()?.dataset.p === "1") cmd("pauseVideo") }
+  if (s === 1) { playing = true; clearTimeout(wd); const tk = pt; clearTimeout(rv); rv = setTimeout(() => { if (tk === pt && !drag) showPl() }, 700); if (curEl()?.dataset.p === "1") cmd("pauseVideo") }
   else if (s === 0) { cmd("seekTo", [0, true]); cmd("playVideo") }
   else if (s === 3 && playing) { playing = false; arm(pt, 1) }
 }
