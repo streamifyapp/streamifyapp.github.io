@@ -48,6 +48,7 @@ let drag = false, host, feed, items = [], seen = new Set(ld(SK, [])), cur = -1, 
 .sh-toast{position:absolute;z-index:9;left:50%;top:calc(env(safe-area-inset-top,0px) + 56px);transform:translateX(-50%);background:rgba(30,30,38,.95);color:#fff;padding:10px 18px;border-radius:99px;font:600 13px inherit;box-shadow:0 8px 24px rgba(0,0,0,.5);animation:shF .2s;white-space:nowrap}
 .sh-heart{position:absolute;z-index:3;left:50%;top:50%;width:96px;height:96px;margin:-48px 0 0 -48px;color:#ff2d55;pointer-events:none;animation:shH .8s ease-out forwards}.sh-heart svg{width:100%;height:100%;fill:#ff2d55;stroke:#ff2d55}
 @keyframes shU{from{transform:translateY(100%)}}@keyframes shF{from{opacity:0}}@keyframes shP{50%{opacity:.5}}@keyframes shH{0%{transform:scale(.3);opacity:0}25%{transform:scale(1.15);opacity:1}100%{transform:scale(1.4) translateY(-30px);opacity:0}}
+.sh-pl{overflow:hidden}.sh-pl iframe{transform:scale(1.3);transform-origin:50% 50%}.sh-pl::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(rgba(0,0,0,.55),transparent 16%,transparent 84%,rgba(0,0,0,.55))}
 #chatView .chat-shell.sh-open .gnav{transform:translate(-50%,170%);opacity:0;pointer-events:none}
 .sh-sh{background:linear-gradient(transparent 45%,rgba(8,4,20,.35) 70%,rgba(8,4,20,.86))}
 .sh-in{left:16px;right:84px;bottom:calc(env(safe-area-inset-bottom,0px) + 92px);font:800 16px/1.28 "Bricolage Grotesque",Inter,sans-serif;letter-spacing:-.2px;max-height:none;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;text-shadow:0 2px 14px rgba(0,0,0,.65)}
@@ -81,8 +82,9 @@ const BK_ = [
 ["wholesome reels", "cute pet reels", "cute baby reels", "satisfying reels", "cozy vibes reels"],
 ["prank on boyfriend reels", "couple challenge reels", "trend challenge reels", "try not to laugh reels", "friends prank reels"],
 ["travel aesthetic reels", "street food reels", "cafe hopping reels", "mumbai vlog reels", "trip with friends reels"],
-["self love reels", "glow up journey reels", "study motivation aesthetic", "gym girl reels", "that girl routine reels"]];
-const BW = [1.7, 1.5, 1.2, 1.1, 1, 1.1, 1, 1.1, 1, .7, .7, .7, .7], CK = "vc-shc2", RK = "vc-shq", BK = "vc-shb";
+["self love reels", "glow up journey reels", "study motivation aesthetic", "gym girl reels", "that girl routine reels"],
+["trending instagram memes", "viral instagram reels memes", "meme templates trending", "desi memes reels", "instagram trending reels", "reels trending now", "meme of the day reels", "instagram viral videos", "trending meme audio reels", "funny instagram reels trending"]];
+const BW = [1.7, 1.5, 1.2, 1.1, 1, 1.1, 1, 1.1, 1, .7, .7, .7, .7, 1.8], CK = "vc-shc2", RK = "vc-shq", BK = "vc-shb";
 let RC = ld(RK, []), BL = ld(BK, {}), AF = P, CA = ld(CK, {}), QC = {};
 const cat = (c, w) => { CA[c] = Math.max(-4, Math.min(14, (CA[c] || 0) + w)); sv(CK, CA) };
 function learn(it, w) { if (!it) return; if (it.cat >= 0) cat(it.cat, w * .6); if (w >= 2) { for (const k of terms(it.title)) AF[k] = (AF[k] || 0) + 1; const e = Object.entries(AF); if (e.length > 120) { e.sort((a, b) => b[1] - a[1]); AF = Object.fromEntries(e.slice(0, 80)) } sv(PK, AF) } else if (w <= -4) { const c = chKey(it); if (c) BL[c] = 1; for (const k of terms(it.title).slice(0, 2)) BL["t:" + k] = (BL["t:" + k] || 0) + 1; sv(BK, BL) } }
@@ -145,7 +147,7 @@ function onSt(e) {
   const s = e.data;
   if (s === 1) { playing = true; clearTimeout(wd); const tk = pt; clearTimeout(rv); if (!drag) showPl(); if (curEl()?.dataset.p === "1") cmd("pauseVideo") }
   else if (s === -1 || s === 5) hidePl();
-  else if (s === 0) { cmd("seekTo", [0, true]); cmd("playVideo") }
+  else if (s === 2) { cmd("playVideo") } else if (s === 0) { cmd("seekTo", [0, true]); cmd("playVideo") }
   else if (s === 3 && playing) { playing = false; arm(pt, 1) }
 }
 function onErr() { const it = items[cur]; if (it && ifr) fail(pt) }
