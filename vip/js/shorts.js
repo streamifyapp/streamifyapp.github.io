@@ -83,27 +83,50 @@ const BK_ = [
 ["prank on boyfriend reels", "couple challenge reels", "trend challenge reels", "try not to laugh reels", "friends prank reels"],
 ["travel aesthetic reels", "street food reels", "cafe hopping reels", "mumbai vlog reels", "trip with friends reels"],
 ["self love reels", "glow up journey reels", "study motivation aesthetic", "gym girl reels", "that girl routine reels"],
-["trending instagram memes", "viral instagram reels memes", "meme templates trending", "desi memes reels", "instagram trending reels", "reels trending now", "meme of the day reels", "instagram viral videos", "trending meme audio reels", "funny instagram reels trending"]];
-const BW = [1.7, 1.5, 1.2, 1.1, 1, 1.1, 1, 1.1, 1, .7, .7, .7, .7, 1.8], CK = "vc-shc2", RK = "vc-shq", BK = "vc-shb";
-let RC = ld(RK, []), BL = ld(BK, {}), AF = P, CA = ld(CK, {}), QC = {};
-const cat = (c, w) => { CA[c] = Math.max(-4, Math.min(14, (CA[c] || 0) + w)); sv(CK, CA) };
-function learn(it, w) { if (!it) return; if (it.cat >= 0) cat(it.cat, w * .6); if (w >= 2) { for (const k of terms(it.title)) AF[k] = (AF[k] || 0) + 1; const e = Object.entries(AF); if (e.length > 120) { e.sort((a, b) => b[1] - a[1]); AF = Object.fromEntries(e.slice(0, 80)) } sv(PK, AF) } else if (w <= -4) { const c = chKey(it); if (c) BL[c] = 1; for (const k of terms(it.title).slice(0, 2)) BL["t:" + k] = (BL["t:" + k] || 0) + 1; sv(BK, BL) } }
+["trending instagram memes", "viral instagram reels memes", "meme templates trending", "desi memes reels", "instagram trending reels", "reels trending now", "meme of the day reels", "instagram viral videos", "trending meme audio reels", "funny instagram reels trending"],
+["trending reels today", "viral shorts this week", "trending audio this week", "new trend challenge reels", "viral reels {m} {y}", "trending memes {m}", "everyone is doing this trend"]];
+const BW = [1.7, 1.5, 1.2, 1.1, 1, 1.1, 1, 1.1, 1, .7, .7, .7, .7, 1.8, 1.5], CK = "vc-shc2", RK = "vc-shq", BK = "vc-shb", TK = "vc-sht";
+let RC = ld(RK, []), BL = ld(BK, {}), AF = P, CA = ld(CK, {}), QC = {}, SC = {}, FIRST = true, TS = new Set(ld(TK, []));
+const POS = /pov|aesthetic|grwm|couple|crush|situationship|trend|viral|edit|meme|relatable|bestie|bff|fit ?check|glow ?up|transition|dance|delulu|\bera\b|reel|girlfriend|boyfriend|love|romantic|date|cute|funny|comedy|roast|vibe|slowed|reverb|main character|that girl|soft girl|hostel|college|campus|brainrot|cringe|red flag|green flag|toxic|ghost|rizz|aura|gen ?z|insta|ootd|makeup|hairstyle|skincare|challenge|prank|fyp|pyaar|ishq|dil\b|jaan|yaar|dost/gi;
+const NEG = /tutorial|lecture|news|explained|how to|tips|review|interview|highlights|match|trailer|lyrics video|full song|official video|podcast|webinar|class\b|chapter|exam|syllabus|price|\bvs\b|unboxing|jobs?\b|stock|crypto|ipo|politic|election|rally|modi|rahul|bjp|congress/i;
+const vibe = x => { const t = (x.title || "") + " " + (x.ch || ""); return Math.min((t.match(POS) || []).length, 4) + Math.min((t.match(/#/g) || []).length, 2) * .5 + (/[\u{1F300}-\u{1FAFF}❤]/u.test(t) ? 1 : 0) - (NEG.test(t) ? 3 : 0) };
+const tk = x => String(x.title || "").toLowerCase().replace(/#\S+|[^\p{L}\s]/gu, "").trim().split(/\s+/).slice(0, 5).join(" ");
+const cl = (v, a, b) => Math.max(a, Math.min(b, v));
+const cat = (c, w) => { CA[c] = cl((CA[c] || 0) + w, -4, 14); sv(CK, CA) };
+function learn(it, w) {
+  if (!it) return; if (it.cat >= 0) { cat(it.cat, w * .6); SC[it.cat] = (SC[it.cat] || 0) + (w >= 2 ? 1 : w < 0 ? -.8 : 0) }
+  const c = chKey(it), t = terms(it.title);
+  if (w >= 1.2) { for (const k of t) AF[k] = cl((AF[k] || 0) + (w >= 2 ? 1 : .5), -3, 12); if (c) AF[c] = cl((AF[c] || 0) + (w >= 2 ? 1.5 : .6), -3, 12) }
+  else if (w < 0 && w > -4) { for (const k of t) AF[k] = cl((AF[k] || 0) - .3, -3, 12); if (c) AF[c] = cl((AF[c] || 0) - .5, -3, 12) }
+  else if (w <= -4) { if (c) BL[c] = 1; for (const k of t.slice(0, 2)) BL["t:" + k] = (BL["t:" + k] || 0) + 1; sv(BK, BL) }
+  const e = Object.entries(AF); if (e.length > 200) { e.sort((a, b) => Math.abs(b[1]) - Math.abs(a[1])); AF = Object.fromEntries(e.slice(0, 140)) } sv(PK, AF)
+}
 function queries() {
-  const w = BW.map((b, i) => Math.max(.25, b + Math.max(-1.5, Math.min(CA[i] || 0, 8)) * .3) * (.6 + Math.random() * .8)), idx = w.map((_, i) => i), q = [];
-  for (let n = 0; n < 7 && idx.length; n++) { let t = idx.reduce((a, i) => a + w[i], 0), r = Math.random() * t, k = 0; for (; k < idx.length - 1; k++) { r -= w[idx[k]]; if (r <= 0) break } const c = idx.splice(k, 1)[0], pool = BK_[c].filter(x => !RC.includes(x)), t0 = rnd(pool.length ? pool : BK_[c]); QC[t0] = c; q.push(t0) }
-  const top = Object.entries(AF).sort((a, b) => b[1] - a[1]).slice(0, 8); if (top.length && Math.random() < .5) { const t = rnd(top)[0] + " reels"; QC[t] = -1; q.push(t) }
-  RC.push(...q); RC = RC.slice(-60); sv(RK, RC); return q
+  const hr = new Date().getHours(), tw = hr >= 22 || hr < 4 ? { 1: 1.8, 0: 1.5, 8: 1.7, 7: 1.3 } : hr < 10 ? { 3: 1.6, 12: 1.6, 4: 1.3 } : hr < 17 ? { 5: 1.4, 6: 1.5, 13: 1.3, 9: 1.2 } : { 2: 1.5, 4: 1.4, 0: 1.3, 14: 1.3, 10: 1.2 };
+  const w = BW.map((b, i) => Math.max(.25, b + cl((CA[i] || 0) + (SC[i] || 0), -1.5, 8) * .3) * (tw[i] || 1) * (.6 + Math.random() * .8)), idx = w.map((_, i) => i), q = [], picked = [], now = new Date(), M = now.toLocaleString("en", { month: "long" }), Y = now.getFullYear();
+  const put = c => { const pool = BK_[c].filter(x => !RC.includes(x)), t0 = rnd(pool.length ? pool : BK_[c]).replace("{m}", M).replace("{y}", Y); QC[t0] = c; q.push(t0); picked.push(c) };
+  for (let n = 0; n < 6 && idx.length; n++) { const t = idx.reduce((a, i) => a + w[i], 0); let r = Math.random() * t, k = 0; for (; k < idx.length - 1; k++) { r -= w[idx[k]]; if (r <= 0) break } put(idx.splice(k, 1)[0]) }
+  const rest = BK_.map((_, i) => i).filter(i => !picked.includes(i)); if (rest.length) put(rnd(rest));
+  const E = Object.entries(AF), tt = E.filter(x => x[1] > 1 && x[0][0] !== "@").sort((a, b) => b[1] - a[1]).slice(0, 8), cc = E.filter(x => x[1] > 2 && x[0][0] === "@").sort((a, b) => b[1] - a[1]).slice(0, 5);
+  if (tt.length && Math.random() < .45) { const t = rnd(tt)[0] + " reels"; QC[t] = -1; q.push(t) }
+  if (cc.length && Math.random() < .25) { const t = rnd(cc)[0].slice(1) + " shorts"; QC[t] = -1; q.push(t) }
+  RC.push(...q); RC = RC.slice(-80); sv(RK, RC); return q
 }
 const BADRX = /village|gaon|gaav|\bgram\b|bgm|background music|bhajan|devotional|kirtan|bhakti|status video|whatsapp status|news|podcast|full movie|\blive\b|tutorial|kisan|farmer|farming|shayari|speech|sermon|prayer|quran|bible|rashifal|astrology|recipe|cooking|ringtone|rural|tractor|katha|football|cricket|\bipl\b|fifa|gameplay|minecraft|pubg|bgmi|free fire|car review|bike review|unboxing/i;
-const bad = x => BADRX.test((x.title || "") + " " + (x.ch || "")) || BL[chKey(x)] || terms(x.title).some(k => (BL["t:" + k] || 0) >= 2);
-function mix(fresh) { const key = x => Math.random() * 3 + (CA[x.cat] || 0) * .4 + terms(x.title).reduce((a, k) => a + Math.min(AF[k] || 0, 3), 0) * .3, pool = fresh.map(x => [key(x), x]).sort((a, b) => b[0] - a[0]).map(a => a[1]), out = []; while (pool.length) { const rc = out.slice(-3).map(chKey), rk = out.slice(-2).map(o => o.cat); let i = pool.findIndex(x => (!chKey(x) || !rc.includes(chKey(x))) && !(x.cat >= 0 && rk[0] === x.cat && rk[1] === x.cat)); if (i < 0) i = 0; out.push(pool.splice(i, 1)[0]) } return out }
+const bad = x => BADRX.test((x.title || "") + " " + (x.ch || "")) || BL[chKey(x)] || terms(x.title).some(k => (BL["t:" + k] || 0) >= 2) || vibe(x) <= -2 || (tk(x) && TS.has(tk(x)));
+function mix(fresh) {
+  const key = x => Math.random() * 3 + (CA[x.cat] || 0) * .4 + (SC[x.cat] || 0) * .5 + vibe(x) * .6 + terms(x.title).reduce((a, k) => a + cl(AF[k] || 0, -3, 3), 0) * .3 + cl(AF[chKey(x)] || 0, -3, 6) * .5, pool = fresh.map(x => [key(x), x]).sort((a, b) => b[0] - a[0]).map(a => a[1]), out = [];
+  if (FIRST) { FIRST = false; const top = Object.entries(CA).sort((a, b) => b[1] - a[1]).map(e => +e[0]), seq = [top[0] ?? 0, 13, rnd(BK_.map((_, i) => i).filter(i => !top.slice(0, 2).includes(i) && i !== 13)), 0, 5, top[1] ?? 2, 14]; for (const c of seq) { const i = pool.findIndex(x => x.cat === c); if (i >= 0) out.push(pool.splice(i, 1)[0]) } }
+  while (pool.length) { const rc = out.slice(-3).map(chKey), lc = out.at(-1)?.cat; let i = pool.findIndex(x => (!chKey(x) || !rc.includes(chKey(x))) && !(x.cat >= 0 && x.cat === lc)); if (i < 0) i = pool.findIndex(x => !chKey(x) || !rc.includes(chKey(x))); if (i < 0) i = 0; out.push(pool.splice(i, 1)[0]) }
+  return out
+}
 async function more() {
   if (busy) return; busy = true;
   try {
     for (let tries = 0; tries < 3; tries++) {
-      const qs = queries(), hl = rnd(["hi", "en", "en", "hi"]), rs = await Promise.allSettled(qs.map(q => fetch(`${API}/shorts?q=${encodeURIComponent(q)}&gl=IN&hl=${hl}`, { signal: AbortSignal.timeout(8000) }).then(r => r.ok ? r.json() : Promise.reject(r.status)))), lists = rs.map((r, i) => r.status === "fulfilled" ? (r.value.items || []).slice(0, 6).map(x => (x.cat = QC[qs[i]] ?? -1, x)) : []), fresh = [];
-      for (let i = 0; lists.some(l => i < l.length); i++) for (const l of lists) { const x = l[i]; if (x && !seen.has(x.id) && !bad(x)) { seen.add(x.id); fresh.push(x) } }
-      if (fresh.length) { sv(SK, [...seen].slice(-1500)); add(mix(fresh)); return }
+      const qs = queries(), hl = rnd(["hi", "en", "en", "hi"]), rs = await Promise.allSettled(qs.map(q => fetch(`${API}/shorts?q=${encodeURIComponent(q)}&gl=IN&hl=${hl}`, { signal: AbortSignal.timeout(8000) }).then(r => r.ok ? r.json() : Promise.reject(r.status)))), lists = rs.map((r, i) => r.status === "fulfilled" ? (r.value.items || []).slice(0, 7).map(x => (x.cat = QC[qs[i]] ?? -1, x)) : []), fresh = [];
+      for (let i = 0; lists.some(l => i < l.length); i++) for (const l of lists) { const x = l[i]; if (x && !seen.has(x.id) && !bad(x)) { seen.add(x.id); const k = tk(x); if (k) TS.add(k); fresh.push(x) } }
+      if (fresh.length) { sv(SK, [...seen].slice(-4000)); sv(TK, [...TS].slice(-800)); add(mix(fresh)); return }
     }
     if (!items.length) note("Couldn't load Shorts right now.", true)
   } finally { busy = false }
@@ -118,7 +141,7 @@ function add(list, front) {
   }
 }
 const ord = () => [...feed.children].filter(x => x.classList?.contains("sh-it")), H = () => feed.clientHeight || innerHeight;
-function leave() { if (cur < 0) return; const d = (Date.now() - t0) / 1000, it = items[cur]; if (d >= 4) {  learn(it, d >= 12 ? 2 : 1) } else if (d < 1.5 && d > .2) { learn(it, -.7); 0 } if (ifr) { try { pl?.pauseVideo() } catch { } ifr = false } }
+function leave() { if (cur < 0) return; const d = (Date.now() - t0) / 1000, it = items[cur]; let du = 30; try { du = pl?.getDuration?.() || 30 } catch { } du = cl(du, 6, 90); const r = d / du; if (d > .3) { if (r >= 1.4) learn(it, 3); else if (r >= .8) learn(it, 2.2); else if (r >= .4) learn(it, 1.2); else if (d < 1.8) learn(it, -1); else if (r < .2) learn(it, -.4) } if (ifr) { try { pl?.pauseVideo() } catch { } ifr = false } }
 let rv = 0, pl = null, pr = null, plBox, pt = 0, playing = false, wd = 0, autoMuted = false, ytP = null;
 const yt = () => ytP ||= new Promise((res, rej) => {
   if (window.YT?.Player) return res();
@@ -151,11 +174,11 @@ function onSt(e) {
   else if (s === 3 && playing) { playing = false; arm(pt, 1) }
 }
 function onErr() { const it = items[cur]; if (it && ifr) fail(pt) }
-document.addEventListener("visibilitychange", () => { if (document.hidden || !feed || !host?.isConnected || host.hidden) return; setTimeout(() => { busy = false; if (cur >= 0 && ifr) { let st = -1; try { st = pl.getPlayerState() } catch { } if (st !== 1 && curEl()?.dataset.p !== "1") { playing = false; start(++pt, 1) } else showPl() } if (feed.children.length - Math.round(feed.scrollTop / H()) <= 6) more() }, 250) });
+document.addEventListener("visibilitychange", () => { if (document.hidden || !feed || !host?.isConnected || host.hidden) return; setTimeout(() => { busy = false; if (cur >= 0 && ifr) { let st = -1; try { st = pl.getPlayerState() } catch { } if (st !== 1 && curEl()?.dataset.p !== "1") { playing = false; start(++pt, 1) } else showPl() } if (feed.children.length - Math.round(feed.scrollTop / H()) <= 8) more() }, 250) });
 function play(i) {
-  leave(); const L = ord(), el = feed.querySelector(`[data-i="${i}"]`), it = items[i]; if (!it || !el) return; cur = i; t0 = Date.now(); ifr = true; playing = false; hidePl(); const tok = ++pt;
+  leave(); const L = ord(), el = feed.querySelector(`[data-i="${i}"]`), it = items[i]; if (!it || !el) return; for (const k of [i + 1, i + 2]) { const n = items[k]; if (n) new Image().src = `https://i.ytimg.com/vi/${n.id}/hqdefault.jpg` } cur = i; t0 = Date.now(); ifr = true; playing = false; hidePl(); const tok = ++pt;
   if (el.querySelector(".sh-bad")) setTimeout(() => { if (tok === pt) skip() }, 300); else start(tok, 0);
-  if (L.length - L.indexOf(el) <= 6) more();
+  if (L.length - L.indexOf(el) <= 8) more();
 }
 let anim = 0;
 function settle(n) { const el = ord()[n]; if (el) { const i = +el.dataset.i; if (i !== cur || !ifr) play(i); else showPl() } }
