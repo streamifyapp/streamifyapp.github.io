@@ -68,18 +68,38 @@ const ic = { like: '<path d="M12 21s-7.5-4.6-9.5-9.3C1.2 8.4 3 5 6.3 5c2 0 3.4 1
 const svg = p => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
 const terms = t => [...new Set(String(t).toLowerCase().replace(/#/g, " ").replace(/[^\p{L}\p{M}\s]/gu, " ").split(/\s+/).filter(w => w.length >= 4 && !STOP.has(w)))].slice(0, 6);
 const chKey = it => it?.ch ? "@" + String(it.ch).toLowerCase().slice(0, 40) : "";
-const GZ = ["pov reels", "relatable reels", "dance trend reels", "viral transition reels", "grwm reels", "fit check reels", "aesthetic day in my life", "college life reels", "hostel life reels", "couple goals reels", "situationship reels", "brainrot memes", "funny reels hindi", "comedy skit reels", "roast reels", "glow up transformation", "street style fits", "cafe aesthetic reels", "main character energy", "gym motivation reels", "anime edits", "car edits", "football edits", "cricket edits", "bollywood edits", "slowed reverb edit", "trending audio reels", "viral song reels", "satisfying reels", "pranks reels", "friends squad reels", "travel reels india", "tech gadgets reels", "skincare reels", "study with me reels", "lofi aesthetic reels", "gamer reels", "cute pet reels", "street food reels", "dance challenge couple", "mumbai vlog reels", "makeup transition", "photo dump aesthetic", "ai edits trending", "meme compilation", "cringe vs cool", "pinterest aesthetic", "gen z humor", "that girl routine", "boys night reels"];
-const RK = "vc-shq", BK = "vc-shb"; let RC = ld(RK, []), BL = ld(BK, {}), AF = P;
-function learn(it, w) { if (!it) return; if (w >= 2) { for (const k of terms(it.title)) AF[k] = (AF[k] || 0) + 1; const e = Object.entries(AF); if (e.length > 120) { e.sort((a, b) => b[1] - a[1]); AF = Object.fromEntries(e.slice(0, 80)) } sv(PK, AF) } else if (w <= -4) { const c = chKey(it); if (c) BL[c] = 1; for (const k of terms(it.title).slice(0, 2)) BL["t:" + k] = (BL["t:" + k] || 0) + 1; sv(BK, BL) } }
-function queries() { const pool = GZ.filter(x => !RC.includes(x)), src = pool.length > 8 ? pool : GZ, q = []; while (q.length < 4) { const t = rnd(src); if (!q.includes(t)) q.push(t) } const top = Object.entries(AF).sort((a, b) => b[1] - a[1]).slice(0, 8); if (top.length && Math.random() < .5) q.push(rnd(top)[0] + " reels"); RC.push(...q); RC = RC.slice(-30); sv(RK, RC); return q }
-const BADRX = /village|gaon|gaav|\bgram\b|bgm|background music|bhajan|devotional|kirtan|bhakti|status video|whatsapp status|news|podcast|full movie|\blive\b|tutorial|kisan|farmer|farming|shayari|speech|sermon|prayer|quran|bible|rashifal|astrology|recipe|cooking|ringtone|rural|tractor|katha/i;
+const BK_ = [
+["cute couple reels", "couple goals reels", "pov he is your boyfriend", "pov crush reels", "romantic edits reels", "love story reels", "long distance relationship reels", "first love aesthetic reels", "boyfriend girlfriend funny reels", "couple dance reels"],
+["situationship reels", "crush confession reels", "one sided love reels", "heartbreak edit reels", "toxic ex reels", "red flag green flag reels", "ghosting reels", "dating in 20s reels"],
+["dance trend reels", "viral dance reels", "trending audio reels", "dance challenge reels", "girls dance reels", "boys dance trend reels", "bollywood dance reels trending", "couple dance trend"],
+["that girl aesthetic reels", "day in my life reels", "grwm reels", "cafe aesthetic reels", "photo dump reels", "pinterest aesthetic reels", "morning routine aesthetic", "room makeover aesthetic reels"],
+["fit check reels", "outfit transition reels", "glow up transformation reels", "street style reels", "makeup transition reels", "skincare routine reels", "hairstyle reels", "ootd reels"],
+["relatable reels", "funny reels hindi", "comedy skit reels", "meme reels", "brainrot memes", "roast reels", "gen z humor reels", "cringe reels"],
+["college life reels", "hostel life reels", "bestie reels", "friends squad reels", "bff goals reels", "school college memories reels", "campus vlog reels"],
+["pov reels", "pov you are her", "storytime reels", "main character energy reels", "villain era reels", "soft girl era reels", "delulu reels"],
+["slowed reverb edit reels", "lyrics edit aesthetic reels", "song edit reels", "vibe edit reels", "sad song edit reels", "romantic song reels", "lofi vibes reels"],
+["wholesome reels", "cute pet reels", "cute baby reels", "satisfying reels", "cozy vibes reels"],
+["prank on boyfriend reels", "couple challenge reels", "trend challenge reels", "try not to laugh reels", "friends prank reels"],
+["travel aesthetic reels", "street food reels", "cafe hopping reels", "mumbai vlog reels", "trip with friends reels"],
+["self love reels", "glow up journey reels", "study motivation aesthetic", "gym girl reels", "that girl routine reels"]];
+const BW = [1.7, 1.5, 1.2, 1.1, 1, 1.1, 1, 1.1, 1, .7, .7, .7, .7], CK = "vc-shc2", RK = "vc-shq", BK = "vc-shb";
+let RC = ld(RK, []), BL = ld(BK, {}), AF = P, CA = ld(CK, {}), QC = {};
+const cat = (c, w) => { CA[c] = Math.max(-4, Math.min(14, (CA[c] || 0) + w)); sv(CK, CA) };
+function learn(it, w) { if (!it) return; if (it.cat >= 0) cat(it.cat, w * .6); if (w >= 2) { for (const k of terms(it.title)) AF[k] = (AF[k] || 0) + 1; const e = Object.entries(AF); if (e.length > 120) { e.sort((a, b) => b[1] - a[1]); AF = Object.fromEntries(e.slice(0, 80)) } sv(PK, AF) } else if (w <= -4) { const c = chKey(it); if (c) BL[c] = 1; for (const k of terms(it.title).slice(0, 2)) BL["t:" + k] = (BL["t:" + k] || 0) + 1; sv(BK, BL) } }
+function queries() {
+  const w = BW.map((b, i) => Math.max(.25, b + Math.max(-1.5, Math.min(CA[i] || 0, 8)) * .3) * (.6 + Math.random() * .8)), idx = w.map((_, i) => i), q = [];
+  for (let n = 0; n < 7 && idx.length; n++) { let t = idx.reduce((a, i) => a + w[i], 0), r = Math.random() * t, k = 0; for (; k < idx.length - 1; k++) { r -= w[idx[k]]; if (r <= 0) break } const c = idx.splice(k, 1)[0], pool = BK_[c].filter(x => !RC.includes(x)), t0 = rnd(pool.length ? pool : BK_[c]); QC[t0] = c; q.push(t0) }
+  const top = Object.entries(AF).sort((a, b) => b[1] - a[1]).slice(0, 8); if (top.length && Math.random() < .5) { const t = rnd(top)[0] + " reels"; QC[t] = -1; q.push(t) }
+  RC.push(...q); RC = RC.slice(-60); sv(RK, RC); return q
+}
+const BADRX = /village|gaon|gaav|\bgram\b|bgm|background music|bhajan|devotional|kirtan|bhakti|status video|whatsapp status|news|podcast|full movie|\blive\b|tutorial|kisan|farmer|farming|shayari|speech|sermon|prayer|quran|bible|rashifal|astrology|recipe|cooking|ringtone|rural|tractor|katha|football|cricket|\bipl\b|fifa|gameplay|minecraft|pubg|bgmi|free fire|car review|bike review|unboxing/i;
 const bad = x => BADRX.test((x.title || "") + " " + (x.ch || "")) || BL[chKey(x)] || terms(x.title).some(k => (BL["t:" + k] || 0) >= 2);
-function mix(fresh) { const pool = fresh.slice().sort(() => Math.random() - .5), out = []; while (pool.length) { const rc = out.slice(-3).map(chKey); let i = pool.findIndex(x => !chKey(x) || !rc.includes(chKey(x))); if (i < 0) i = 0; out.push(pool.splice(i, 1)[0]) } return out }
+function mix(fresh) { const key = x => Math.random() * 3 + (CA[x.cat] || 0) * .4 + terms(x.title).reduce((a, k) => a + Math.min(AF[k] || 0, 3), 0) * .3, pool = fresh.map(x => [key(x), x]).sort((a, b) => b[0] - a[0]).map(a => a[1]), out = []; while (pool.length) { const rc = out.slice(-3).map(chKey), rk = out.slice(-2).map(o => o.cat); let i = pool.findIndex(x => (!chKey(x) || !rc.includes(chKey(x))) && !(x.cat >= 0 && rk[0] === x.cat && rk[1] === x.cat)); if (i < 0) i = 0; out.push(pool.splice(i, 1)[0]) } return out }
 async function more() {
   if (busy) return; busy = true;
   try {
     for (let tries = 0; tries < 3; tries++) {
-      const qs = queries(), hl = rnd(["hi", "en", "en", "hi"]), rs = await Promise.allSettled(qs.map(q => fetch(`${API}/shorts?q=${encodeURIComponent(q)}&gl=IN&hl=${hl}`, { signal: AbortSignal.timeout(8000) }).then(r => r.ok ? r.json() : Promise.reject(r.status)))), lists = rs.map(r => r.status === "fulfilled" ? (r.value.items || []) : []), fresh = [];
+      const qs = queries(), hl = rnd(["hi", "en", "en", "hi"]), rs = await Promise.allSettled(qs.map(q => fetch(`${API}/shorts?q=${encodeURIComponent(q)}&gl=IN&hl=${hl}`, { signal: AbortSignal.timeout(8000) }).then(r => r.ok ? r.json() : Promise.reject(r.status)))), lists = rs.map((r, i) => r.status === "fulfilled" ? (r.value.items || []).slice(0, 6).map(x => (x.cat = QC[qs[i]] ?? -1, x)) : []), fresh = [];
       for (let i = 0; lists.some(l => i < l.length); i++) for (const l of lists) { const x = l[i]; if (x && !seen.has(x.id) && !bad(x)) { seen.add(x.id); fresh.push(x) } }
       if (fresh.length) { sv(SK, [...seen].slice(-1500)); add(mix(fresh)); return }
     }
@@ -199,7 +219,7 @@ export function mountShorts(el) {
   feed.addEventListener("click", e => {
     const el = e.target.closest(".sh-it"); if (!el) return; const it = items[+el.dataset.i], b = e.target.closest("[data-a]"); if (autoMuted && !muted) { cmd("unMute"); autoMuted = false }
     if (b) { const a = b.dataset.a; if (a === "like") { L[it.id] ? delete L[it.id] : (L[it.id] = 1, learn(it, 3), heart(el, { clientX: b.getBoundingClientRect().left + 22, clientY: b.getBoundingClientRect().top + 22 })); sv(LK, L); b.classList.toggle("on", !!L[it.id]) } else if (a === "cm") comments(it); else if (a === "sh") share(it); else if (a === "ni") { learn(it, -4); toast("Showing less like this"); skip() } else if (a === "mu") { muted = !muted; cmd(muted ? "mute" : "unMute"); feed.querySelectorAll('[data-a="mu"]').forEach(x => x.innerHTML = svg(muted ? ic.x : ic.mu)) } }
-    else if (e.target.classList.contains("sh-tap") && ifr) { const n = Date.now(); if (n - (el._t || 0) < 300) { clearTimeout(el._pt); el._t = 0; if (!L[it.id]) { L[it.id] = 1; learn(it, 3); sv(LK, L); el.querySelector('[data-a="like"]')?.classList.add("on") } heart(el, e) } else { el._t = n; el._pt = setTimeout(() => { el.dataset.p = el.dataset.p === "1" ? "" : "1"; cmd(el.dataset.p ? "pauseVideo" : "playVideo") }, 280) } }
+    else if (e.target.classList.contains("sh-tap") && ifr) { const n = Date.now(); if (n - (el._t || 0) < 300) { clearTimeout(el._pt); el._t = 0; if (!L[it.id]) { L[it.id] = 1; learn(it, 3); sv(LK, L); el.querySelector('[data-a="like"]')?.classList.add("on") } heart(el, e) } else { el._t = n; el._pt = setTimeout(() => { muted = !muted; cmd(muted ? "mute" : "unMute"); feed.querySelectorAll('[data-a="mu"]').forEach(x => x.innerHTML = svg(muted ? ic.x : ic.mu)) }, 280) } }
   });
   more();
 }
