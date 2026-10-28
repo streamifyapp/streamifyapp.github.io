@@ -3,15 +3,10 @@ import { auth, db, fb } from "./firebase.js";
 const API = "https://musify-api.musify.workers.dev", PK = "vc-shp", LK = "vc-shl", SK = "vc-shs", $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const ld = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) || d } catch { return d } }, sv = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)) } catch { } };
-const SEEDS = ["reels", "bollywood", "comedy", "music", "gaming", "dance", "cars", "fitness", "anime", "memes", "fashion", "travel", "football", "cricket", "edits", "couple", "college", "pranks", "foodie", "tech", "funny memes", "relatable", "roast", "trends", "challenge", "satisfying", "pov", "aesthetic", "glow up", "dance trend"], GEN = SEEDS;
-const CATS = [["trending reels","viral reels","instagram reels trending","trending audio reels","gen z reels","tiktok viral reels","viral reels today","main character energy reels"],["dance reels trending","viral dance trend","trending dance challenge","couple dance reels","college dance reels","bollywood dance reels"],["aesthetic reels","cafe aesthetic reels","day in my life reels","grwm reels","get ready with me reels","that girl morning routine reels","pinterest aesthetic reels","aesthetic photo dump reels"],["outfit transition reels","fashion reels india","streetwear outfit reels","ootd reels","boys fit check reels","glow up transformation reels","viral transition reels","makeup transition reels","hairstyle reels"],["couple goals reels","romantic reels","love story edit reels","cute couple reels","soft launch couple reels","talking stage reels","situationship reels","friendship reels"],["attitude reels","sigma edit reels","edit reels trending","car edit reels","bike edit reels","football skills reels","gym reels","gym motivation reels aesthetic"],["sad edit reels","night drive reels","late night vibes reels","aesthetic sad reels","bollywood edit reels"],["funny reels india","pov reels","relatable reels","college life reels","hostel life reels","campus vibes reels","girls vs boys reels","comedy skit reels","trending memes reels","meme edit reels","funny voiceover reels","prank reels","friends prank reels","roast reels","brainrot reels","cringe reels"],["travel reels india","mumbai vlog reels","delhi college vibes reels","cafe hopping reels","street food reels aesthetic","cute dog reels","satisfying reels","anime edit reels"]], IN = CATS.flat();
-const LANGS = ["hindi", "english", "marathi", "tamil", "telugu", "punjabi", "bengali", "gujarati", "kannada", "malayalam", "bhojpuri"], LG = "vc-shg";
-const INRX = /india|desi|hindi|bollywood|ipl|mumbai|delhi|punjabi|tamil|telugu|marathi|bhojpuri|kannada|malayalam|bengali|gujarati|bharat|kohli|dhoni|rohit|shahrukh|salman|kolkata|bangalore|chennai|hyderabad/i;
-const indian = x => { const s = (x.title || "") + " " + (x.ch || ""); return /[\u0900-\u0D7F]/.test(s) || INRX.test(s) };
 const HL = { hindi: "hi", marathi: "mr", tamil: "ta", telugu: "te", punjabi: "pa", bengali: "bn", gujarati: "gu", kannada: "kn", malayalam: "ml" };
 const rnd = a => a[Math.random() * a.length | 0];
 const STOP = new Set("this that with from have your what when they them will just like video shorts short about into more best new how the and for are you not but can all out".split(" "));
-let drag = false, host, feed, items = [], seen = new Set(ld(SK, [])), cur = -1, busy = false, muted = false, ifr = false, t0 = 0, io, P = ld(PK, {}), L = ld(LK, {}), friends = null, syncT, skipRun = 0;
+let drag = false, host, feed, items = [], seen = new Set(ld(SK, [])), cur = -1, busy = false, muted = false, ifr = false, t0 = 0, io, P = ld(PK, {}), L = ld(LK, {}), friends = null, syncT;
 (() => { if (document.getElementById("sh-css")) return; const s = document.createElement("style"); s.id = "sh-css"; s.textContent = `
 #chatView #shortsPanel.rl:not([hidden]){display:block;padding:0;background:#000;overflow:hidden}
 .sh-feed{position:absolute;inset:0;overflow:hidden;touch-action:none;overscroll-behavior:contain}.sh-feed::-webkit-scrollbar{display:none}
@@ -54,45 +49,37 @@ let drag = false, host, feed, items = [], seen = new Set(ld(SK, [])), cur = -1, 
 .sh-heart{position:absolute;z-index:3;left:50%;top:50%;width:96px;height:96px;margin:-48px 0 0 -48px;color:#ff2d55;pointer-events:none;animation:shH .8s ease-out forwards}.sh-heart svg{width:100%;height:100%;fill:#ff2d55;stroke:#ff2d55}
 @keyframes shU{from{transform:translateY(100%)}}@keyframes shF{from{opacity:0}}@keyframes shP{50%{opacity:.5}}@keyframes shH{0%{transform:scale(.3);opacity:0}25%{transform:scale(1.15);opacity:1}100%{transform:scale(1.4) translateY(-30px);opacity:0}}
 #chatView .chat-shell.sh-open .gnav{transform:translate(-50%,170%);opacity:0;pointer-events:none}
+.sh-sh{background:linear-gradient(transparent 45%,rgba(8,4,20,.35) 70%,rgba(8,4,20,.86))}
+.sh-in{left:16px;right:84px;bottom:calc(env(safe-area-inset-bottom,0px) + 92px);font:800 16px/1.28 "Bricolage Grotesque",Inter,sans-serif;letter-spacing:-.2px;max-height:none;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;text-shadow:0 2px 14px rgba(0,0,0,.65)}
+.sh-in b{font-weight:800;background:linear-gradient(90deg,#ff9ad5,#b5a3ff);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none}
+.sh-side{right:10px;bottom:calc(env(safe-area-inset-bottom,0px) + 96px);gap:14px}
+.sh-side button{width:48px;height:48px;border-radius:50%;padding:0;place-items:center;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);-webkit-backdrop-filter:blur(14px) saturate(1.6);backdrop-filter:blur(14px) saturate(1.6);box-shadow:0 6px 18px rgba(0,0,0,.35);transition:transform .18s cubic-bezier(.3,1.8,.5,1),background .2s}
+.sh-side button:active{transform:scale(.82)}.sh-side svg{width:23px;height:23px}
+.sh-side button.on{background:linear-gradient(135deg,#ff5e8a,#a62cff);border-color:transparent;box-shadow:0 6px 22px rgba(255,45,117,.55)}.sh-side .on svg{fill:#fff;stroke:#fff;animation:shPop .5s cubic-bezier(.3,1.9,.5,1)}
+.sh-hb{position:absolute;z-index:3;width:0;height:0;pointer-events:none}
+.sh-hg{position:absolute;width:116px;height:116px;left:-58px;top:-58px;filter:drop-shadow(0 8px 26px rgba(255,45,117,.75));animation:shHg .95s cubic-bezier(.2,1.4,.4,1) forwards}
+.sh-hb i{position:absolute;left:-10px;top:-10px;font-size:19px;font-style:normal;opacity:0;animation:shHp .9s ease-out forwards}
+.sh-hb u{position:absolute;left:-14px;top:-14px;width:28px;height:28px;border-radius:50%;border:3px solid #ff5c93;animation:shHr .8s ease-out forwards}
+@keyframes shHg{0%{transform:scale(0) rotate(var(--r));opacity:0}30%{transform:scale(1.2) rotate(var(--r));opacity:1}55%{transform:scale(.95) rotate(var(--r))}100%{transform:scale(1.5) translateY(-80px) rotate(var(--r));opacity:0}}
+@keyframes shHp{0%{transform:translate(0,0) scale(0);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(var(--s));opacity:0}}
+@keyframes shHr{from{transform:scale(.3);opacity:.9}to{transform:scale(5);opacity:0}}@keyframes shPop{0%{transform:scale(.3)}60%{transform:scale(1.35)}100%{transform:scale(1)}}
 `; document.head.appendChild(s) })();
 const ic = { like: '<path d="M12 21s-7.5-4.6-9.5-9.3C1.2 8.4 3 5 6.3 5c2 0 3.4 1.1 4.2 2.4h3C14.3 6.1 15.7 5 17.7 5 21 5 22.8 8.4 21.5 11.7 19.5 16.4 12 21 12 21z"/>', cm: '<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.5-4.7A8 8 0 1 1 21 12z"/>', sh: '<path d="M22 3 11 14M22 3l-7 19-4-8-8-4z"/>', mu: '<path d="M11 5 6 9H3v6h3l5 4zM16 9a4 4 0 0 1 0 6M19 6a8 8 0 0 1 0 12"/>', x: '<path d="M4 4l16 16M11 5 6 9H3v6h3l5 4z"/>', cp: '<rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/>', se: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>', tn: '<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>', ni: '<circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/>' };
 const svg = p => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
 const terms = t => [...new Set(String(t).toLowerCase().replace(/#/g, " ").replace(/[^\p{L}\p{M}\s]/gu, " ").split(/\s+/).filter(w => w.length >= 4 && !STOP.has(w)))].slice(0, 6);
 const chKey = it => it?.ch ? "@" + String(it.ch).toLowerCase().slice(0, 40) : "";
-function save() { const e = Object.entries(P).filter(x => Math.abs(x[1]) > .3); if (e.length > 260) { e.sort((a, b) => Math.abs(b[1]) - Math.abs(a[1])); e.length = 160 } P = Object.fromEntries(e); sv(PK, P); clearTimeout(syncT); syncT = setTimeout(push, 5000) }
-function learn(it, w) { if (!it) return; if (it.cat >= 0) { CC[it.cat] = Math.max(-3, Math.min(12, (CC[it.cat] || 0) + w * .6)); sv("vc-shc", CC) } for (const k of terms(it.title)) P[k] = (P[k] || 0) + w; const c = chKey(it); if (c) P[c] = (P[c] || 0) + w * 1.5; save() }
-async function push() { const u = auth.currentUser; if (!u) return; try { await fb.update(fb.ref(db, `users/${u.uid}`), { shortsPrefs: JSON.stringify({ p: P, l: Object.keys(L).slice(-200), g: ld(LG, null), t: Date.now() }) }) } catch { } }
-async function pull() { const u = auth.currentUser; if (!u) return; try { const s = (await fb.get(fb.ref(db, `users/${u.uid}/shortsPrefs`))).val(); if (!s) return; const d = JSON.parse(s); for (const [k, v] of Object.entries(d.p || {})) if (Math.abs(v) > Math.abs(P[k] || 0)) P[k] = v; for (const k of d.l || []) L[k] = 1; if (d.g?.length && !localStorage.getItem(LG)) sv(LG, d.g); sv(PK, P); sv(LK, L) } catch { } }
-function decay() { const d = Math.floor(Date.now() / 864e5), last = ld("vc-shd", 0); if (last && d > last) { const f = Math.pow(.96, Math.min(d - last, 30)); for (const k in P) P[k] *= f; save() } sv("vc-shd", d) }
-const wpick = pairs => { const w = pairs.map(x => Math.sqrt(Math.max(x[1], .1))), tot = w.reduce((a, b) => a + b, 0); let r = Math.random() * tot; for (let i = 0; i < pairs.length; i++) if ((r -= w[i]) <= 0) return pairs[i][0]; return pairs[0][0] };
-const CC = ld("vc-shc", {}), QC = {};
-function pickCat(ex) {
-  const hr = new Date().getHours(), tw = hr >= 22 || hr < 4 ? { 6: 2.2, 4: 1.6, 2: 1.2 } : hr >= 5 && hr < 10 ? { 2: 1.8, 5: 1.4, 0: 1.2 } : hr >= 17 ? { 1: 2, 3: 1.6, 7: 1.6, 4: 1.2 } : { 0: 1.5, 7: 1.4, 1: 1.2, 8: 1.2 };
-  const w = CATS.map((_, i) => ex?.includes(i) ? 0 : (.6 + Math.max(-1, Math.min(CC[i] || 0, 10)) * .35 + 1) * (tw[i] || 1));
-  let t = w.reduce((a, b) => a + b, 0), x = Math.random() * t; for (let i = 0; i < w.length; i++) if ((x -= w[i]) <= 0) return i; return 0;
-}
-function queries() {
-  const pos = Object.entries(P).filter(x => x[1] > 0).sort((a, b) => b[1] - a[1]).slice(0, 14), lg = ld(LG, ["hindi", "english"]), nm = k => k.replace(/^@/, ""), q = [], used = [];
-  const add = c => { const t = rnd(CATS[c]); QC[t] = c; q.push(t) };
-  if (skipRun >= 3) { skipRun = 0; for (let k = 0; k < 4; k++) { const c = pickCat(used); used.push(c); add(c) } }
-  else { for (let k = 0; k < 2; k++) { const c = pickCat(used); used.push(c); add(c) } const e = rnd(CATS.map((_, i) => i).filter(i => !used.includes(i))); add(e); used.push(e);
-    if (pos.length >= 3) { const t = nm(wpick(pos)) + " reels"; q.push(t); QC[t] = pickCat(used) } else add(pickCat(used));
-    if (Math.random() < .35) { const t = rnd(GEN) + " reels " + rnd(lg); q.push(t) } }
-  return [...new Set(q.map(s => s.trim()))].slice(0, 5);
-}
-const BADRX = /village|gaon|gaav|\bgram\b|desi vlog|bgm|background music|bhajan|devotional|kirtan|bhakti|status video|whatsapp status|news|podcast|full movie|\blive\b|tutorial|kisan|farmer|farming|shayari|speech|sermon|prayer|quran|bible|rashifal|astrology|recipe|cooking|ringtone|haryanvi|bhojpuri|khesari|pawan singh|jugaad|motivational speaker|sandeep maheshwari|vlogs? of my village|rural|tractor|bhai ji|baba|katha/i;
-const bad = x => { if (BADRX.test((x.title || "") + " " + (x.ch || ""))) return true; let s = 0; for (const k of terms(x.title)) s += Math.min(P[k] || 0, 0); const c = chKey(x); if (c) s += Math.min(P[c] || 0, 0); return s <= -4 };
-const sc = x => { let s = 0; for (const k of terms(x.title)) s += P[k] || 0; s += P[chKey(x)] || 0; return Math.max(-8, Math.min(s, 10)) + (indian(x) ? .8 : 0) + (/reel|viral|trend|insta|edit|aesthetic|pov|transition|grwm|dance|challenge|funny|meme|prank|roast|gen ?z|fit check|ootd|glow up|couple|situationship|main character|brainrot|cringe|relatable|hostel|college|campus/i.test((x.title || "") + " " + (x.ch || "")) ? 3 : 0) };
-function mix(fresh) {
-  const pool = fresh.map(x => ({ x, s: sc(x) * .4 + Math.random() * 5 })).sort((a, b) => b.s - a.s), out = [];
-  while (pool.length) { const rc = out.slice(-3).map(chKey), rt = out.slice(-2).map(o => terms(o.title)[0]); let i = pool.findIndex(p => { const c = chKey(p.x), k = terms(p.x.title)[0]; return (!c || !rc.includes(c)) && (!k || !rt.includes(k)) }); if (i < 0) i = 0; out.push(pool.splice(i, 1)[0].x) }
-  return out;
-}
+const GZ = ["pov reels", "relatable reels", "dance trend reels", "viral transition reels", "grwm reels", "fit check reels", "aesthetic day in my life", "college life reels", "hostel life reels", "couple goals reels", "situationship reels", "brainrot memes", "funny reels hindi", "comedy skit reels", "roast reels", "glow up transformation", "street style fits", "cafe aesthetic reels", "main character energy", "gym motivation reels", "anime edits", "car edits", "football edits", "cricket edits", "bollywood edits", "slowed reverb edit", "trending audio reels", "viral song reels", "satisfying reels", "pranks reels", "friends squad reels", "travel reels india", "tech gadgets reels", "skincare reels", "study with me reels", "lofi aesthetic reels", "gamer reels", "cute pet reels", "street food reels", "dance challenge couple", "mumbai vlog reels", "makeup transition", "photo dump aesthetic", "ai edits trending", "meme compilation", "cringe vs cool", "pinterest aesthetic", "gen z humor", "that girl routine", "boys night reels"];
+const RK = "vc-shq", BK = "vc-shb"; let RC = ld(RK, []), BL = ld(BK, {}), AF = P;
+function learn(it, w) { if (!it) return; if (w >= 2) { for (const k of terms(it.title)) AF[k] = (AF[k] || 0) + 1; const e = Object.entries(AF); if (e.length > 120) { e.sort((a, b) => b[1] - a[1]); AF = Object.fromEntries(e.slice(0, 80)) } sv(PK, AF) } else if (w <= -4) { const c = chKey(it); if (c) BL[c] = 1; for (const k of terms(it.title).slice(0, 2)) BL["t:" + k] = (BL["t:" + k] || 0) + 1; sv(BK, BL) } }
+function queries() { const pool = GZ.filter(x => !RC.includes(x)), src = pool.length > 8 ? pool : GZ, q = []; while (q.length < 4) { const t = rnd(src); if (!q.includes(t)) q.push(t) } const top = Object.entries(AF).sort((a, b) => b[1] - a[1]).slice(0, 8); if (top.length && Math.random() < .5) q.push(rnd(top)[0] + " reels"); RC.push(...q); RC = RC.slice(-30); sv(RK, RC); return q }
+const BADRX = /village|gaon|gaav|\bgram\b|bgm|background music|bhajan|devotional|kirtan|bhakti|status video|whatsapp status|news|podcast|full movie|\blive\b|tutorial|kisan|farmer|farming|shayari|speech|sermon|prayer|quran|bible|rashifal|astrology|recipe|cooking|ringtone|rural|tractor|katha/i;
+const bad = x => BADRX.test((x.title || "") + " " + (x.ch || "")) || BL[chKey(x)] || terms(x.title).some(k => (BL["t:" + k] || 0) >= 2);
+function mix(fresh) { const pool = fresh.slice().sort(() => Math.random() - .5), out = []; while (pool.length) { const rc = out.slice(-3).map(chKey); let i = pool.findIndex(x => !chKey(x) || !rc.includes(chKey(x))); if (i < 0) i = 0; out.push(pool.splice(i, 1)[0]) } return out }
 async function more() {
   if (busy) return; busy = true;
   try {
     for (let tries = 0; tries < 3; tries++) {
-      const qs = queries(), rs = await Promise.allSettled(qs.map(q => fetch(`${API}/shorts?q=${encodeURIComponent(q)}&gl=IN&hl=${HL[rnd(ld(LG, ["hindi", "english"]))] || "en"}`, { signal: AbortSignal.timeout(8000) }).then(r => r.ok ? r.json() : Promise.reject(r.status)))), lists = rs.map((r, i) => r.status === "fulfilled" ? (r.value.items || []).map(x => (x.cat = QC[qs[i]] ?? -1, x)) : []), fresh = [];
+      const qs = queries(), hl = rnd(["hi", "en", "en", "hi"]), rs = await Promise.allSettled(qs.map(q => fetch(`${API}/shorts?q=${encodeURIComponent(q)}&gl=IN&hl=${hl}`, { signal: AbortSignal.timeout(8000) }).then(r => r.ok ? r.json() : Promise.reject(r.status)))), lists = rs.map(r => r.status === "fulfilled" ? (r.value.items || []) : []), fresh = [];
       for (let i = 0; lists.some(l => i < l.length); i++) for (const l of lists) { const x = l[i]; if (x && !seen.has(x.id) && !bad(x)) { seen.add(x.id); fresh.push(x) } }
       if (fresh.length) { sv(SK, [...seen].slice(-1500)); add(mix(fresh)); return }
     }
@@ -104,12 +91,12 @@ function add(list, front) {
   $(".sh-note", host)?.remove();
   for (const x of list) {
     const i = items.push(x) - 1, el = document.createElement("div"); el.className = "sh-it"; el.dataset.i = i; el.dataset.id = x.id; el.style.backgroundImage = `url(https://i.ytimg.com/vi/${x.id}/hqdefault.jpg)`;
-    el.innerHTML = `<div class="sh-tap"></div><div class="sh-sh"></div><div class="sh-in">${esc(x.title)}${x.ch ? `<small>${esc(x.ch)}</small>` : ""}</div><div class="sh-side"><button data-a="like" class="${L[x.id] ? "on" : ""}">${svg(ic.like)}</button><button data-a="cm">${svg(ic.cm)}</button><button data-a="sh">${svg(ic.sh)}</button><button data-a="ni">${svg(ic.ni)}</button><button data-a="mu">${svg(muted ? ic.x : ic.mu)}</button></div>`;
+    el.innerHTML = `<div class="sh-tap"></div><div class="sh-sh"></div><div class="sh-in">${esc(x.title).replace(/#[^\s#]+/g, "<b>$&</b>")}</div><div class="sh-side"><button data-a="like" class="${L[x.id] ? "on" : ""}" aria-label="Like">${svg(ic.like)}</button><button data-a="cm" aria-label="Comments">${svg(ic.cm)}</button><button data-a="sh" aria-label="Share">${svg(ic.sh)}</button><button data-a="ni" aria-label="Not interested">${svg(ic.ni)}</button><button data-a="mu" aria-label="Mute">${svg(muted ? ic.x : ic.mu)}</button></div>`;
     front ? feed.insertBefore(el, feed.firstChild) : feed.appendChild(el); io.observe(el);
   }
 }
 const ord = () => [...feed.children].filter(x => x.classList?.contains("sh-it")), H = () => feed.clientHeight || innerHeight;
-function leave() { if (cur < 0) return; const d = (Date.now() - t0) / 1000, it = items[cur]; if (d >= 4) { skipRun = 0; learn(it, d >= 12 ? 2 : 1) } else if (d < 1.5 && d > .2) { learn(it, -.7); skipRun++ } if (ifr) { try { pl?.pauseVideo() } catch { } ifr = false } }
+function leave() { if (cur < 0) return; const d = (Date.now() - t0) / 1000, it = items[cur]; if (d >= 4) {  learn(it, d >= 12 ? 2 : 1) } else if (d < 1.5 && d > .2) { learn(it, -.7); 0 } if (ifr) { try { pl?.pauseVideo() } catch { } ifr = false } }
 let rv = 0, pl = null, pr = null, plBox, pt = 0, playing = false, wd = 0, autoMuted = false, ytP = null;
 const yt = () => ytP ||= new Promise((res, rej) => {
   if (window.YT?.Player) return res();
@@ -160,7 +147,7 @@ async function loadFriends() {
 const closeSheet = () => { host.querySelectorAll(".sh-sheet,.sh-scrim").forEach(x => x.remove()); host.closest(".chat-shell")?.classList.remove("sh-open") };
 const openSheet = html => { closeSheet(); const sc = document.createElement("div"); sc.className = "sh-scrim"; sc.onclick = closeSheet; const s = document.createElement("div"); s.className = "sh-sheet"; s.innerHTML = html; host.append(sc, s); host.closest(".chat-shell")?.classList.add("sh-open"); const x = $(".sh-x", s); if (x) x.onclick = closeSheet; return s };
 const toast = m => { const d = document.createElement("div"); d.className = "sh-toast"; d.textContent = m; host.appendChild(d); setTimeout(() => d.remove(), 1900) };
-const heart = el => { const d = document.createElement("div"); d.className = "sh-heart"; d.innerHTML = svg(ic.like); el.appendChild(d); setTimeout(() => d.remove(), 800) };
+const heart = (el, e) => { const r = el.getBoundingClientRect(), x = e ? e.clientX - r.left : r.width / 2, y = e ? e.clientY - r.top : r.height / 2, d = document.createElement("div"); d.className = "sh-hb"; d.style.left = x + "px"; d.style.top = y + "px"; let h = `<svg class="sh-hg" style="--r:${R_(-15, 15) | 0}deg" viewBox="0 0 24 24"><defs><linearGradient id="shg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffb347"/><stop offset=".5" stop-color="#ff2d75"/><stop offset="1" stop-color="#a62cff"/></linearGradient></defs><path fill="url(#shg)" d="M12 21s-7.5-4.6-9.5-9.3C1.2 8.4 3 5 6.3 5c2 0 3.4 1.1 4.2 2.4h3C14.3 6.1 15.7 5 17.7 5 21 5 22.8 8.4 21.5 11.7 19.5 16.4 12 21 12 21z"/></svg><u></u>`; for (let i = 0; i < 9; i++) { const a = i / 9 * 6.283 + R_(0, .5), k = R_(70, 130); h += `<i style="--dx:${Math.cos(a) * k | 0}px;--dy:${Math.sin(a) * k | 0}px;--s:${R_(.8, 1.5).toFixed(2)};animation-delay:${i * 14}ms">${["💗", "✨", "💖", "🩷"][i % 4]}</i>` } d.innerHTML = h; el.appendChild(d); setTimeout(() => d.remove(), 1100) }, R_ = (a, b) => a + Math.random() * (b - a);
 async function share(it) {
   const u = auth.currentUser, url = `https://www.youtube.com/shorts/${it.id}`, s = openSheet(`<div class="sh-grab"></div><div class="sh-sh-h"><span>Share</span><button class="sh-x" aria-label="Close">✕</button></div><div class="sh-act"><button data-x="cp">${svg(ic.cp)}<span>Copy link</span></button><button data-x="ext">${svg(ic.sh)}<span>More apps</span></button></div><label class="sh-srw">${svg(ic.se)}<input class="sh-sr" placeholder="Search friends" autocomplete="off"></label><div class="sh-fr"><div class="sh-em">Loading…</div></div><div class="sh-snd"><input maxlength="200" placeholder="Add a message…"><button disabled aria-label="Send">${svg(ic.sh)}<em></em></button></div>`);
   const grid = $(".sh-fr", s), sel = new Set(), btn = $(".sh-snd button", s), sr = $(".sh-sr", s), badge = $("em", btn); let list = [];
@@ -192,13 +179,13 @@ export function openShort(it, fromDM) {
   learn(it, 3);
 }
 function refresh() {
-  leave(); hidePl(); cmd("stopVideo"); pt++; cur = -1; items = []; skipRun = 0; busy = false; io?.disconnect(); feed.innerHTML = ""; feed.scrollTop = 0; closeSheet(); $(".sh-note", host)?.remove(); more(); toast("Feed refreshed");
+  leave(); hidePl(); cmd("stopVideo"); pt++; cur = -1; items = [];  busy = false; io?.disconnect(); feed.innerHTML = ""; feed.scrollTop = 0; closeSheet(); $(".sh-note", host)?.remove(); more(); toast("Feed refreshed");
 }
 export function stopShorts() { closeSheet(); leave(); hidePl(); cmd("stopVideo"); pt++; clearTimeout(wd); cur = -1; if (host) host.dataset.dm = ""; if (feed) io?.disconnect() }
 export function mountShorts(el) {
   host = el; host.classList.add("rl");
   if (host.dataset.sh === "1") { feed.querySelectorAll(".sh-it").forEach(x => io.observe(x)); return }
-  host.dataset.sh = "1"; document.addEventListener("click", e => { if (e.target.closest('[data-gn="shorts"]') && host.isConnected && !host.hidden) refresh() }, true); host.innerHTML = `<div class="sh-pl"></div><div class="sh-top">Shorts</div><button class="sh-back">‹ Chat</button><div class="sh-feed"></div>`; feed = $(".sh-feed", host); plBox = $(".sh-pl", host);
+  host.dataset.sh = "1"; document.addEventListener("click", e => { if (e.target.closest('[data-gn="shorts"]') && host.isConnected && !host.hidden) refresh() }, true); host.innerHTML = `<div class="sh-pl"></div><button class="sh-back">‹ Chat</button><div class="sh-feed"></div>`; feed = $(".sh-feed", host); plBox = $(".sh-pl", host);
   $(".sh-back", host).onclick = () => document.querySelector('[data-gn="chats"]')?.click();
   io = new IntersectionObserver(es => { if (drag) return; for (const e of es) if (e.isIntersecting && e.intersectionRatio >= .7) { const i = +e.target.dataset.i; if (i !== cur || !ifr) play(i); else if (!drag) showPl() } }, { root: feed, threshold: [.7] });
 
@@ -211,8 +198,8 @@ export function mountShorts(el) {
   document.addEventListener("keydown", e => { if (!host.isConnected || host.hidden || !["ArrowDown", "ArrowUp"].includes(e.key) || e.target.closest?.("input,[contenteditable]")) return; goTo(Math.round(feed.scrollTop / H()) + (e.key === "ArrowDown" ? 1 : -1)) });
   feed.addEventListener("click", e => {
     const el = e.target.closest(".sh-it"); if (!el) return; const it = items[+el.dataset.i], b = e.target.closest("[data-a]"); if (autoMuted && !muted) { cmd("unMute"); autoMuted = false }
-    if (b) { const a = b.dataset.a; if (a === "like") { L[it.id] ? delete L[it.id] : (L[it.id] = 1, learn(it, 3)); sv(LK, L); b.classList.toggle("on", !!L[it.id]) } else if (a === "cm") comments(it); else if (a === "sh") share(it); else if (a === "ni") { learn(it, -4); toast("Showing less like this"); skip() } else if (a === "mu") { muted = !muted; cmd(muted ? "mute" : "unMute"); feed.querySelectorAll('[data-a="mu"]').forEach(x => x.innerHTML = svg(muted ? ic.x : ic.mu)) } }
-    else if (e.target.classList.contains("sh-tap") && ifr) { const n = Date.now(); if (n - (el._t || 0) < 300) { clearTimeout(el._pt); el._t = 0; if (!L[it.id]) { L[it.id] = 1; learn(it, 3); sv(LK, L); el.querySelector('[data-a="like"]')?.classList.add("on") } heart(el) } else { el._t = n; el._pt = setTimeout(() => { el.dataset.p = el.dataset.p === "1" ? "" : "1"; cmd(el.dataset.p ? "pauseVideo" : "playVideo") }, 280) } }
+    if (b) { const a = b.dataset.a; if (a === "like") { L[it.id] ? delete L[it.id] : (L[it.id] = 1, learn(it, 3), heart(el, { clientX: b.getBoundingClientRect().left + 22, clientY: b.getBoundingClientRect().top + 22 })); sv(LK, L); b.classList.toggle("on", !!L[it.id]) } else if (a === "cm") comments(it); else if (a === "sh") share(it); else if (a === "ni") { learn(it, -4); toast("Showing less like this"); skip() } else if (a === "mu") { muted = !muted; cmd(muted ? "mute" : "unMute"); feed.querySelectorAll('[data-a="mu"]').forEach(x => x.innerHTML = svg(muted ? ic.x : ic.mu)) } }
+    else if (e.target.classList.contains("sh-tap") && ifr) { const n = Date.now(); if (n - (el._t || 0) < 300) { clearTimeout(el._pt); el._t = 0; if (!L[it.id]) { L[it.id] = 1; learn(it, 3); sv(LK, L); el.querySelector('[data-a="like"]')?.classList.add("on") } heart(el, e) } else { el._t = n; el._pt = setTimeout(() => { el.dataset.p = el.dataset.p === "1" ? "" : "1"; cmd(el.dataset.p ? "pauseVideo" : "playVideo") }, 280) } }
   });
-  decay(); pull(); more();
+  more();
 }
