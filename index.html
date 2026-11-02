@@ -305,6 +305,42 @@ aside.sd>*{animation:cin .7s var(--ease) backwards}aside.sd>:nth-child(3){animat
 </footer>
 <nav id="mnav"><i class="pill"></i><div class="nv" data-go="home" data-ic="home">Home</div><div class="nv" data-go="search" data-ic="search">Search</div><div class="nv" data-go="library" data-ic="lib">Library</div><div class="nv" data-go="queue" data-ic="list">Queue</div></nav>
 <script>
+/* YouTube IFrame engine: an Audio-compatible shim (hidden 64px player, same tricks as music.graphikrafts.com) */
+(function(){
+try{['hidden','webkitHidden'].forEach(function(k){Object.defineProperty(document,k,{get:function(){return false}})});['visibilityState','webkitVisibilityState'].forEach(function(k){Object.defineProperty(document,k,{get:function(){return'visible'}})})}catch(_){}
+['visibilitychange','webkitvisibilitychange'].forEach(function(e){window.addEventListener(e,function(ev){ev.stopImmediatePropagation()},true);document.addEventListener(e,function(ev){ev.stopImmediatePropagation()},true)});
+var ctx=null;function keep(){if(ctx){if(ctx.state==='suspended')ctx.resume();return}try{var C=window.AudioContext||window.webkitAudioContext;ctx=new C();var o=ctx.createOscillator(),g=ctx.createGain();g.gain.value=1e-5;o.connect(g);g.connect(ctx.destination);o.start()}catch(_){}}
+var inst=[];function unlock(){keep();inst.forEach(function(i){try{i.p.unMute()}catch(_){}})}
+document.addEventListener('touchstart',unlock,{passive:true});document.addEventListener('click',unlock);
+var ap;function api(){return ap||(ap=new Promise(function(r){if(window.YT&&YT.Player)return r();var o=window.onYouTubeIframeAPIReady;window.onYouTubeIframeAPIReady=function(){o&&o();r()};var s=document.createElement('script');s.src='https://www.youtube.com/iframe_api';document.head.appendChild(s)}))}
+var ID=/^[\w-]{11}$/;
+function YTA(){var d=document.createElement('div');d.style.cssText='position:fixed;bottom:0;right:0;width:64px;height:64px;opacity:.01;pointer-events:none;z-index:-999';var h=document.createElement('div');d.appendChild(h);document.body.appendChild(d);
+var s=this;s._l={};s._v=1;s._r=1;s.paused=true;s.ended=false;s.readyState=0;s.networkState=0;s.error=null;s._src='';s._id='';s._want=false;s._tok=0;inst.push(s);
+api().then(function(){s.p=new YT.Player(h,{width:'100%',height:'100%',playerVars:{autoplay:0,controls:0,disablekb:1,fs:0,playsinline:1,rel:0,origin:location.origin},events:{onReady:function(){s._ok=1;s.p.setVolume(s._v*100);if(s._id)s._go(s._id)},onStateChange:function(e){s._st(e.data)},onError:function(){s._err()}}})});
+setInterval(function(){if(s._ok&&s.p.getPlayerState&&s.p.getPlayerState()===1)s._fire('timeupdate')},250)}
+var P=YTA.prototype;
+P._fire=function(t){var e={type:t,target:this};if(typeof this['on'+t]==='function')try{this['on'+t](e)}catch(_){}(this._l[t]||[]).forEach(function(f){try{f.call(this,e)}catch(_){}},this)};
+P.addEventListener=function(t,f){(this._l[t]=this._l[t]||[]).push(f)};P.removeEventListener=function(t,f){this._l[t]=(this._l[t]||[]).filter(function(x){return x!==f})};
+P._ms=function(st){try{navigator.mediaSession.playbackState=st}catch(_){}};
+P._st=function(x){if(!this._id)return;if(x===1){this.readyState=4;this.networkState=2;try{this.p.unMute();this.p.setVolume(this._v*100)}catch(_){}if(this.paused){this.paused=false;this._fire('play')}this._ms('playing');this._fire('playing');this._fire('durationchange')}
+else if(x===3){this.readyState=2;this._fire('waiting')}
+else if(x===2){var s=this;if(this._want&&!this.ended){setTimeout(function(){if(s._want&&s.p&&s.p.playVideo){try{s.p.unMute();s.p.setVolume(s._v*100)}catch(_){}s.p.playVideo()}},40)}else if(!this.paused){this.paused=true;this._ms('paused');this._fire('pause')}}
+else if(x===0){this.ended=true;this.paused=true;this._want=false;this._fire('ended')}};
+P._err=function(){this.error={code:4};this.networkState=3;this._fire('error')};
+P._go=function(id){if(!this._ok)return;var t=++this._tok;this.ended=false;try{this.p.loadVideoById({videoId:id,startSeconds:0});this.p.setVolume(this._v*100);this.p.setPlaybackRate(this._r);if(!this._want)this.p.pauseVideo()}catch(_){this._err()}};
+Object.defineProperty(P,'src',{get:function(){return this._src},set:function(u){var s=this,t=++s._tok;s._src=u;s._id='';s.ended=false;s.error=null;s.readyState=0;s.networkState=2;if(!u)return;var m=/[?&]id=([^&]*)/.exec(u),id=m?decodeURIComponent(m[1]):'';
+var run=function(v){if(t!==s._tok)return;s._id=v;s._go(v)};
+if(ID.test(id))run(id);else fetch(u).then(function(r){return r.ok?r.json():Promise.reject()}).then(function(j){if(!j.id)throw 0;run(j.id)}).catch(function(){if(t===s._tok)s._err()})}});
+Object.defineProperty(P,'currentTime',{get:function(){try{return this._ok&&this._id?this.p.getCurrentTime()||0:0}catch(_){return 0}},set:function(v){try{if(this._ok)this.p.seekTo(v,true)}catch(_){}}});
+Object.defineProperty(P,'duration',{get:function(){try{var d=this._ok&&this._id?this.p.getDuration():0;return d>0?d:NaN}catch(_){return NaN}}});
+Object.defineProperty(P,'volume',{get:function(){return this._v},set:function(v){this._v=Math.max(0,Math.min(1,v));try{if(this._ok)this.p.setVolume(this._v*100)}catch(_){}}});
+Object.defineProperty(P,'playbackRate',{get:function(){return this._r},set:function(v){this._r=v;try{if(this._ok)this.p.setPlaybackRate(v)}catch(_){}}});
+P.play=function(){keep();this._want=true;if(this.paused){this.paused=false;this._fire('play')}if(this._ok&&this._id){try{this.p.unMute();this.p.playVideo()}catch(_){}}return Promise.resolve()};
+P.pause=function(){this._want=false;try{if(this._ok&&this._id)this.p.pauseVideo()}catch(_){}if(!this.paused){this.paused=true;this._ms('paused');this._fire('pause')}};
+P.load=function(){};
+window.YTA=YTA})();
+</script>
+<script>
 const API='https://musify-api.musify.workers.dev';
 const $=(s,e=document)=>e.querySelector(s),$$=s=>document.querySelectorAll(s),q=encodeURIComponent,sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -321,7 +357,7 @@ $$('[data-ic]').forEach(e=>e.insertAdjacentHTML('afterbegin',ic(e.dataset.ic)));
 let DB={liked:[],pls:{},rec:[],sp:[],yt:null,ytp:[],src:'sp',set:{xf:6,sp:1,ly:'flow'},ov:{}};try{DB=Object.assign(DB,JSON.parse(localStorage.getItem('musify')||'{}'))}catch{}
 const save=()=>{try{localStorage.setItem('musify',JSON.stringify(DB))}catch{}};
 const M={},L={},SPN={},SC=new Map();let Q=[],Q0=[],qi=-1,sh=false,rp=0,mp=null,sc=0,RT=0,tm,sgT=0,DD=null,LY=null,lyI=-2,lyW=-1,lyUser=0,lyTw=0,lyRun=false,ytPoll=0;
-const A=[new Audio(),new Audio()];let au=A[0],XF=DB.set.xf,xfId=0,xfT=null,uiId=null,slT=0,slM=0,IMP=null,CPL=null,TS=0,lastH=null,SCR={},pend=0;const V=$('#view'),vol=$('#vol'),lyr=$('#lyr'),lsc=$('#lsc'),lyt=$('#lyt'),inp=$('#inp'),sg=$('#sg'),bar=$('#bar');
+const A=[new YTA(),new YTA()];let au=A[0],XF=DB.set.xf,xfId=0,xfT=null,uiId=null,slT=0,slM=0,IMP=null,CPL=null,TS=0,lastH=null,SCR={},pend=0;const V=$('#view'),vol=$('#vol'),lyr=$('#lyr'),lsc=$('#lsc'),lyt=$('#lyt'),inp=$('#inp'),sg=$('#sg'),bar=$('#bar');
 const cur=()=>Q[qi],liked=id=>DB.liked.some(x=>x.id==id);
 const reg=a=>(a||[]).map(x=>(M[x.id]=x));
 const YA=()=>DB.yt?btoa(JSON.stringify(DB.yt)):'';
@@ -448,7 +484,7 @@ function ui(){const s=cur(),lk=s?`<button class="ib h${liked(s.id)?' on':''}" da
  $$('.row').forEach(r=>r.classList.toggle('cur',L[r.dataset.k]?.[r.dataset.i]?.id==s?.id))}
 function meta(s){if(!('mediaSession'in navigator))return;const m=navigator.mediaSession;
  m.metadata=new MediaMetadata({title:s.title,artist:s.sub,artwork:s.thumb?[{src:s.thumb}]:[]});
- [['play',()=>au.play()],['pause',()=>au.pause()],['nexttrack',()=>next()],['previoustrack',prev]].forEach(([a,f])=>{try{m.setActionHandler(a,f)}catch{}})}
+ [['play',()=>au.play()],['pause',()=>au.pause()],['nexttrack',()=>next()],['previoustrack',prev],['seekto',d=>{au.currentTime=d.seekTime}]].forEach(([a,f])=>{try{m.setActionHandler(a,f)}catch{}})}
 const fmt=s=>isFinite(s)?(s/60|0)+':'+String(s%60|0).padStart(2,'0'):'0:00';
 const SK=$$('.seekr'),TC=$$('.tc'),TD=$$('.td'),PRG=$('#prg');let lastS=-1;
 A.forEach(a=>a.ontimeupdate=function(){if(this!==au)return;{const r=au.duration-au.currentTime;if(XF&&!au.paused&&r<=XF&&au.duration>XF*2+4&&xfT!==cur()?.id&&rp!=2&&(qi<Q.length-1||rp==1)){xfT=cur().id;next(true)}}const d=au.duration,p=d?au.currentTime/d:0;PRG.style.transform=`scaleX(${p})`;const t=au.currentTime|0;if(t==lastS)return;lastS=t;
