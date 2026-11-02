@@ -358,8 +358,9 @@ async home(){const my=RT,src=DB.src=='yt'?'yt':'sp';
   if(!put(my,hd+`<div style="margin:12px 0 0">${ybtn}</div>`+shelf('Your YT Music playlists',DB.ytp)+shelf('Recently played',DB.rec,1)+SECS(d.sections)+'<div id="more" class="skl"><i></i></div>'))return;
   await lazy('/ymfeed?part=',d.parts||1,my);
   if(my==RT)$('#more')?.remove();return}
- const[d,mine]=await Promise.all([api('/home?part=0'),mySp()]);
- if(!put(my,hd+`<div style="margin:12px 0 0">${cbtn}</div>`+shelf('Your Spotify playlists',mine)+shelf('Recently played',DB.rec,1)+SECS(d.sections)+'<div id="more" class="skl"><i></i></div>'))return;
+ const mp=mySp(),d=await api('/home?part=0');
+ if(!put(my,hd+`<div style="margin:12px 0 0">${cbtn}</div>`+shelf('Recently played',DB.rec,1)+SECS(d.sections)+'<div id="more" class="skl"><i></i></div>'))return;
+ mp.then(m=>{if(my==RT&&m.length)V.querySelector('.shw')?.insertAdjacentHTML('beforebegin',shelf('Your Spotify playlists',m))});
  await lazy('/home?part=',d.parts||1,my);
  if(my==RT)$('#more')?.remove()},
 async search(t){const my=RT;
@@ -423,7 +424,7 @@ function sm(){const s=DB.set;$('#xf').value=s.xf;$('#spd').value=s.sp;$('#xfv').
  $$('#smod [data-s]').forEach(b=>b.classList.toggle('on',b.dataset.s==s.ly));$$('#smod [data-m]').forEach(b=>b.classList.toggle('on',+b.dataset.m==slM));
  [['xf',0,12],['spd',.5,2]].forEach(([i,a,b])=>{const e=$('#'+i);e.style.setProperty('--v',(e.value-a)/(b-a)*100+'%')});lyr.dataset.ly=s.ly}
 function load(fx=0){const s=cur();if(!s)return;xfT=null;const o=fx&&au.src&&!au.paused?au:null;if(o)au=A[A.indexOf(o)^1];else{xfId++;A.forEach(a=>a.pause())}
- au.src=`${API}/stream?v=4&id=${q(s.id)}&t=${q(s.title)}&a=${q(s.sub)}&d=${s.dur||''}`;au.playbackRate=DB.set.sp;au.volume=o?0:vol.value/100;au.play().catch(()=>{});if(o)fade(o,au,fx);
+ au.src=`${API}/stream?v=5&id=${q(s.id)}&t=${q(s.title)}&a=${q(s.sub)}&d=${s.dur||''}`;au.playbackRate=DB.set.sp;au.volume=o?0:vol.value/100;au.play().catch(()=>{});if(o)fade(o,au,fx);
  DB.rec=[s,...DB.rec.filter(x=>x.id!=s.id)].slice(0,20);save();ui();meta(s);document.title=s.title+' • Musify';
  if(Q.length-qi<4)more();if(lyr.classList.contains('on'))lyrics();if(location.hash=='#/queue')route()}
 /* Auto-queue = YouTube Music "radio" of the playing song (related songs), shared promise so next() can await it */
